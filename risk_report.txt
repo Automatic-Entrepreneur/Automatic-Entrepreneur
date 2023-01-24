@@ -1,0 +1,4 @@
+Identified risks:
+* Tools used, in particular generative models, could be taken down between testing and official release
+* The Company House API is new and possibly subject to change, breaking existing code modelled for old API
+* Possible Terms of Service issues may restrict the amount of information that we can obtain and publish
