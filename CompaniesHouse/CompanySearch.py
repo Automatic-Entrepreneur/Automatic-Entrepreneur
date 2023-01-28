@@ -1,8 +1,7 @@
-from googlesearch import search
 import requests
 import json
 import pickle as pkl
-import key
+import CompaniesHouse.key
 
 
 class TooManyResults(UserWarning):
@@ -12,14 +11,16 @@ class TooManyResults(UserWarning):
 
 class CompanySearch:
     def __init__(self):
-        self.__key = key.api_key
+        self.__key = CompaniesHouse.key.api_key
 
-    def search(self, company_name, n=5):
+    def search(self, company_name, active=True, start=0, n=50):
         """
-        Searches query on google and companies house
+        Searches query on companies house
         :param query: company to search for
         :type query: str
-        :param n: number of results
+        :param start: position of the first result (used for multiple pages)
+        :type start: int
+        :param n: maximum number of results
         :type n: int
         :return: ordered list of potential matches
         :rtype: list[dict[str, str]]
@@ -37,12 +38,16 @@ class CompanySearch:
         # return['registered_office_address'] a dictionary containing the office address of the company:
         # return['sic_codes'] a list of unique identifiers for what the company does
         # return['industry'] a list of strings describing what the company does
-        if n > 20:
-            raise ResourceWarning
-        searched_companies = search(company_name, extra_params={'as_sitesearch': 'find-and-update.company-information.service.gov.uk/company'}, country='en', num=n, stop=n)
-        ids_for_CH = [next(searched_companies)[67:75] for _ in range(n)]
+        if n > 5000:
+            raise TooManyResults
         query = "https://api.company-information.service.gov.uk/advanced-search/companies"
-        params = {'company_name_includes': company_name}
+        params = {
+            'company_name_includes': company_name,
+            'start_index': start,
+            'size': n
+                  }
+        if active:
+            params['company_status'] = 'active'
         results = json.JSONDecoder().decode(requests.get(query, auth=(self.__key, ''), params=params).text)['items']
         companies = {
             company['company_number']: {
@@ -61,36 +66,9 @@ class CompanySearch:
                 companies[company['company_number']]['registered_office_address'] = company['registered_office_address']
             if 'sic_codes' in company:
                 companies[company['company_number']]['sic_codes'] = company['sic_codes']
-        no_info = set(ids_for_CH) - companies.keys()
-        for company in no_info:
-            query = "https://api.company-information.service.gov.uk/company/{}".format(company)
-            profile = json.JSONDecoder().decode(requests.get(query, auth=(self.__key, ''), params=params).text)
-            companies[company] = {
-                'company_name': profile['company_name'],
-                'company_number': profile['company_number'],
-                'company_status': profile['company_status'],
-                'company_type': profile['type'],
-                'date_of_creation': profile['date_of_creation'],
-            }
-            if 'date_of_cessation' in profile:
-                companies[company]['date_of_cessation'] = profile['date_of_cessation']
-            if 'registered_office_address' in profile:
-                companies[company]['registered_office_address'] = profile['registered_office_address']
-            if 'sic_codes' in profile:
-                companies[company]['sic_codes'] = profile['sic_codes']
-        codes_to_text = pkl.load(open('sic_codes.pkl', 'rb'))
+        codes_to_text = pkl.load(open('CompaniesHouse\sic_codes.pkl', 'rb'))
         for company in companies.values():
             if 'sic_codes' in company:
-                 company['industry'] = [codes_to_text[sic] for sic in company['sic_codes']]
-        seen = set()
-        search_results = []
-        for id in ids_for_CH:
-            if id not in seen:
-                seen.add(id)
-                search_results.append(companies[id])
-        for id, company in companies.items():
-            if id not in seen:
-                seen.add(id)
-                search_results.append(company)
-        return search_results
+                 company['industry'] = [codes_to_text[sic] for sic in company['sic_codes'] if sic in codes_to_text]
+        return sorted(companies.values(), key=lambda x: x['date_of_creation'])
 
