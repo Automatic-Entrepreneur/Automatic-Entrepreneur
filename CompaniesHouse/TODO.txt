@@ -1,0 +1,16 @@
+
+- Finish CompanySearch
+  currently only the googlesearch is done -- the CH side is unimplemented!
+
+- Integrate PDF scanning
+  Finish it off and add it to CompanyInfo
+
+- Use "requests-cache"
+  This library caches requests, increasing performance and reducing probability of blocks
+
+- make classes async?
+  Many queries are known very early so could be made early and used later, reducing latency. Be careful about overloading via "multithreaded queries".
+
+- Rate Limit
+  Google does A LOT OF rate limiting! It will block very easily!
+  Both Google and CH can and will block -- if this happens in a demo it's really bad
