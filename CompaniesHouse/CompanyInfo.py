@@ -1,4 +1,4 @@
-import key
+import CompaniesHouse.key
 import requests
 import json
 import pytesseract
@@ -39,7 +39,7 @@ class CompanyInfo:
         :type company_info: str
         """
         self.__company_number = company_info
-        self.__key = key.api_key
+        self.__key = CompaniesHouse.key.api_key
         self.__info = None
         self.__people = None
         self.__accounts = None

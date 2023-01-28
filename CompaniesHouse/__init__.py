@@ -1,1 +1,2 @@
-import CompaniesHouse.CompanySearch
+from CompaniesHouse.CompanySearch import CompanySearch
+from CompaniesHouse.CompanyInfo import CompanyInfo
