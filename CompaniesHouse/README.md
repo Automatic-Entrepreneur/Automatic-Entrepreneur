@@ -1,6 +1,5 @@
-Everything in CompaniesHouse is wrapped in two classes.
 
-Anything with __ is private and should not be accessed.
+# Everything in CompaniesHouse is wrapped in two classes.
 
 - CompanyInformation
   This is a class which wraps API calls and extraction from accounts.
