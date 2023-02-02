@@ -13,20 +13,22 @@ def graph():
 if __name__ == "__main__":
     company = CompanyInfo('03824658')
     accountInfo = company.getAccountInformation(2022)
-    turnover = []
+    extractedData = {'ProfitLoss':[],'FixedAssets':[],'CurrentAssets':[]}
     years = []
 
     for year in range(2018, 2023):
         accountInfo = company.getAccountInformation(year)
 
         for record in accountInfo:
-            if record['name'] == 'ProfitLoss':
-                turnover.append(record['value'])
-                years.append(year)
-                print(turnover, year)
-                break
+            for attribute in extractedData.keys():
+                if record['name'] == attribute and record['startdate'] == str(year-1)+'-01-01':
+                    extractedData[attribute].append(record['value'])
+                    years.append(year-1)
+                    print(record['startdate'])
+                    print(extractedData[attribute], year)
+                    break
 
-    plt.plot(years,turnover)
+    plt.plot(years,extractedData['ProfitLoss'])
     plt.ylabel('Profit GBP')
     plt.show()
     print(accountInfo)
