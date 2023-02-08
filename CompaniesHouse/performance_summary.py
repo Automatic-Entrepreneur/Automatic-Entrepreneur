@@ -2,9 +2,6 @@ from CompaniesHouse.CompanySearch import CompanySearch
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
 
-keywords = {1: "increased", -1: "decreased", 0: "stayed the same"}
-
-
 def ternary(n: int) -> int:
 	if n > 0:
 		return 1
@@ -46,6 +43,7 @@ def summary(company_id: str) -> tuple[list[int], list[list[int]]]:
 
 
 if __name__ == "__main__":
+	keywords = {1: "increased", -1: "decreased", 0: "stayed the same"}
 	trends, intervals = summary("03824658")
 	output = [
 		f"Profit {keywords[trend]} from {start} to {end}."
