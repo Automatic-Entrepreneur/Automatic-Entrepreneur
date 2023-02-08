@@ -23,10 +23,12 @@ def summary(company_id: str) -> tuple[list[int], list[list[int]]]:
 		if record["name"] == "ProfitLoss" and record["startdate"] == f"{year - 1}-01-01"
 	]
 
+	# profit_by_year = [(600, 2017), (700, 2018), (100, 2019), (50, 2020), (50, 2021), (500, 2022)]
+
 	start = profit_by_year[0]
 	prev = profit_by_year[1]
 
-	trend_list = [ternary(prev[0] - start)]
+	trend_list = [ternary(prev[0] - start[0])]
 	groups = [[start[1], prev[1]]]
 
 	for profit, year in profit_by_year[2:]:
@@ -35,7 +37,7 @@ def summary(company_id: str) -> tuple[list[int], list[list[int]]]:
 			groups[-1][-1] = year
 		else:
 			trend_list.append(trend)
-			groups.append([year, year])
+			groups.append([year - 1, year])
 		prev = (profit, year)
 
 	return trend_list, groups
