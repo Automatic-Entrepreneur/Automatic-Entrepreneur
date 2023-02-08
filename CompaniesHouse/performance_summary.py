@@ -37,7 +37,7 @@ def summary(company_id: str) -> tuple[list[int], list[list[int]]]:
 			groups[-1][-1] = year
 		else:
 			trend_list.append(trend)
-			groups.append([year - 1, year])
+			groups.append([prev[1], year])
 		prev = (profit, year)
 
 	return trend_list, groups
