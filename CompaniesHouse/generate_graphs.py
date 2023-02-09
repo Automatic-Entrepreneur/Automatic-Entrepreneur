@@ -2,39 +2,23 @@ import matplotlib.pyplot as plt
 from CompaniesHouse.CompanySearch import CompanySearch
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
-def preprocessing():
-    print()
 
-def bar_graph(x,y):
-    menMeans = y
-
-    # Creating a figure with some fig size
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(x, menMeans, width=0.4)
-    # Now the trick is here.
-    # plt.text() , you need to give (x,y) location , where you want to put the numbers,
-    # So here index will give you x pos and data+1 will provide a little gap in y axis.
-    for index, data in enumerate(menMeans):
-        plt.text(x=index, y=data + 1, s=f"{data}", fontdict=dict(fontsize=20))
-    plt.tight_layout()
-    plt.show()
-
-if __name__ == "__main__":
-    company = CompanyInfo('05475394')
-   # accountInfo = company.getAccountInformation(2022)
+def generate_bar_graph(company_id):
+    company = CompanyInfo(company_id)
     extractedData = {'ProfitLoss':
-                         {'years':[],'values':[], },
+                         {'years': [], 'values': [], },
                      'FixedAssets':
-                         {'years':[],'values':[]},
+                         {'years': [], 'values': []},
                      'CurrentAssets':
-                         {'years':[],'values':[]}}
+                         {'years': [], 'values': []}}
 
     for year in range(2010, 2023):
         try:
             accountInfo = company.getAccountInformation(year)
+            print(accountInfo)
         except IndexError:
             continue
-        except NotImplementedError: # Risky behaviour - how to indicate the graph isn't there
+        except NotImplementedError:  # Risky behaviour - how to indicate the graph isn't there
             continue
 
         for record in accountInfo:
@@ -47,20 +31,20 @@ if __name__ == "__main__":
 
                     extractedData[attribute]['values'].append(record['value'])
                     extractedData[attribute]['years'].append(time)
-
-               #     print(record['startdate'])
-                #    print(extractedData[attribute], year)
                     break
-
     print(extractedData)
-    plt.bar(extractedData['CurrentAssets']['years'],extractedData['CurrentAssets']['values'])
-    plt.ylabel('Profit in GBP')
-    plt.xlabel('Year')
+    for attribute in extractedData.keys():
+        if len(extractedData[attribute]['years']) > 0:
+            plt.bar(extractedData[attribute]['years'], extractedData[attribute]['values'])
+            plt.ylabel('Profit in GBP')
+            plt.xlabel('Year')
 
-    plt.ylim([0, max(extractedData['CurrentAssets']['values']) * 1.2])
+            plt.ylim([0, max(extractedData[attribute]['values']) * 1.2])
 
-    plt.show()
+            plt.show()
+        else:
+            print('No data found for ' + attribute)
 
-  #  bar_graph(years,extractedData['ProfitLoss'])
+if __name__ == "__main__":
+    generate_bar_graph('02713500')
 
-    print(accountInfo)
