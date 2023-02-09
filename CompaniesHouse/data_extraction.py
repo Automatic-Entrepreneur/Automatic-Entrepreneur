@@ -1,6 +1,6 @@
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
-trend_map = {1: "increasing", -1: "decreasing", 0: "steady"}
+trend_map = {1: "increased", -1: "decreased", 0: "remained steady"}
 
 attribute_map = {
 	"ProfitLoss": {1: "profit", -1: "loss", 0: "no profit or loss"},

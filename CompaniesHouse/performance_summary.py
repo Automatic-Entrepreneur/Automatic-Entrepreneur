@@ -18,39 +18,43 @@ def compare(a: float, b: float) -> int:
 
 def data_summary(
 		records: dict[str, list[int | float]]
-) -> list[dict[str, int | list[list[int]]]]:
+) -> list[dict[str, int | list[dict[str, int | float]]]]:
 	values_by_year = list(zip(records["values"], records["years"]))
 	prev = values_by_year[0]
-	trend_list = [{"sign": compare(prev[0], 0), "trend": [[0, prev[1], prev[1]]]}]
+	trends_list = [{
+		"sign": compare(prev[0], 0),
+		"trends": [{"trend": 0, "startVal": prev[0], "endVal": prev[0], "startYear": prev[1], "endYear": prev[1]}]
+	}]
 
 	for value, year in values_by_year[1:]:
 		sign = compare(value, 0)
-		direction = compare(value, prev[0])
-		if trend_list[-1]["sign"] == sign or sign == 0:
-			trends = trend_list[-1]["trend"]
-			if trends[-1][0] == direction:
-				trends[-1][2] = year
+		trend = compare(value, prev[0])
+		if trends_list[-1]["sign"] == sign or sign == 0:
+			trends = trends_list[-1]["trends"]
+			if trends[-1]["trend"] == trend:
+				trends[-1]["endVal"] = value
+				trends[-1]["endYear"] = year
 			else:
-				trends.append([direction, prev[1], year])
+				trends.append({"trend": trend, "startVal": prev[0], "endVal": value, "startYear": prev[1], "endYear": year})
 		else:
-			trend_list.append({"sign": sign, "trend": [[direction, prev[1], year]]})
+			trends_list.append({"sign": sign, "trends": [{"trend": trend, "startVal": prev[0], "endVal": value, "startYear": prev[1], "endYear": year}]})
 		prev = (value, year)
-	return trend_list
+	return trends_list
 
 
 def format_summary(
-		values_by_year: list[dict[str, int | list[list[int]]]], sign_map: dict[int, str]
+		values_by_year: list[dict[str, int | list[dict[str, int | float]]]], sign_map: dict[int, str]
 ) -> str:
 	output = []
 	for section in values_by_year:
-		for trend in section["trend"]:
-			if trend[1] != trend[2]:
+		for trend in section["trends"]:
+			if trend["startYear"] != trend["endYear"]:
 				s = section["sign"]
-				if s != 0:
-					keywords = f"{trend_map[s * trend[0]]} {sign_map[s]}"
-				else:
-					keywords = sign_map[s]
-				output.append(f"There was {keywords} from {trend[1]} to {trend[2]}.")
+				t = s * trend['trend']
+				keywords1 = f"{sign_map[s]}" if s == 0 else f"{sign_map[s]} {trend_map[t]}"
+				keywords2 = f"at {trend['startVal']} GBP." if t == 0 else f"from {trend['startVal']} to {trend['endVal']} GBP."
+				output.append(f"{trend['startYear']}-{trend['endYear']}: {keywords1} {keywords2}")
+
 	return "\n".join(output)
 
 
@@ -70,6 +74,6 @@ def overall_summary(company_id: str, start_year: int, end_year: int) -> dict[str
 
 
 if __name__ == "__main__":
-	for summary in overall_summary("02713500", 2010, 2023).values():
+	for summary in overall_summary("03824658", 2010, 2023).values():
 		print(summary)
 		print()
