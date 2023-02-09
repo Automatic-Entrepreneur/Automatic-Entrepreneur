@@ -1,8 +1,13 @@
-from CompaniesHouse.CompanySearch import CompanySearch
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
 
 def compare(a: float, b: float) -> int:
+	"""
+	Compares two numbers and returns 1, -1, or 0
+	:param a: number being focused on
+	:param b: number being compared to a
+	:return: 1 if a > b, -1 if a < b, 0 if a == b
+	"""
 	if a > b:
 		return 1
 	elif a < b:
@@ -12,16 +17,16 @@ def compare(a: float, b: float) -> int:
 
 
 def summary(company_id: str) -> list[dict[str, int | list[list[int]]]]:
-	"""
 	company = CompanyInfo(company_id)
-	profit_by_year = [
+	profitloss_by_year = [
 		(record["value"], year - 1)
 		for year in range(2018, 2023)
 		for record in company.getAccountInformation(year)
 		if record["name"] == "ProfitLoss" and record["startdate"] == f"{year - 1}-01-01"
 	]
-	"""
+	print(profitloss_by_year)
 
+	"""
 	profitloss_by_year = [
 		(0, 2015),
 		(0, 2016),
@@ -33,6 +38,7 @@ def summary(company_id: str) -> list[dict[str, int | list[list[int]]]]:
 		(-25, 2022),
 		(-25, 2023)
 	]
+	"""
 
 	prev = profitloss_by_year[0]
 	trend_list = [{
@@ -60,10 +66,9 @@ def summary(company_id: str) -> list[dict[str, int | list[list[int]]]]:
 	return trend_list
 
 
-if __name__ == "__main__":
+def format_summary(summary: list[dict[str, int | list[list[int]]]]) -> str:
 	trend_words = {1: "increasing", -1: "decreasing", 0: "steady"}
 	profit_words = {1: "profit", -1: "loss", 0: "no change"}
-	summary = summary("03824658")
 	output = []
 	for section in summary:
 		for trend in section["trend"]:
@@ -76,5 +81,8 @@ if __name__ == "__main__":
 				output.append(
 					f"There was {keywords} from {trend[1]} to {trend[2]}."
 				)
-	print("\n".join(output))
+	return "\n".join(output)
 
+
+if __name__ == "__main__":
+	print(format_summary(summary("03824658")))
