@@ -20,17 +20,22 @@ def bar_graph(x,y):
     plt.show()
 
 if __name__ == "__main__":
-    company = CompanyInfo('03824658')
-    accountInfo = company.getAccountInformation(2022)
+    company = CompanyInfo('05475394')
+   # accountInfo = company.getAccountInformation(2022)
     extractedData = {'ProfitLoss':
-                         {'years':[],'values':[]},
+                         {'years':[],'values':[], },
                      'FixedAssets':
                          {'years':[],'values':[]},
                      'CurrentAssets':
                          {'years':[],'values':[]}}
 
-    for year in range(2018, 2023):
-        accountInfo = company.getAccountInformation(year)
+    for year in range(2010, 2023):
+        try:
+            accountInfo = company.getAccountInformation(year)
+        except IndexError:
+            continue
+        except NotImplementedError: # Risky behaviour - how to indicate the graph isn't there
+            continue
 
         for record in accountInfo:
             for attribute in extractedData.keys():
