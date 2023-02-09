@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
 from CompaniesHouse.CompanySearch import CompanySearch
 from CompaniesHouse.CompanyInfo import CompanyInfo
+from data_extraction import extract_data
 
 
 def generate_bar_graph(company_id):
+    # extractedData = extract_data(company_id, 2010, 2023)
+
     company = CompanyInfo(company_id)
     extractedData = {'ProfitLoss':
                          {'years': [], 'values': [], },
