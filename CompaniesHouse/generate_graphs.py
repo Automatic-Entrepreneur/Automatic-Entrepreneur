@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from CompaniesHouse.CompanySearch import CompanySearch
 from CompaniesHouse.CompanyInfo import CompanyInfo
-import numpy as np
 
 def preprocessing():
     print()
@@ -23,26 +22,37 @@ def bar_graph(x,y):
 if __name__ == "__main__":
     company = CompanyInfo('03824658')
     accountInfo = company.getAccountInformation(2022)
-    extractedData = {'ProfitLoss':[],'FixedAssets':[],'CurrentAssets':[]}
-    years = []
+    extractedData = {'ProfitLoss':
+                         {'years':[],'values':[]},
+                     'FixedAssets':
+                         {'years':[],'values':[]},
+                     'CurrentAssets':
+                         {'years':[],'values':[]}}
 
     for year in range(2018, 2023):
         accountInfo = company.getAccountInformation(year)
 
         for record in accountInfo:
             for attribute in extractedData.keys():
-                if record['name'] == attribute and record['startdate'] == str(year-1)+'-01-01':
-                    extractedData[attribute].append(record['value'])
-                    years.append(year-1)
-                    print(record['startdate'])
-                    print(extractedData[attribute], year)
+                if record['name'] == attribute:
+                    if record['startdate'] == None:
+                        time = int(record['instant'][0:4])
+                    else:
+                        time = int(record['startdate'][0:4])
+
+                    extractedData[attribute]['values'].append(record['value'])
+                    extractedData[attribute]['years'].append(time)
+
+               #     print(record['startdate'])
+                #    print(extractedData[attribute], year)
                     break
 
-    plt.bar(years,extractedData['ProfitLoss'])
+    print(extractedData)
+    plt.bar(extractedData['CurrentAssets']['years'],extractedData['CurrentAssets']['values'])
     plt.ylabel('Profit in GBP')
     plt.xlabel('Year')
 
-    plt.ylim([0, max(extractedData['ProfitLoss']) * 1.2])
+    plt.ylim([0, max(extractedData['CurrentAssets']['values']) * 1.2])
 
     plt.show()
 
