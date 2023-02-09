@@ -5,42 +5,7 @@ from data_extraction import extract_data
 
 
 def generate_bar_graph(company_id):
-    # extractedData = extract_data(company_id, 2010, 2023)
-
-    company = CompanyInfo(company_id)
-    extractedData = {'ProfitLoss':
-                         {'years': [], 'values': [], },
-                     'FixedAssets':
-                         {'years': [], 'values': []},
-                     'CurrentAssets':
-                         {'years': [], 'values': []}}
-
-    for year in range(2010, 2023):
-        try:
-            accountInfo = company.getAccountInformation(year)
-            print(accountInfo)
-        except IndexError:
-            continue
-        except NotImplementedError:  # Risky behaviour - how to indicate the graph isn't there
-            continue
-
-        for record in accountInfo:
-            for attribute in extractedData.keys():
-                if record['name'] == attribute:
-                    if record['startdate'] == None:
-                        record_year = int(record['instant'][0:4])
-                    else:
-                        record_year = int(record['startdate'][0:4])
-
-                    if record_year not in extractedData[attribute]['years']:
-                        extractedData[attribute]['values'].append(record['value'])
-                        extractedData[attribute]['years'].append(record_year)
-                    else:
-                        i = extractedData[attribute]['years'].index(record_year)
-                        extractedData[attribute]['values'][i] = max(extractedData[attribute]['values'][i], record['value'])
-
-                    break
-
+    extractedData = extract_data(company_id, 2010, 2023)
     # print(extractedData)
     for attribute in extractedData.keys():
         if len(extractedData[attribute]['years']) > 0:

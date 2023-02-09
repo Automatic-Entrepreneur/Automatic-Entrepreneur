@@ -61,13 +61,15 @@ def overall_summary(company_id: str, start_year: int, end_year: int) -> dict[str
 
 	output = {}
 	for attribute, record in extracted_data.items():
-		if attribute in attribute_map:
+		if not record["years"]:
+			output[attribute] = f"No data for {attribute}."
+		elif attribute in attribute_map:
 			output[attribute] = format_summary(data_summary(record), attribute_map[attribute])
 			# else raise NotImplementedError(f"{attribute} summary not implemented")
 	return output
 
 
 if __name__ == "__main__":
-	for summary in overall_summary("03824658", 2018, 2023).values():
+	for summary in overall_summary("02713500", 2010, 2023).values():
 		print(summary)
 		print()
