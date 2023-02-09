@@ -16,7 +16,7 @@ def compare(a: float, b: float) -> int:
 		return 0
 
 
-def extract_data(company_id: str) -> dict[str, list[tuple[float, int]]]:
+def extract_data(company_id: str, start_year: int, end_year: int) -> dict[str, list[tuple[float, int]]]:
 	company = CompanyInfo(company_id)
 	extracted_data = {
 		"ProfitLoss": {},
@@ -24,7 +24,7 @@ def extract_data(company_id: str) -> dict[str, list[tuple[float, int]]]:
 		"CurrentAssets": {}
 	}
 
-	for year in range(2018, 2023):
+	for year in range(start_year, end_year):
 		account_info = company.getAccountInformation(year)
 		for record in account_info:
 			for attribute in extracted_data:
@@ -110,8 +110,8 @@ def generate_single_summary(extracted_data: list[dict[str, int | list[list[int]]
 		return format_summary(extracted_data, attribute_map[attribute])
 
 
-def overall_summary(company_id: str) -> list[str]:
-	data = extract_data(company_id)
+def overall_summary(company_id: str, start_year: int, end_year: int) -> list[str]:
+	data = extract_data(company_id, start_year, end_year)
 	print(data)
 	print()
 
@@ -122,6 +122,6 @@ def overall_summary(company_id: str) -> list[str]:
 
 
 if __name__ == "__main__":
-	for summary in overall_summary("03824658"):
+	for summary in overall_summary("03824658", 2018, 2023):
 		print(summary)
 		print()
