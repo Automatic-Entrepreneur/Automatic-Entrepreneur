@@ -1,5 +1,3 @@
-from typing import Dict, Any, List, Tuple
-
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
 
@@ -46,20 +44,6 @@ def extract_data(company_id: str) -> dict[str, list[tuple[float, int]]]:
 
 
 def data_summary(values_by_year: list[tuple[float, int]]) -> list[dict[str, int | list[list[int]]]]:
-	"""
-	values_by_year = [
-		(0, 2015),
-		(0, 2016),
-		(50, 2017),
-		(50, 2018),
-		(100, 2019),
-		(200, 2020),
-		(-55, 2021),
-		(-25, 2022),
-		(-25, 2023)
-	]
-	"""
-
 	prev = values_by_year[0]
 	trend_list = [{
 		"sign": compare(prev[0], 0),
@@ -129,9 +113,10 @@ def generate_summary(extracted_data: list[dict[str, int | list[list[int]]]], att
 if __name__ == "__main__":
 	data = extract_data("03824658")
 	print(data)
-	for attribute, values in data.items():
+	print()
+	for data_attribute, values in data.items():
 		try:
-			print(generate_summary(data_summary(values), attribute))
+			print(generate_summary(data_summary(values), data_attribute))
 		except NotImplementedError as e:
 			print(repr(e))
 		print()
