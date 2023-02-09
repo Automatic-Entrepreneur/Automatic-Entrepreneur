@@ -25,14 +25,20 @@ def generate_bar_graph(company_id):
             for attribute in extractedData.keys():
                 if record['name'] == attribute:
                     if record['startdate'] == None:
-                        time = int(record['instant'][0:4])
+                        record_year = int(record['instant'][0:4])
                     else:
-                        time = int(record['startdate'][0:4])
+                        record_year = int(record['startdate'][0:4])
 
-                    extractedData[attribute]['values'].append(record['value'])
-                    extractedData[attribute]['years'].append(time)
+                    if record_year not in extractedData[attribute]['years']:
+                        extractedData[attribute]['values'].append(record['value'])
+                        extractedData[attribute]['years'].append(record_year)
+                    else:
+                        i = extractedData[attribute]['years'].index(record_year)
+                        extractedData[attribute]['values'][i] = max(extractedData[attribute]['values'][i], record['value'])
+
                     break
-    print(extractedData)
+
+    # print(extractedData)
     for attribute in extractedData.keys():
         if len(extractedData[attribute]['years']) > 0:
             plt.bar(extractedData[attribute]['years'], extractedData[attribute]['values'])
