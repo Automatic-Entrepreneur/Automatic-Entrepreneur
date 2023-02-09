@@ -21,13 +21,13 @@ def bar_graph(x,y):
 
 if __name__ == "__main__":
     company = CompanyInfo('03824658')
+    accountInfo = company.getAccountInformation(2022)
     extractedData = {'ProfitLoss':
                          {'years':[],'values':[]},
                      'FixedAssets':
                          {'years':[],'values':[]},
                      'CurrentAssets':
                          {'years':[],'values':[]}}
-
 
     for year in range(2018, 2023):
         accountInfo = company.getAccountInformation(year)
@@ -36,21 +36,18 @@ if __name__ == "__main__":
             for attribute in extractedData.keys():
                 if record['name'] == attribute:
                     if record['startdate'] == None:
-                        record_year = int(record['instant'][0:4])
+                        time = int(record['instant'][0:4])
                     else:
-                        record_year = int(record['startdate'][0:4])
+                        time = int(record['startdate'][0:4])
 
-                    if record_year not in extractedData[attribute]['years']:
-                        extractedData[attribute]['values'].append(record['value'])
-                        extractedData[attribute]['years'].append(record_year)
-                    else:
-                        i = extractedData[attribute]['years'].index(record_year)
-                        extractedData[attribute]['values'][i] = max(extractedData[attribute]['values'][i], record['value'])
+                    extractedData[attribute]['values'].append(record['value'])
+                    extractedData[attribute]['years'].append(time)
 
+               #     print(record['startdate'])
+                #    print(extractedData[attribute], year)
                     break
 
-    for key in extractedData:
-        print(key, ':', extractedData[key])
+    print(extractedData)
     plt.bar(extractedData['CurrentAssets']['years'],extractedData['CurrentAssets']['values'])
     plt.ylabel('Profit in GBP')
     plt.xlabel('Year')
@@ -59,4 +56,6 @@ if __name__ == "__main__":
 
     plt.show()
 
-    # bar_graph(extractedData['ProfitLoss']['years'], extractedData['ProfitLoss']['values'])
+  #  bar_graph(years,extractedData['ProfitLoss'])
+
+    print(accountInfo)
