@@ -21,10 +21,20 @@ def data_summary(
 ) -> list[dict[str, int | list[dict[str, int | float]]]]:
 	values_by_year = list(zip(records["values"], records["years"]))
 	prev = values_by_year[0]
-	trends_list = [{
-		"sign": compare(prev[0], 0),
-		"trends": [{"trend": 0, "startVal": prev[0], "endVal": prev[0], "startYear": prev[1], "endYear": prev[1]}]
-	}]
+	trends_list = [
+		{
+			"sign": compare(prev[0], 0),
+			"trends": [
+				{
+					"trend": 0,
+					"startVal": prev[0],
+					"endVal": prev[0],
+					"startYear": prev[1],
+					"endYear": prev[1],
+				}
+			],
+		}
+	]
 
 	for value, year in values_by_year[1:]:
 		sign = compare(value, 0)
@@ -35,27 +45,56 @@ def data_summary(
 				trends[-1]["endVal"] = value
 				trends[-1]["endYear"] = year
 			else:
-				trends.append({"trend": trend, "startVal": prev[0], "endVal": value, "startYear": prev[1], "endYear": year})
+				trends.append(
+					{
+						"trend": trend,
+						"startVal": prev[0],
+						"endVal": value,
+						"startYear": prev[1],
+						"endYear": year,
+					}
+				)
 		else:
-			trends_list.append({"sign": sign, "trends": [{"trend": trend, "startVal": prev[0], "endVal": value, "startYear": prev[1], "endYear": year}]})
+			trends_list.append(
+				{
+					"sign": sign,
+					"trends": [
+						{
+							"trend": trend,
+							"startVal": prev[0],
+							"endVal": value,
+							"startYear": prev[1],
+							"endYear": year,
+						}
+					],
+				}
+			)
 		prev = (value, year)
 	return trends_list
 
 
 def format_summary(
-		values_by_year: list[dict[str, int | list[dict[str, int | float]]]], sign_map: dict[int, str]
-) -> str:
+		values_by_year: list[dict[str, int | list[dict[str, int | float]]]],
+		sign_map: dict[int, str],
+) -> list[str]:
 	output = []
 	for section in values_by_year:
 		for trend in section["trends"]:
 			if trend["startYear"] != trend["endYear"]:
 				s = section["sign"]
-				t = s * trend['trend']
-				keywords1 = f"{sign_map[s]}" if s == 0 else f"{sign_map[s]} {trend_map[t]}"
-				keywords2 = f"at {trend['startVal']} GBP." if t == 0 else f"from {trend['startVal']} to {trend['endVal']} GBP."
-				output.append(f"{trend['startYear']}-{trend['endYear']}: {keywords1} {keywords2}")
-
-	return "\n".join(output)
+				t = s * trend["trend"]
+				keywords1 = (
+					f"{sign_map[s]}" if s == 0 else f"{sign_map[s]} {trend_map[t]}"
+				)
+				keywords2 = (
+					f"at {trend['startVal']} GBP."
+					if t == 0
+					else f"from {trend['startVal']} to {trend['endVal']} GBP."
+				)
+				output.append(
+					f"{trend['startYear']}-{trend['endYear']}: {keywords1} {keywords2}"
+				)
+	return output
 
 
 def overall_summary(company_id: str, start_year: int, end_year: int) -> dict[str, str]:
@@ -68,7 +107,13 @@ def overall_summary(company_id: str, start_year: int, end_year: int) -> dict[str
 		if not record["years"]:
 			output[attribute] = f"No data for {attribute}."
 		elif attribute in attribute_map:
-			output[attribute] = attribute + ":\n" + format_summary(data_summary(record), attribute_map[attribute])
+			output[attribute] = (
+				attribute
+				+ ":\n"
+				+ "\n".join(
+					format_summary(data_summary(record), attribute_map[attribute])
+				)
+			)
 			# else raise NotImplementedError(f"{attribute} summary not implemented")
 	return output
 
