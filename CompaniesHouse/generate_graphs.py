@@ -44,9 +44,9 @@ def generate_bar_graph(company_id):
             plt.bar(extractedData[attribute]['years'], extractedData[attribute]['values'])
             plt.ylabel('Profit in GBP')
             plt.xlabel('Year')
+            plt.title(attribute)
 
             plt.ylim([0, max(extractedData[attribute]['values']) * 1.2])
-
             plt.show()
         else:
             print('No data found for ' + attribute)
