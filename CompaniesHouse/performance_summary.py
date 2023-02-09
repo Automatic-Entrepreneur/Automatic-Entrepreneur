@@ -16,13 +16,17 @@ def compare(a: float, b: float) -> int:
 		return 0
 
 
-def extract_data(company_id: str, start_year: int, end_year: int) -> dict[str, list[tuple[float, int]]]:
+def extract_data(
+		company_id: str,
+		attribute_map: dict[str, dict[int, str]],
+		start_year: int,
+		end_year: int
+) -> dict[str, list[tuple[float, int]]]:
 	company = CompanyInfo(company_id)
-	extracted_data = {
-		"ProfitLoss": {},
-		"FixedAssets": {},
-		"CurrentAssets": {}
-	}
+
+	extracted_data = {}
+	for attribute in attribute_map:
+		extracted_data[attribute] = {}
 
 	for year in range(start_year, end_year):
 		account_info = company.getAccountInformation(year)
@@ -87,7 +91,18 @@ def format_summary(values_by_year: list[dict[str, int | list[list[int]]]], data_
 	return "\n".join(output)
 
 
-def generate_single_summary(extracted_data: list[dict[str, int | list[list[int]]]], attribute: str) -> str:
+def generate_single_summary(
+		extracted_data: list[dict[str, int | list[list[int]]]],
+		attribute_map: dict[str, dict[int, str]],
+		attribute: str
+) -> str:
+	if attribute not in attribute_map:
+		raise NotImplementedError(f"{attribute} summary not implemented")
+	else:
+		return format_summary(extracted_data, attribute_map[attribute])
+
+
+def overall_summary(company_id: str, start_year: int, end_year: int) -> list[str]:
 	attribute_map = {
 		"ProfitLoss": {
 			1: "profit",
@@ -104,19 +119,12 @@ def generate_single_summary(extracted_data: list[dict[str, int | list[list[int]]
 		}
 	}
 
-	if attribute not in attribute_map:
-		raise NotImplementedError(f"{attribute} summary not implemented")
-	else:
-		return format_summary(extracted_data, attribute_map[attribute])
-
-
-def overall_summary(company_id: str, start_year: int, end_year: int) -> list[str]:
-	data = extract_data(company_id, start_year, end_year)
+	data = extract_data(company_id, attribute_map, start_year, end_year)
 	print(data)
 	print()
 
 	return [
-		generate_single_summary(data_summary(values), data_attribute)
+		generate_single_summary(data_summary(values), attribute_map, data_attribute)
 		for data_attribute, values in data.items()
 	]
 
