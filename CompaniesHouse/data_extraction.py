@@ -5,14 +5,14 @@ trend_map = {1: "increasing", -1: "decreasing", 0: "steady"}
 attribute_map = {
 	"ProfitLoss": {1: "profit", -1: "loss", 0: "no profit or loss"},
 	"FixedAssets": {
-		1: "value of fixed assets",
-		-1: "NEGATIVE value of fixed assets",
-		0: "no change in the value of fixed assets",
+		1: "value",
+		-1: "NEGATIVE value",
+		0: "no change in value",
 	},
 	"CurrentAssets": {
-		1: "value of current assets",
-		-1: "NEGATIVE value of current assets",
-		0: "no change in the value of current assets",
+		1: "value",
+		-1: "NEGATIVE value",
+		0: "no change in value",
 	},
 }
 

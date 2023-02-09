@@ -64,7 +64,7 @@ def overall_summary(company_id: str, start_year: int, end_year: int) -> dict[str
 		if not record["years"]:
 			output[attribute] = f"No data for {attribute}."
 		elif attribute in attribute_map:
-			output[attribute] = format_summary(data_summary(record), attribute_map[attribute])
+			output[attribute] = attribute + ":\n" + format_summary(data_summary(record), attribute_map[attribute])
 			# else raise NotImplementedError(f"{attribute} summary not implemented")
 	return output
 
