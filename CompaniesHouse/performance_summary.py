@@ -87,7 +87,7 @@ def format_summary(values_by_year: list[dict[str, int | list[list[int]]]], data_
 	return "\n".join(output)
 
 
-def generate_summary(extracted_data: list[dict[str, int | list[list[int]]]], attribute: str) -> str:
+def generate_single_summary(extracted_data: list[dict[str, int | list[list[int]]]], attribute: str) -> str:
 	attribute_map = {
 		"ProfitLoss": {
 			1: "profit",
@@ -110,15 +110,18 @@ def generate_summary(extracted_data: list[dict[str, int | list[list[int]]]], att
 		return format_summary(extracted_data, attribute_map[attribute])
 
 
-if __name__ == "__main__":
-	data = extract_data("03824658")
+def overall_summary(company_id: str) -> list[str]:
+	data = extract_data(company_id)
 	print(data)
 	print()
-	for data_attribute, values in data.items():
-		try:
-			print(generate_summary(data_summary(values), data_attribute))
-		except NotImplementedError as e:
-			print(repr(e))
+
+	return [
+		generate_single_summary(data_summary(values), data_attribute)
+		for data_attribute, values in data.items()
+	]
+
+
+if __name__ == "__main__":
+	for summary in overall_summary("03824658"):
+		print(summary)
 		print()
-
-
