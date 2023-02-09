@@ -1,5 +1,3 @@
-from typing import List, Dict
-
 from CompaniesHouse.CompanySearch import CompanySearch
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
