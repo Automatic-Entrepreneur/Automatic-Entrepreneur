@@ -1,3 +1,5 @@
+from typing import Dict, Any, List, Tuple
+
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
 
@@ -16,18 +18,36 @@ def compare(a: float, b: float) -> int:
 		return 0
 
 
-def summary(company_id: str) -> list[dict[str, int | list[list[int]]]]:
+def extract_data(company_id: str) -> dict[str, list[tuple[float, int]]]:
 	company = CompanyInfo(company_id)
-	profitloss_by_year = [
-		(record["value"], year - 1)
-		for year in range(2018, 2023)
-		for record in company.getAccountInformation(year)
-		if record["name"] == "ProfitLoss" and record["startdate"] == f"{year - 1}-01-01"
-	]
-	print(profitloss_by_year)
+	extracted_data = {
+		"ProfitLoss": {},
+		"FixedAssets": {},
+		"CurrentAssets": {}
+	}
 
+	for year in range(2018, 2023):
+		account_info = company.getAccountInformation(year)
+		for record in account_info:
+			for attribute in extracted_data:
+				if record['name'] == attribute:
+					if record["startdate"] is None:
+						time = int(record["instant"][0:4])
+					else:
+						time = int(record["startdate"][0:4])
+					if time not in extracted_data[attribute]:
+						extracted_data[attribute][time] = record["value"]
+					else:
+						extracted_data[attribute][time] = max(extracted_data[attribute][time], record["value"])
+
+	for attribute, data_by_year in extracted_data.items():
+		extracted_data[attribute] = sorted([(value, year) for year, value in data_by_year.items()], key=lambda t: t[1])
+	return extracted_data
+
+
+def data_summary(values_by_year: list[tuple[float, int]]) -> list[dict[str, int | list[list[int]]]]:
 	"""
-	profitloss_by_year = [
+	values_by_year = [
 		(0, 2015),
 		(0, 2016),
 		(50, 2017),
@@ -40,16 +60,16 @@ def summary(company_id: str) -> list[dict[str, int | list[list[int]]]]:
 	]
 	"""
 
-	prev = profitloss_by_year[0]
+	prev = values_by_year[0]
 	trend_list = [{
-		"is_profit": compare(prev[0], 0),
+		"sign": compare(prev[0], 0),
 		"trend": [[0, prev[1], prev[1]]]
 	}]
 
-	for profitloss, year in profitloss_by_year[1:]:
-		is_profit = compare(profitloss, 0)
+	for profitloss, year in values_by_year[1:]:
+		sign = compare(profitloss, 0)
 		direction = compare(profitloss, prev[0])
-		if trend_list[-1]["is_profit"] == is_profit or is_profit == 0:
+		if trend_list[-1]["sign"] == sign or sign == 0:
 			trends = trend_list[-1]["trend"]
 			if trends[-1][0] == direction:
 				trends[-1][2] = year
@@ -57,7 +77,7 @@ def summary(company_id: str) -> list[dict[str, int | list[list[int]]]]:
 				trends.append([direction, prev[1], year])
 		else:
 			trend_list.append({
-				"is_profit": is_profit,
+				"sign": sign,
 				"trend": [[direction, prev[1], year]]
 			})
 
@@ -66,23 +86,54 @@ def summary(company_id: str) -> list[dict[str, int | list[list[int]]]]:
 	return trend_list
 
 
-def format_summary(summary: list[dict[str, int | list[list[int]]]]) -> str:
+def format_summary(values_by_year: list[dict[str, int | list[list[int]]]], data_words: dict[int, str]) -> str:
 	trend_words = {1: "increasing", -1: "decreasing", 0: "steady"}
-	profit_words = {1: "profit", -1: "loss", 0: "no change"}
 	output = []
-	for section in summary:
+	for section in values_by_year:
 		for trend in section["trend"]:
 			if trend[1] != trend[2]:
-				p = section['is_profit']
-				if p != 0:
-					keywords = f"{trend_words[p * trend[0]]} {profit_words[p]}"
+				s = section["sign"]
+				if s != 0:
+					keywords = f"{trend_words[s * trend[0]]} {data_words[s]}"
 				else:
-					keywords = "no profit or loss"
+					keywords = data_words[s]
 				output.append(
 					f"There was {keywords} from {trend[1]} to {trend[2]}."
 				)
 	return "\n".join(output)
 
 
+def generate_summary(extracted_data: list[dict[str, int | list[list[int]]]], attribute: str) -> str:
+	attribute_map = {
+		"ProfitLoss": {
+			1: "profit",
+			-1: "loss",
+			0: "no profit or loss"
+		},
+		"FixedAssets": {
+			1: "value of fixed assets",
+			-1: "NEGATIVE value of fixed assets",
+			0: "no change in the value of fixed assets"
+		},
+		"CurrentAssets": {
+			1: "value of current assets"
+		}
+	}
+
+	if attribute not in attribute_map:
+		raise NotImplementedError(f"{attribute} summary not implemented")
+	else:
+		return format_summary(extracted_data, attribute_map[attribute])
+
+
 if __name__ == "__main__":
-	print(format_summary(summary("03824658")))
+	data = extract_data("03824658")
+	print(data)
+	for attribute, values in data.items():
+		try:
+			print(generate_summary(data_summary(values), attribute))
+		except NotImplementedError as e:
+			print(repr(e))
+		print()
+
+
