@@ -1,17 +1,19 @@
+from typing import List, Dict
+
 from CompaniesHouse.CompanySearch import CompanySearch
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
 
-def ternary(n: int) -> int:
-	if n > 0:
+def compare(a: float, b: float) -> int:
+	if a > b:
 		return 1
-	elif n < 0:
+	elif a < b:
 		return -1
 	else:
 		return 0
 
 
-def summary(company_id: str) -> tuple[list[int], list[list[int]]]:
+def summary(company_id: str) -> list[dict[str, int | list[list[int]]]]:
 	"""
 	company = CompanyInfo(company_id)
 	profit_by_year = [
@@ -22,32 +24,59 @@ def summary(company_id: str) -> tuple[list[int], list[list[int]]]:
 	]
 	"""
 
-	profit_by_year = [(600, 2017), (700, 2018), (100, 2019), (50, 2020), (50, 2021), (500, 2022)]
+	profitloss_by_year = [
+		(0, 2015),
+		(0, 2016),
+		(50, 2017),
+		(50, 2018),
+		(100, 2019),
+		(200, 2020),
+		(-55, 2021),
+		(-25, 2022),
+		(-25, 2023)
+	]
 
-	start = profit_by_year[0]
-	prev = profit_by_year[1]
+	prev = profitloss_by_year[0]
+	trend_list = [{
+		"is_profit": compare(prev[0], 0),
+		"trend": [[0, prev[1], prev[1]]]
+	}]
 
-	trend_list = [ternary(prev[0] - start[0])]
-	groups = [[start[1], prev[1]]]
-
-	for profit, year in profit_by_year[2:]:
-		trend = ternary(profit - prev[0])
-		if trend_list[-1] == trend:
-			groups[-1][-1] = year
+	for profitloss, year in profitloss_by_year[1:]:
+		is_profit = compare(profitloss, 0)
+		direction = compare(profitloss, prev[0])
+		if trend_list[-1]["is_profit"] == is_profit or is_profit == 0:
+			trends = trend_list[-1]["trend"]
+			if trends[-1][0] == direction:
+				trends[-1][2] = year
+			else:
+				trends.append([direction, prev[1], year])
 		else:
-			trend_list.append(trend)
-			groups.append([prev[1], year])
-		prev = (profit, year)
+			trend_list.append({
+				"is_profit": is_profit,
+				"trend": [[direction, prev[1], year]]
+			})
 
-	return trend_list, groups
+		prev = (profitloss, year)
+
+	return trend_list
 
 
 if __name__ == "__main__":
-	keywords = {1: "increased", -1: "decreased", 0: "stayed the same"}
-	trends, intervals = summary("03824658")
-	output = [
-		f"Profit {keywords[trend]} from {start} to {end}."
-		for trend, (start, end) in zip(trends, intervals)
-	]
-	print(" ".join(output))
+	trend_words = {1: "increasing", -1: "decreasing", 0: "steady"}
+	profit_words = {1: "profit", -1: "loss", 0: "no change"}
+	summary = summary("03824658")
+	output = []
+	for section in summary:
+		for trend in section["trend"]:
+			if trend[1] != trend[2]:
+				p = section['is_profit']
+				if p != 0:
+					keywords = f"{trend_words[p * trend[0]]} {profit_words[p]}"
+				else:
+					keywords = "no profit or loss"
+				output.append(
+					f"There was {keywords} from {trend[1]} to {trend[2]}."
+				)
+	print("\n".join(output))
 
