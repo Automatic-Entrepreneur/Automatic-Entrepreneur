@@ -21,6 +21,9 @@ def data_summary(
 ) -> list[dict[str, int | list[dict[str, int | float]]]]:
 	values_by_year = list(zip(records["values"], records["years"]))
 	prev = values_by_year[0]
+	# a list of dictionaries, each one representing a continued profit/loss
+	# the "sign" key indicates profit/loss/neither
+	# the "trends" key points to a list of dictionaries, each one representing a continuous increase/decrease
 	trends_list = [
 		{
 			"sign": compare(prev[0], 0),
