@@ -9,24 +9,26 @@ def generate_bar_graph(extractedData, company_id, show_graph):
 
     output = {}
     for attribute in extractedData:
-        if len(extractedData[attribute]['years']) > 0:
+        if len(extractedData[attribute]["years"]) > 0:
             f, ax = plt.subplots(figsize=(10, 5))
-            ax.bar(extractedData[attribute]['years'], extractedData[attribute]['values'])
-            ax.set_ylabel('Profit in GBP')
-            ax.set_xlabel('Year')
+            ax.bar(
+                extractedData[attribute]["years"], extractedData[attribute]["values"]
+            )
+            ax.set_ylabel("Profit in GBP")
+            ax.set_xlabel("Year")
 
-            ax.set_ylim([0, max(extractedData[attribute]['values']) * 1.2])
-            plt.savefig(f'{company_id}_{attribute}.png', bbox_inches='tight')
-            output[attribute] = f'{company_id}_{attribute}.png'
+            ax.set_ylim([0, max(extractedData[attribute]["values"]) * 1.2])
+            plt.savefig(f"{company_id}_{attribute}.png", bbox_inches="tight")
+            output[attribute] = f"{company_id}_{attribute}.png"
             if show_graph:
                 plt.show()
         else:
-            print('No data found for ' + attribute)
+            print("No data found for " + attribute)
     return output
 
 
 if __name__ == "__main__":
-    company_id = '02713500'
+    company_id = "02713500"
     start_year = 2010
     end_year = 2023
     extracted_data = extract_data(company_id, start_year, end_year)

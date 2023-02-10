@@ -11,7 +11,7 @@ def p_write(html: TextIO, text: str, linebreak: bool = True) -> None:
 		html.write("<br>\n")
 
 
-def img_write(html: TextIO, img_path) -> None:
+def img_write(html: TextIO, img_path: str) -> None:
 	html.write(f"<img src={img_path} alt={img_path}>\n")
 
 
@@ -19,7 +19,7 @@ def body_write(
 		html: TextIO,
 		sentiment: str,
 		image_paths: dict[str, str],
-		captions: dict[str, list[str]]
+		captions: dict[str, list[str]],
 ) -> None:
 	p_write(html, sentiment)
 	for attribute in image_paths:
@@ -35,10 +35,12 @@ def html_write(
 		company_id: str,
 		sentiment: str,
 		image_paths: dict[str, str],
-		captions: dict[str, list[str]]
+		captions: dict[str, list[str]],
 ) -> None:
 	with open(filename, "w") as html:
-		html.write(f"<html>\n<head>\n<title>\n{company_id} Summary</title>\n</head><body>\n")
+		html.write(
+			f"<html>\n<head>\n<title>\n{company_id} Summary</title>\n</head><body>\n"
+		)
 		html.write(f"<h1>{company_id} Summary</h1>")
 		body_write(html, sentiment, image_paths, captions)
 		html.write("</body>\n</html>")
