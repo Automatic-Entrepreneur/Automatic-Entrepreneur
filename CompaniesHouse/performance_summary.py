@@ -1,5 +1,7 @@
 from data_extraction import trend_map, attribute_map, compare, extract_data
 
+GRADIENT_THRESHOLD = 0.15
+
 
 def data_summary(
 		records: dict[str, list[int | float]]
@@ -71,8 +73,10 @@ def format_summary(
 			if trend["startYear"] != trend["endYear"]:
 				s = section["sign"]
 				t = s * trend["trend"]
+				gradient = abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]
+				gradient_word = "sharply" if gradient >= GRADIENT_THRESHOLD else "slightly"
 				keywords1 = (
-					f"{sign_map[s]}" if s == 0 else f"{sign_map[s]} {trend_map[t]}"
+					f"{sign_map[s]}" if s == 0 else f"{sign_map[s]} {trend_map[t]} {gradient_word} by {gradient:.1%}"
 				)
 				keywords2 = (
 					f"at {trend['startVal']} GBP."
