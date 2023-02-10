@@ -26,5 +26,8 @@ def generate_bar_graph(extractedData, company_id, show_graph):
 
 
 if __name__ == "__main__":
-    extracted_data = extract_data('02713500', 2010, 2023)
-    generate_bar_graph(extracted_data, '02713500', show_graph=True)
+    company_id = '02713500'
+    start_year = 2010
+    end_year = 2023
+    extracted_data = extract_data(company_id, start_year, end_year)
+    generate_bar_graph(extracted_data, company_id, show_graph=True)
