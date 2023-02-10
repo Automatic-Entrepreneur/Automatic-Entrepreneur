@@ -182,6 +182,5 @@ class CompanyInfo:
                 information = []
                 for i in range(min(len(scanner), 5)):
                     information.extend(scanner.readPage(i))
-                return information
         pkl.dump(information, open(pklpath, 'wb'))
         return information
