@@ -1,5 +1,7 @@
 from typing import TextIO
 
+from data_extraction import extract_data
+from generate_graphs import generate_bar_graph
 from performance_summary import overall_summary
 
 
@@ -22,6 +24,7 @@ def body_write(
 	p_write(html, sentiment)
 	for attribute in image_paths:
 		img_write(html, image_paths[attribute])
+		p_write(html, f"<b>{attribute}</b>", linebreak=False)
 		for line in captions[attribute]:
 			p_write(html, line, linebreak=False)
 		html.write("<br>\n")
@@ -36,15 +39,18 @@ def html_write(
 ) -> None:
 	with open(filename, "w") as html:
 		html.write(f"<html>\n<head>\n<title>\n{company_id} Summary</title>\n</head><body>\n")
+		html.write(f"<h1>{company_id} Summary</h1>")
 		body_write(html, sentiment, image_paths, captions)
 		html.write("</body>\n</html>")
 
 
 if __name__ == "__main__":
 	company_id = "03824658"
-	summary = overall_summary(company_id, 2010, 2023)
-	img_paths = {}
-	for attribute in summary:
-		img_paths[attribute] = f"{attribute}.png"
-	s = "Test sentiment"
-	html_write("test.html", company_id, s, img_paths, summary)
+	start_year = 2010
+	end_year = 2023
+
+	sentiment = "[PLACEHOLDER SENTIMENT]"
+	extracted_data = extract_data(company_id, start_year, end_year)
+	summary = overall_summary(extracted_data)
+	img_paths = generate_bar_graph(extracted_data, company_id, show_graph=False)
+	html_write("test.html", company_id, sentiment, img_paths, summary)

@@ -101,12 +101,8 @@ def format_summary(
 
 
 def overall_summary(
-		company_id: str, start_year: int, end_year: int
+		extracted_data: dict[str, dict[str, list[int | float]]]
 ) -> dict[str, list[str]]:
-	extracted_data = extract_data(company_id, start_year, end_year)
-	print(extracted_data)
-	print()
-
 	output = {}
 	for attribute, record in extracted_data.items():
 		if not record["years"]:
@@ -120,6 +116,14 @@ def overall_summary(
 
 
 if __name__ == "__main__":
-	for label, summaries in overall_summary("03824658", 2010, 2023).items():
+	company_id = "03824658"
+	start_year = 2010
+	end_year = 2023
+
+	data = extract_data(company_id, start_year, end_year)
+	print(data)
+	print()
+
+	for label, summaries in overall_summary(data).items():
 		print(label + ":\n" + "\n".join(summaries))
 		print()
