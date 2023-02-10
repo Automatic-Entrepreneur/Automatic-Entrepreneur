@@ -8,7 +8,7 @@ def generate_bar_graph(
         extracted_data: dict[str, dict[str, list[int | float]]],
         company_id: str,
         show_graph: bool = True,
-):
+) -> dict[str, str]:
     # print(extractedData)
 
     output = {}
