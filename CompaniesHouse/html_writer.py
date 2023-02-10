@@ -1,6 +1,6 @@
 from typing import TextIO
 
-from data_extraction import extract_data
+from data_util import extract_data
 from generate_graphs import generate_bar_graph
 from performance_summary import overall_summary
 

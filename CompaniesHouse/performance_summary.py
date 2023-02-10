@@ -1,4 +1,4 @@
-from data_extraction import trend_map, attribute_map, compare, extract_data
+from data_util import trend_map, attribute_map, compare, extract_data
 
 GRADIENT_THRESHOLD = 0.15
 
