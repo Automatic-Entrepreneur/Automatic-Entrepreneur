@@ -1,4 +1,3 @@
-from io import TextIOWrapper
 from typing import TextIO
 
 
