@@ -5,13 +5,14 @@ import pytesseract
 import os
 from ixbrlparse import IXBRL
 import pickle as pkl
+from ScannedReportReader import ScannedReportReader
 
 pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
 
 # Sample Usage:
-# company = Company('03824658')
-# accountInfo = company.getAccountInformation
+# company = CompanyInfo('03824658')
+# accountInfo = company.getAccountInformation(2022)
 
 
 class CompanyInfo:
@@ -138,7 +139,7 @@ class CompanyInfo:
         It caches as much as possible to reduce load.
         :param year: the year in which the account was filed
         :type year: int
-        :return: None
+        :return: list[dict[str, str]]
         """
         dirpath = 'companies_house/{}/{}'.format(self.__company_number, year)
         pklpath = 'companies_house/{}/{}/accounts_{}.pkl'.format(self.__company_number, year, year)
@@ -177,8 +178,10 @@ class CompanyInfo:
                 ]
         else:
             with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/pdf'}, params={'Accept': 'application/pdf'}) as response:
-                raise NotImplementedError(
-                    "This account is a scanned pdf -- pdf reading is not fully implemented yet."
-                )
+                scanner = ScannedReportReader(response.content, year)
+                information = []
+                for i in range(min(len(scanner), 5)):
+                    information.extend(scanner.readPage(i))
+                return information
         pkl.dump(information, open(pklpath, 'wb'))
         return information
