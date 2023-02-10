@@ -4,20 +4,24 @@ from CompaniesHouse.CompanyInfo import CompanyInfo
 from data_extraction import extract_data
 
 
-def generate_bar_graph(extractedData, company_id, show_graph):
+def generate_bar_graph(
+        extracted_data: dict[str, dict[str, list[int | float]]],
+        company_id: str,
+        show_graph: bool = True,
+):
     # print(extractedData)
 
     output = {}
-    for attribute in extractedData:
-        if len(extractedData[attribute]["years"]) > 0:
+    for attribute in extracted_data:
+        if len(extracted_data[attribute]["years"]) > 0:
             f, ax = plt.subplots(figsize=(10, 5))
             ax.bar(
-                extractedData[attribute]["years"], extractedData[attribute]["values"]
+                extracted_data[attribute]["years"], extracted_data[attribute]["values"]
             )
             ax.set_ylabel("Profit in GBP")
             ax.set_xlabel("Year")
 
-            ax.set_ylim([0, max(extractedData[attribute]["values"]) * 1.2])
+            ax.set_ylim([0, max(extracted_data[attribute]["values"]) * 1.2])
             plt.savefig(f"{company_id}_{attribute}.png", bbox_inches="tight")
             output[attribute] = f"{company_id}_{attribute}.png"
             if show_graph:
@@ -32,4 +36,4 @@ if __name__ == "__main__":
     start_year = 2010
     end_year = 2023
     extracted_data = extract_data(company_id, start_year, end_year)
-    generate_bar_graph(extracted_data, company_id, show_graph=True)
+    generate_bar_graph(extracted_data, company_id)
