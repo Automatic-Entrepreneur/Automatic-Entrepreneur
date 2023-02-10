@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from CompaniesHouse.CompanySearch import CompanySearch
 from CompaniesHouse.CompanyInfo import CompanyInfo
-from data_extraction import extract_data
+from data_extraction import attribute_map, extract_data
 
 
 def generate_bar_graph(
@@ -18,7 +18,8 @@ def generate_bar_graph(
             ax.bar(
                 extracted_data[attribute]["years"], extracted_data[attribute]["values"]
             )
-            ax.set_ylabel("Profit in GBP")
+            ax.set_title(attribute)
+            ax.set_ylabel(f"{attribute_map[attribute][1].title()} in GBP")
             ax.set_xlabel("Year")
 
             ax.set_ylim([0, max(extracted_data[attribute]["values"]) * 1.2])

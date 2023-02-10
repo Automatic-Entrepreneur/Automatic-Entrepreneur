@@ -5,10 +5,8 @@ from generate_graphs import generate_bar_graph
 from performance_summary import overall_summary
 
 
-def p_write(html: TextIO, text: str, linebreak: bool = True) -> None:
+def p_write(html: TextIO, text: str) -> None:
 	html.write(f"<p>{text}</p>\n")
-	if linebreak:
-		html.write("<br>\n")
 
 
 def img_write(html: TextIO, img_path: str) -> None:
@@ -22,11 +20,13 @@ def body_write(
 		captions: dict[str, list[str]],
 ) -> None:
 	p_write(html, sentiment)
+	html.write("<br>\n")
+	html.write("<br>\n")
 	for attribute in image_paths:
 		img_write(html, image_paths[attribute])
-		p_write(html, f"<b>{attribute}</b>", linebreak=False)
 		for line in captions[attribute]:
-			p_write(html, line, linebreak=False)
+			p_write(html, line)
+		html.write("<br>\n")
 		html.write("<br>\n")
 
 

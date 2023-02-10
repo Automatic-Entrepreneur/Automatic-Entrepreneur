@@ -1,19 +1,4 @@
-from data_extraction import trend_map, attribute_map, extract_data
-
-
-def compare(a: float, b: float) -> int:
-	"""
-	Compares two numbers and returns 1, -1, or 0
-	:param a: number being focused on
-	:param b: number being compared to a
-	:return: 1 if a > b, -1 if a < b, 0 if a == b
-	"""
-	if a > b:
-		return 1
-	elif a < b:
-		return -1
-	else:
-		return 0
+from data_extraction import trend_map, attribute_map, compare, extract_data
 
 
 def data_summary(
