@@ -128,7 +128,7 @@ def glassdoorScrape(driver, companyName, ret):
 def financeScrape(ticker, ret):
     key = 'O8YBYOA6EAO0EANF'
 
-    for i in ['GLOBAL_QUOTE', 'OVERVIEW', 'BALANCE_SHEET', 'INCOME_STATEMENT', 'CASH_FLOW']:
+    for i in ['GLOBAL_QUOTE', 'OVERVIEW', 'BALANCE_SHEET', 'INCOME_STATEMENT', 'CASH_FLOW', 'EARNINGS']:
         url = 'https://www.alphavantage.co/query?function='+i+'&symbol='+ticker+'&apikey='+key
         r = requests.get(url)
         data = json.loads(r.text)
@@ -149,6 +149,8 @@ def financeScrape(ticker, ret):
             ret['Income Statement'] = data["annualReports"]
         if i == 'CASH_FLOW':
             ret['Cash Flow'] = data["annualReports"]
+        if i == 'EARNINGS':
+            ret['Annual Earnings'] = data["annualEarnings"]
 
 def main():
     chrome_options = webdriver.ChromeOptions()
