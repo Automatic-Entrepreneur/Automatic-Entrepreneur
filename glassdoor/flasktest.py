@@ -147,7 +147,7 @@ def glassdoorScrape(driver, companyName, ret):
 def financeScrape(ticker, ret):
     key = 'O8YBYOA6EAO0EANF'
 
-    for i in ['GLOBAL_QUOTE', 'OVERVIEW']:
+    for i in ['GLOBAL_QUOTE', 'OVERVIEW', 'BALANCE_SHEET', 'INCOME_STATEMENT', 'CASH_FLOW']:
         url = 'https://www.alphavantage.co/query?function='+i+'&symbol='+ticker+'&apikey='+key
         r = requests.get(url)
         data = json.loads(r.text)
@@ -157,11 +157,15 @@ def financeScrape(ticker, ret):
             ret['Price'] = quote['05. price']
             ret['Trade Volume (Day)'] = quote['06. volume']
             ret['Change Percentage (Day)'] = quote['10. change percent']
-            print('Stock Price: ', ret['Price'])
         if i == 'OVERVIEW':
             for k, v in data.items():
                 ret[k] = v
-            print(ret['Symbol'])
+        if i == 'BALANCE_SHEET':
+            ret['Balance Sheet'] = data["annualReports"]
+        if i == 'INCOME_STATEMENT':
+            ret['Income Statement'] = data["annualReports"]
+        if i == 'CASH_FLOW':
+            ret['Cash Flow'] = data["annualReports"]
 
 @app.route('/', methods =["GET", "POST"])
 def index():
