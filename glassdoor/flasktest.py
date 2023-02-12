@@ -29,45 +29,45 @@ def glassdoorScrape(driver, companyName, ret):
 
     # Get Company Mission
     try:
-        mission = driver.find_elements(By.XPATH,'.//span[@class="css-dwl48b css-1cnqmgc"]')[1].text
+        ret['Mission'] = driver.find_elements(By.XPATH,'.//span[@class="css-dwl48b css-1cnqmgc"]')[1].text
         
     except:
-        mission = 'N/A'
+        ret['Mission'] = 'N/A'
 
     # Get Company Website
     try:
         for i in soup.find(attrs={"data-test": "employer-website"}):
-            website = i
+            ret['Website'] = i
     except:
-        website = 'N/A'
+        ret['Website'] = 'N/A'
 
     # Get Company Industry
     try:
         for i in soup.find(attrs={"data-test": "employer-industry"}):
-            industry = i
+            ret['Industry'] = i
     except:
-        industry = 'N/A'
+        ret['Industry'] = 'N/A'
 
     # Get Company Headquarters
     try:
         for i in soup.find(attrs={"data-test": "employer-headquarters"}):
-            hq = i
+            ret['Headquarters'] = i
     except:
-        hq = 'N/A'
+        ret['Headquarters'] = 'N/A'
 
     # Get Company Size
     try:
         for i in soup.find(attrs={"data-test": "employer-size"}):
-            sz = i
+            ret['Size'] = i
     except:
-        sz = 'N/A'
+        ret['Size'] = 'N/A'
 
     # Get Company Founded
     try:
         for i in soup.find(attrs={"data-test": "employer-founded"}):
-            found = i
+            ret['Founded'] = i
     except:
-        found = 'N/A'
+        ret['Founded'] = 'N/A'
 
     # Get Company Revenue
     try:
@@ -80,21 +80,21 @@ def glassdoorScrape(driver, companyName, ret):
 
     # Get the recommended percentage
     try:
-        recommended = driver.find_elements(By.CLASS_NAME,'textVal')[0].text
+        ret['Recommended to Friends'] = driver.find_elements(By.CLASS_NAME,'textVal')[0].text
     except:
-        recommended = 'N/A'
+        ret['Recommended to Friends'] = 'N/A'
 
     # Get CEO approval percentage
     try:
-        approveCEO = driver.find_elements(By.CLASS_NAME, 'textVal')[1].text
+        ret['Approve of CEO']  = driver.find_elements(By.CLASS_NAME, 'textVal')[1].text
     except:
-        approveCEO = 'N/A'
+        ret['Approve of CEO']  = 'N/A'
 
     # Get Rating out of 5
     try:
-        rating = driver.find_element(By.XPATH,'.//div[@class="mr-xsm css-1c86vvj eky1qiu0"]').text
+        ret['Overall Rating'] = driver.find_element(By.XPATH,'.//div[@class="mr-xsm css-1c86vvj eky1qiu0"]').text
     except:
-        rating = 'N/A'
+        ret['Overall Rating'] = 'N/A'
     #recommendParagraph = driver.find_element(By.XPATH,'.//div[@class="pb-std pt-std d-none css-ujzx5o e1r4hxna3"]').text
 
     # Get CEO
@@ -107,9 +107,9 @@ def glassdoorScrape(driver, companyName, ret):
                 break
             else:
                 i += 1
-        ceo = ceo.strip()
+        ret['CEO'] = ceo.strip()
     except:
-        ceo = 'N/A'
+        ret['CEO'] = 'N/A'
     # Need to strip numbers at the end
 
     # Get Company Type
@@ -130,24 +130,14 @@ def glassdoorScrape(driver, companyName, ret):
     # Look to get more ratings
   
     #ret['Company'] = company
-    ret['Mission'] = mission
-    ret['Website'] = website
-    ret['Headquarters'] = hq
-    ret['Size'] = sz
-    ret['Industry'] = industry
-    ret['Recommended to Friends'] = recommended
-    ret['Approve of CEO'] = approveCEO
-    ret['Overall Rating'] = rating
-    ret['CEO'] = ceo
     ret['Company Type'] = typ
-    ret['Founded'] = found
     ret['Revenue'] = rev
     ret['Ticker'] = ticker    
 
 def financeScrape(ticker, ret):
     key = 'O8YBYOA6EAO0EANF'
 
-    for i in ['GLOBAL_QUOTE', 'OVERVIEW', 'BALANCE_SHEET', 'INCOME_STATEMENT', 'CASH_FLOW']:
+    for i in ['GLOBAL_QUOTE', 'OVERVIEW', 'BALANCE_SHEET', 'INCOME_STATEMENT', 'CASH_FLOW', 'EARNINGS']:
         url = 'https://www.alphavantage.co/query?function='+i+'&symbol='+ticker+'&apikey='+key
         r = requests.get(url)
         data = json.loads(r.text)
@@ -166,6 +156,8 @@ def financeScrape(ticker, ret):
             ret['Income Statement'] = data["annualReports"]
         if i == 'CASH_FLOW':
             ret['Cash Flow'] = data["annualReports"]
+        if i == 'EARNINGS':
+            ret['Annual Earnings'] = data["annualEarnings"]
 
 @app.route('/', methods =["GET", "POST"])
 def index():
