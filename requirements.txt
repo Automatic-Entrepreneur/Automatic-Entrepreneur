@@ -1,0 +1,11 @@
+pytesseract==0.3.10
+requests==2.27.1
+matplotlib==3.6.3
+ixbrlparse==0.5.3
+pandas==1.4.2
+pdf2image==1.16.2
+transformers==4.26.1
+pytorch==1.12.1
+
+# tesseract: https://tesseract-ocr.github.io/tessdoc/Installation.html
+# poppler: https://github.com/oschwartz10612/poppler-windows/releases/

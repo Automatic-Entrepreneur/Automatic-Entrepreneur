@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 from CompaniesHouse.CompanySearch import CompanySearch
 from CompaniesHouse.CompanyInfo import CompanyInfo
 from data_util import attribute_map, extract_data
+import typing
 
 
 def generate_bar_graph(
-        extracted_data: dict[str, dict[str, list[int | float]]],
+        extracted_data: dict[str, dict[str, list[typing.Union[int, float]]]],
         company_id: str,
         show_graph: bool = True,
 ) -> dict[str, str]:
