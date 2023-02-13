@@ -1,4 +1,3 @@
-from flask import Flask, render_template, request
 import webbrowser
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -6,13 +5,8 @@ from time import sleep
 import json
 from bs4 import BeautifulSoup as bs
 import requests
-#import pandas as pd
-
-app = Flask(__name__)
-
-
-#def index():
-    #return render_template('index.html')
+import json
+import csv
 
 def glassdoorScrape(driver, companyName, ret):
     # scraping glassdoor
@@ -65,9 +59,9 @@ def glassdoorScrape(driver, companyName, ret):
     # Get Company Founded
     try:
         for i in soup.find(attrs={"data-test": "employer-founded"}):
-            ret['Founded'] = i
+            found = i
     except:
-        ret['Founded'] = 'N/A'
+        found = 'N/A'
 
     # Get Company Revenue
     try:
@@ -86,9 +80,9 @@ def glassdoorScrape(driver, companyName, ret):
 
     # Get CEO approval percentage
     try:
-        ret['Approve of CEO']  = driver.find_elements(By.CLASS_NAME, 'textVal')[1].text
+        ret['Approve of CEO'] = driver.find_elements(By.CLASS_NAME, 'textVal')[1].text
     except:
-        ret['Approve of CEO']  = 'N/A'
+        ret['Approve of CEO'] = 'N/A'
 
     # Get Rating out of 5
     try:
@@ -115,24 +109,21 @@ def glassdoorScrape(driver, companyName, ret):
     # Get Company Type
     try:
         for i in soup.find(attrs={"data-test": "employer-type"}):
-            typ = i
-        if 'Public' in typ:
-            dashInd = typ.index('-')
-            ticker = typ[dashInd + 10:-1]
+            ret['Company Type'] = i
+        if 'Public' in ret['Company Type']:
+            dashInd = ret['Company Type'].index('-')
+            ret['Ticker'] = ret['Company Type'][dashInd + 10:-1]
         else:
-            ticker = 'N/A'
+            ret['Ticker'] = 'N/A'
     except:
-        typ = 'N/A'
+        ret['Company Type'] = 'N/A'
 
     #script_label = driver.find_element(By.XPATH, "//script[@type = 'text/javascript']").text
-
-
     # Look to get more ratings
   
     #ret['Company'] = company
-    ret['Company Type'] = typ
+    ret['Founded'] = found
     ret['Revenue'] = rev
-    ret['Ticker'] = ticker    
 
 def financeScrape(ticker, ret):
     key = 'O8YBYOA6EAO0EANF'
@@ -147,9 +138,11 @@ def financeScrape(ticker, ret):
             ret['Price'] = quote['05. price']
             ret['Trade Volume (Day)'] = quote['06. volume']
             ret['Change Percentage (Day)'] = quote['10. change percent']
+            print('Stock Price: ', ret['Price'])
         if i == 'OVERVIEW':
             for k, v in data.items():
                 ret[k] = v
+            print(ret['Symbol'])
         if i == 'BALANCE_SHEET':
             ret['Balance Sheet'] = data["annualReports"]
         if i == 'INCOME_STATEMENT':
@@ -159,31 +152,29 @@ def financeScrape(ticker, ret):
         if i == 'EARNINGS':
             ret['Annual Earnings'] = data["annualEarnings"]
 
-@app.route('/', methods =["GET", "POST"])
-def index():
-    if request.method == "POST": 
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_experimental_option("useAutomationExtension", False)
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+def main():
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
 
-        #This line prevents the pop-up
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument('--ignore-certificate-errors')
-        chrome_options.add_argument('--incognito')
+    #This line prevents the pop-up
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument('--ignore-certificate-errors')
+    chrome_options.add_argument('--incognito')
 
-        driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
 
-        ret = dict()
-        companyName = request.form.get("title")
-        glassdoorScrape(driver, companyName, ret)
+    ret = dict()
+    companyName = input("Please enter the company name: ")
+    glassdoorScrape(driver, companyName, ret)
 
-        if ret['Ticker'] != 'N/A':
-            financeScrape(ret['Ticker'], ret)
-        else:
-            for i in ['Price', 'Description', 'ProfitMargin', '52WeekHigh', '52WeekLow', '50DayMovingAverage', '200DayMovingAverage']:
-                ret[i] = 'N/A'
-        return ret['CEO']
-    return render_template("index.html") 
-
-if __name__=='__main__':
-   app.run()
+    if ret['Ticker'] != 'N/A':
+        financeScrape(ret['Ticker'], ret)
+    
+    with open('companyInfo.csv', 'w') as f:
+        w = csv.writer(f)
+        w.writerow(ret.keys())
+        w.writerow(ret.values())
+        
+if __name__ == "__main__":
+    main()

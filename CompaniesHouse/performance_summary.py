@@ -1,53 +1,118 @@
-from CompaniesHouse.CompanySearch import CompanySearch
-from CompaniesHouse.CompanyInfo import CompanyInfo
+from data_util import trend_map, attribute_map, compare, extract_data
+
+GRADIENT_THRESHOLD = 0.15
 
 
-def ternary(n: int) -> int:
-	if n > 0:
-		return 1
-	elif n < 0:
-		return -1
-	else:
-		return 0
-
-
-def summary(company_id: str) -> tuple[list[int], list[list[int]]]:
-	"""
-	company = CompanyInfo(company_id)
-	profit_by_year = [
-		(record["value"], year - 1)
-		for year in range(2018, 2023)
-		for record in company.getAccountInformation(year)
-		if record["name"] == "ProfitLoss" and record["startdate"] == f"{year - 1}-01-01"
+def data_summary(
+		records: dict[str, list[int | float]]
+) -> list[dict[str, int | list[dict[str, int | float]]]]:
+	values_by_year = list(zip(records["values"], records["years"]))
+	prev = values_by_year[0]
+	# a list of dictionaries, each one representing a continued profit/loss
+	# the "sign" key indicates profit/loss/neither
+	# the "trends" key points to a list of dictionaries, each one representing a continuous increase/decrease
+	trends_list = [
+		{
+			"sign": compare(prev[0], 0),
+			"trends": [
+				{
+					"trend": 0,
+					"startVal": prev[0],
+					"endVal": prev[0],
+					"startYear": prev[1],
+					"endYear": prev[1],
+				}
+			],
+		}
 	]
-	"""
 
-	profit_by_year = [(600, 2017), (700, 2018), (100, 2019), (50, 2020), (50, 2021), (500, 2022)]
-
-	start = profit_by_year[0]
-	prev = profit_by_year[1]
-
-	trend_list = [ternary(prev[0] - start[0])]
-	groups = [[start[1], prev[1]]]
-
-	for profit, year in profit_by_year[2:]:
-		trend = ternary(profit - prev[0])
-		if trend_list[-1] == trend:
-			groups[-1][-1] = year
+	for value, year in values_by_year[1:]:
+		sign = compare(value, 0)
+		trend = compare(value, prev[0])
+		if trends_list[-1]["sign"] == sign or sign == 0:
+			trends = trends_list[-1]["trends"]
+			if trends[-1]["trend"] == trend:
+				trends[-1]["endVal"] = value
+				trends[-1]["endYear"] = year
+			else:
+				trends.append(
+					{
+						"trend": trend,
+						"startVal": prev[0],
+						"endVal": value,
+						"startYear": prev[1],
+						"endYear": year,
+					}
+				)
 		else:
-			trend_list.append(trend)
-			groups.append([prev[1], year])
-		prev = (profit, year)
+			trends_list.append(
+				{
+					"sign": sign,
+					"trends": [
+						{
+							"trend": trend,
+							"startVal": prev[0],
+							"endVal": value,
+							"startYear": prev[1],
+							"endYear": year,
+						}
+					],
+				}
+			)
+		prev = (value, year)
+	return trends_list
 
-	return trend_list, groups
+
+def format_summary(
+		values_by_year: list[dict[str, int | list[dict[str, int | float]]]],
+		sign_map: dict[int, str],
+) -> list[str]:
+	output = []
+	for section in values_by_year:
+		for trend in section["trends"]:
+			if trend["startYear"] != trend["endYear"]:
+				s = section["sign"]
+				t = s * trend["trend"]
+				gradient = abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]
+				gradient_word = "sharply" if gradient >= GRADIENT_THRESHOLD else "slightly"
+				keywords1 = (
+					f"{sign_map[s]}" if s == 0 else f"{sign_map[s]} {trend_map[t]} {gradient_word} by {gradient:.1%}"
+				)
+				keywords2 = (
+					f"at {trend['startVal']} GBP."
+					if t == 0
+					else f"from {trend['startVal']} to {trend['endVal']} GBP."
+				)
+				output.append(
+					f"{trend['startYear']}-{trend['endYear']}: {keywords1} {keywords2}"
+				)
+	return output
+
+
+def overall_summary(
+		extracted_data: dict[str, dict[str, list[int | float]]]
+) -> dict[str, list[str]]:
+	output = {}
+	for attribute, record in extracted_data.items():
+		if not record["years"]:
+			output[attribute] = f"No data for {attribute}."
+		elif attribute in attribute_map:
+			output[attribute] = format_summary(
+				data_summary(record), attribute_map[attribute]
+			)
+			# else raise NotImplementedError(f"{attribute} summary not implemented")
+	return output
 
 
 if __name__ == "__main__":
-	keywords = {1: "increased", -1: "decreased", 0: "stayed the same"}
-	trends, intervals = summary("03824658")
-	output = [
-		f"Profit {keywords[trend]} from {start} to {end}."
-		for trend, (start, end) in zip(trends, intervals)
-	]
-	print(" ".join(output))
+	company_id = "03824658"
+	start_year = 2010
+	end_year = 2023
 
+	data = extract_data(company_id, start_year, end_year)
+	print(data)
+	print()
+
+	for label, summaries in overall_summary(data).items():
+		print(label + ":\n" + "\n".join(summaries))
+		print()

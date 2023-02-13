@@ -71,4 +71,3 @@ class CompanySearch:
             if 'sic_codes' in company:
                  company['industry'] = [codes_to_text[sic] for sic in company['sic_codes'] if sic in codes_to_text]
         return sorted(companies.values(), key=lambda x: x['date_of_creation'])
-
