@@ -24,7 +24,7 @@ def generate_bar_graph(
             ax.set_xlabel("Year")
 
             ax.set_ylim([0, max(extracted_data[attribute]["values"]) * 1.2])
-            plt.savefig(f"{company_id}_{attribute}.png", bbox_inches="tight")
+            plt.savefig(f"out/{company_id}_{attribute}.png", bbox_inches="tight")
             output[attribute] = f"{company_id}_{attribute}.png"
             if show_graph:
                 plt.show()

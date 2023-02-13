@@ -5,7 +5,7 @@ import pytesseract
 import os
 from ixbrlparse import IXBRL
 import pickle as pkl
-from ScannedReportReader import ScannedReportReader
+from CompaniesHouse.ScannedReportReader import ScannedReportReader
 
 pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
