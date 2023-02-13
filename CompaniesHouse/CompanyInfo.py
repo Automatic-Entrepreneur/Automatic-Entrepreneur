@@ -184,3 +184,36 @@ class CompanyInfo:
                     information.extend(scanner.readPage(i))
         pkl.dump(information, open(pklpath, 'wb'))
         return information
+
+
+    def getlongtext(self, year):
+        dirpath = 'companies_house/{}/{}'.format(self.__company_number, year)
+        pklpath = 'companies_house/{}/{}/accounts_{}.pkl'.format(self.__company_number, year, year)
+        if os.path.exists(pklpath):
+            return pkl.load(open(pklpath, 'rb'))
+        self.__fetchAccounts()
+        file = sorted((f for f in self.__accounts if f['date'][:4] == str(year) and f['category'] == 'accounts'), key=lambda x: x['date'])[0]
+        query = file['links']['document_metadata']
+        response = requests.get(query, auth=(self.__key, ''))
+        decoded = json.JSONDecoder().decode(response.text)
+        query = decoded['links']['document']
+        if not os.path.exists(dirpath[:dirpath.index('/')]):
+            os.mkdir(dirpath[:dirpath.index('/')])
+        if not os.path.exists(dirpath[:dirpath.rindex('/')]):
+            os.mkdir(dirpath[:dirpath.rindex('/')])
+        if not os.path.exists(dirpath):
+            os.mkdir(dirpath)
+        if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:
+            with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/xhtml+xml'}, params={'Accept': 'application/xhtml+xml'}) as response:
+
+                class IXBRLWrapper:  # could use io.StringIO instead
+                    def __init__(self, s):
+                        self.s = s
+
+                    def read(self):
+                        return self.s
+
+                d = IXBRL(IXBRLWrapper(response.text))
+                return "\n".join([i for i in d.parser.soup.get_text().split("\n") if len(i)>99 and "{" not in i])
+        else:
+            return ""
