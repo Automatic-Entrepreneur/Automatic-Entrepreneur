@@ -5,13 +5,16 @@ import requests
 import json
 import pytesseract
 import os
+import platform
 from ixbrlparse import IXBRL
 import pickle as pkl
 import io
 from CompaniesHouse.ScannedReportReader import ScannedReportReader
 
-pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
-
+if platform.system() == 'Darwin':
+    pytesseract.pytesseract.tesseract_cmd = "/usr/local/bin/tesseract"
+else:
+    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
 # Sample Usage:
 # company = CompanyInfo('03824658')
