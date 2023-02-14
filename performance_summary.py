@@ -116,7 +116,7 @@ if __name__ == "__main__":
 	start_year = 2010
 	end_year = 2023
 
-	data = extract_data(company_id, start_year, end_year)
+	data = extract_data(company_id, start_year, end_year)["data"]
 	print(data)
 	print()
 

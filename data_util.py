@@ -52,7 +52,7 @@ def extract_data(
 		company_id: str,
 		start_year: int,
 		end_year: int,
-) -> dict[str, dict[str, list[typing.Union[int, float]]]]:
+) -> dict[str, str | dict[str, dict[str, list[typing.Union[int, float]]]]]:
 	company = CompanyInfo(company_id)
 	extracted_data = {}
 	for attribute in attribute_map:
@@ -85,4 +85,4 @@ def extract_data(
 		for year, value in sorted(data_by_year.items(), key=lambda t: t[0]):
 			output[attribute]["years"].append(year)
 			output[attribute]["values"].append(value)
-	return output
+	return {"name": company.getName().title(), "data": output}
