@@ -1,7 +1,7 @@
 from data_util import attribute_map, extract_data
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 import typing
-from CompanyInfo import CompanyInfo
+from CompaniesHouse.CompanyInfo import CompanyInfo
 
 def get_text(company_id: str) -> tuple[str, str]:
 

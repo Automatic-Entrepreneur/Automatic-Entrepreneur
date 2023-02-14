@@ -1,5 +1,6 @@
 from CompaniesHouse.CompanyInfo import CompanyInfo
 import typing
+import numpy as np
 
 trend_map = {1: "increased", -1: "decreased", 0: "remained steady"}
 
@@ -31,6 +32,10 @@ def compare(a: float, b: float) -> int:
 		return -1
 	else:
 		return 0
+
+
+def three_sigfig(n: float) -> str:
+	return str(np.format_float_positional(n, precision=3, unique=False, fractional=False, trim='-'))
 
 
 def extract_data(
