@@ -38,7 +38,7 @@ class CompanySearch:
         # return['registered_office_address'] a dictionary containing the office address of the company:
         # return['sic_codes'] a list of unique identifiers for what the company does
         # return['industry'] a list of strings describing what the company does
-        if n > 5000:
+        if n > 500:
             raise TooManyResults
         query = "https://api.company-information.service.gov.uk/advanced-search/companies"
         params = {
