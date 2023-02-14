@@ -55,4 +55,4 @@ if __name__ == "__main__":
 	extracted_data = extract_data(company_id, start_year, end_year)
 	summary = overall_summary(extracted_data)
 	img_paths = generate_bar_graph(extracted_data, company_id, show_graph=False)
-	html_write("CompaniesHouse/test.html", company_id, sentiment, img_paths, summary)
+	html_write("test.html", company_id, sentiment, img_paths, summary)
