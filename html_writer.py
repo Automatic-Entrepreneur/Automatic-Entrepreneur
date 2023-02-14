@@ -39,7 +39,7 @@ def html_write(
 ) -> None:
 	with open(filename, "w") as html:
 		html.write(
-			f"<html>\n<head>\n<title>\n{company_id} Summary</title>\n</head><body>\n"
+			f"<html>\n<head>\n<title>{company_id} Summary</title>\n</head>\n<body>\n"
 		)
 		html.write(f"<h1>{company_id} Summary</h1>")
 		body_write(html, sentiment, image_paths, captions)
