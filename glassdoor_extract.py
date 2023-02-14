@@ -6,31 +6,25 @@ from time import sleep
 import json
 from bs4 import BeautifulSoup as bs
 import requests
-#import pandas as pd
 
-app = Flask(__name__)
-
-
-#def index():
-    #return render_template('index.html')
 
 def glassdoorScrape(driver, companyName, ret):
     # scraping glassdoor
-    
-    url = 'https://www.glassdoor.com/Search/results.htm?keyword='+companyName
-    
+
+    url = 'https://www.glassdoor.com/Search/results.htm?keyword=' + companyName
+
     driver.get(url)
     element = driver.find_element(By.XPATH, "//a[contains(@href, '/Overview/')]")
 
-    #click on the first instance
+    # click on the first instance
     driver.execute_script("arguments[0].click();", element)
-    
+
     soup = bs(driver.page_source, 'html.parser')
 
     # Get Company Mission
     try:
-        ret['Mission'] = driver.find_elements(By.XPATH,'.//span[@class="css-dwl48b css-1cnqmgc"]')[1].text
-        
+        ret['Mission'] = driver.find_elements(By.XPATH, './/span[@class="css-dwl48b css-1cnqmgc"]')[1].text
+
     except:
         ret['Mission'] = 'N/A'
 
@@ -73,33 +67,34 @@ def glassdoorScrape(driver, companyName, ret):
     try:
         for i in soup.find(attrs={"data-test": "employer-revenue"}):
             rev = i
-        if not(rev[1].isnumeric()):
+        if not (rev[1].isnumeric()):
             rev = 'N/A'
     except:
         rev = 'N/A'
 
     # Get the recommended percentage
     try:
-        ret['Recommended to Friends'] = driver.find_elements(By.CLASS_NAME,'textVal')[0].text
+        ret['Recommended to Friends'] = driver.find_elements(By.CLASS_NAME, 'textVal')[0].text
     except:
         ret['Recommended to Friends'] = 'N/A'
 
     # Get CEO approval percentage
     try:
-        ret['Approve of CEO']  = driver.find_elements(By.CLASS_NAME, 'textVal')[1].text
+        ret['Approve of CEO'] = driver.find_elements(By.CLASS_NAME, 'textVal')[1].text
     except:
-        ret['Approve of CEO']  = 'N/A'
+        ret['Approve of CEO'] = 'N/A'
 
     # Get Rating out of 5
     try:
-        ret['Overall Rating'] = driver.find_element(By.XPATH,'.//div[@class="mr-xsm css-1c86vvj eky1qiu0"]').text
+        ret['Overall Rating'] = driver.find_element(By.XPATH, './/div[@class="mr-xsm css-1c86vvj eky1qiu0"]').text
     except:
         ret['Overall Rating'] = 'N/A'
-    #recommendParagraph = driver.find_element(By.XPATH,'.//div[@class="pb-std pt-std d-none css-ujzx5o e1r4hxna3"]').text
+    # recommendParagraph = driver.find_element(By.XPATH,'.//div[@class="pb-std pt-std d-none css-ujzx5o e1r4hxna3"]').text
 
     # Get CEO
     try:
-        ceo = driver.find_element(By.XPATH, './/div[@class="d-lg-table-cell ceoName pt-sm pt-lg-0 px-lg-sm css-dwl48b css-1cnqmgc"]').text
+        ceo = driver.find_element(By.XPATH,
+                                  './/div[@class="d-lg-table-cell ceoName pt-sm pt-lg-0 px-lg-sm css-dwl48b css-1cnqmgc"]').text
         i = 0
         while i < len(ceo):
             if ceo[i].isnumeric():
@@ -124,24 +119,24 @@ def glassdoorScrape(driver, companyName, ret):
     except:
         typ = 'N/A'
 
-    #script_label = driver.find_element(By.XPATH, "//script[@type = 'text/javascript']").text
-
+    # script_label = driver.find_element(By.XPATH, "//script[@type = 'text/javascript']").text
 
     # Look to get more ratings
-  
-    #ret['Company'] = company
+
+    # ret['Company'] = company
     ret['Company Type'] = typ
     ret['Revenue'] = rev
-    ret['Ticker'] = ticker    
+    ret['Ticker'] = ticker
+
 
 def financeScrape(ticker, ret):
     key = 'O8YBYOA6EAO0EANF'
 
     for i in ['GLOBAL_QUOTE', 'OVERVIEW', 'BALANCE_SHEET', 'INCOME_STATEMENT', 'CASH_FLOW', 'EARNINGS']:
-        url = 'https://www.alphavantage.co/query?function='+i+'&symbol='+ticker+'&apikey='+key
+        url = 'https://www.alphavantage.co/query?function=' + i + '&symbol=' + ticker + '&apikey=' + key
         r = requests.get(url)
         data = json.loads(r.text)
-        #data = r.json()
+        # data = r.json()
         if i == 'GLOBAL_QUOTE':
             quote = data['Global Quote']
             ret['Price'] = quote['05. price']
@@ -158,50 +153,3 @@ def financeScrape(ticker, ret):
             ret['Cash Flow'] = data["annualReports"]
         if i == 'EARNINGS':
             ret['Annual Earnings'] = data["annualEarnings"]
-
-def get_graph(companyName):
-    import sys, os
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'CompaniesHouse'))
-    from CompaniesHouse.CompanySearch import CompanySearch
-    import generate_graphs
-    import data_util
-
-    companySearch = CompanySearch()
-    companyHouseID = companySearch.search(companyName)[0]['company_number']
-    extracted_data = data_util.extract_data(companyHouseID,2019,2021);
-    graphName = generate_graphs.generate_bar_graph(extracted_data,companyHouseID)
-
-    return graphName
-
-@app.route('/', methods =["GET", "POST"])
-def index():
-    if request.method == "POST": 
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_experimental_option("useAutomationExtension", False)
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-
-        #This line prevents the pop-up
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument('--ignore-certificate-errors')
-        chrome_options.add_argument('--incognito')
-
-        driver = webdriver.Chrome(options=chrome_options)
-
-        ret = dict()
-        companyName = request.form.get("title")
-
-    #    get_graph(companyName)
-
-        glassdoorScrape(driver, companyName, ret)
-
-        if ret['Ticker'] != 'N/A':
-            financeScrape(ret['Ticker'], ret)
-        else:
-            for i in ['Price', 'Description', 'ProfitMargin', '52WeekHigh', '52WeekLow', '50DayMovingAverage', '200DayMovingAverage']:
-                ret[i] = 'N/A'
-        return ret['CEO']
-    return render_template("index.html") 
-
-if __name__=='__main__':
-    # get_graph("Softwire")
-    app.run()
