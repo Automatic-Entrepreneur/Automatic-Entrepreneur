@@ -32,16 +32,16 @@ def body_write(
 
 def html_write(
 		filename: str,
-		company_id: str,
+		company_name: str,
 		sentiment: str,
 		image_paths: dict[str, str],
 		captions: dict[str, list[str]],
 ) -> None:
 	with open(filename, "w") as html:
 		html.write(
-			f"<html>\n<head>\n<title>{company_id} Summary</title>\n</head>\n<body>\n"
+			f"<html>\n<head>\n<title>{company_name} Summary</title>\n</head>\n<body>\n"
 		)
-		html.write(f"<h1>{company_id} Summary</h1>")
+		html.write(f"<h1>{company_name} Summary</h1>")
 		body_write(html, sentiment, image_paths, captions)
 		html.write("</body>\n</html>")
 
@@ -53,6 +53,6 @@ if __name__ == "__main__":
 
 	sentiment = "[PLACEHOLDER SENTIMENT]"
 	extracted_data = extract_data(company_id, start_year, end_year)
-	summary = overall_summary(extracted_data)
-	img_paths = generate_bar_graph(extracted_data, company_id, show_graph=False)
-	html_write("test.html", company_id, sentiment, img_paths, summary)
+	summary = overall_summary(extracted_data["data"])
+	img_paths = generate_bar_graph(extracted_data["data"], company_id, show_graph=False)
+	html_write("test.html", extracted_data["name"], sentiment, img_paths, summary)
