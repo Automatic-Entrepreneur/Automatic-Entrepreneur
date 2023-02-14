@@ -1,7 +1,7 @@
 - Use "requests-cache"
   This library caches requests, increasing performance and reducing probability of blocks
 
-- make classes async?
+- Make classes async?
   Many queries are known very early so could be made early and used later, reducing latency. Be careful about overloading via "multithreaded queries".
 
 - Rate Limit
