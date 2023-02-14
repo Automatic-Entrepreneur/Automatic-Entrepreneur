@@ -1,5 +1,5 @@
 
-# Everything in CompaniesHouse is wrapped in two classes.
+# Everything in CompaniesHouse is wrapped in three classes.
 
 Documentation for these is in the code
 
@@ -13,3 +13,8 @@ Documentation for these is in the code
   - It returns a list of companies (of size n)
   - This list is sorted by date of creation
     - a reasonable heuristic as many of the newer companies are offshoots
+
+- ScannedReportReader
+  - This is primarily an internal function
+  - It takes as input the byte representation of a pdf
+  - And supports reading it page-by-page
