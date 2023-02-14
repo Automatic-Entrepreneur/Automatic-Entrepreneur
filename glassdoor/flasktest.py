@@ -159,6 +159,20 @@ def financeScrape(ticker, ret):
         if i == 'EARNINGS':
             ret['Annual Earnings'] = data["annualEarnings"]
 
+"""def get_graph(companyName):
+    import sys, os
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'CompaniesHouse'))
+    from CompaniesHouse.CompanySearch import CompanySearch
+    from CompaniesHouse import generate_graphs
+    from CompaniesHouse import data_util
+
+    companySearch = CompanySearch()
+    companyHouseID = companySearch.search(companyName)[0]
+    extracted_data = data_util.extract_data(companyHouseID,2010,2022);
+    graphName = generate_graphs.generate_bar_graph(extracted_data,companyHouseID)
+
+    return graphName"""
+
 @app.route('/', methods =["GET", "POST"])
 def index():
     if request.method == "POST": 
@@ -175,6 +189,9 @@ def index():
 
         ret = dict()
         companyName = request.form.get("title")
+
+    #    get_graph(companyName)
+
         glassdoorScrape(driver, companyName, ret)
 
         if ret['Ticker'] != 'N/A':
@@ -186,4 +203,5 @@ def index():
     return render_template("index.html") 
 
 if __name__=='__main__':
-   app.run()
+ #   get_graph("Softwire")
+    app.run()
