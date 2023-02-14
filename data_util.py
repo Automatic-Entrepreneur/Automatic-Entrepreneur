@@ -36,12 +36,16 @@ def compare(a: float, b: float) -> int:
 		return 0
 
 
-def three_sigfig(n: float) -> str:
-	return str(
+def three_sigfig(n: float, comma=False) -> str:
+	output = float(
 		np.format_float_positional(
 			n, precision=3, unique=False, fractional=False, trim="-"
 		)
 	)
+	if comma:
+		return f"{output:,}"
+	else:
+		return str(output)
 
 
 def extract_data(
