@@ -5,6 +5,7 @@ import pytesseract
 import os
 from ixbrlparse import IXBRL
 import pickle as pkl
+import io
 from CompaniesHouse.ScannedReportReader import ScannedReportReader
 
 pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
@@ -34,7 +35,7 @@ class CompanyInfo:
 
     # I do not anticipate making anywhere close to this 600 requests so removed the rate limiter
 
-    def __init__(self, company_info, google=None):
+    def __init__(self, company_info):
         """
         :param company_info: The company ID on Company House.
         :type company_info: str
@@ -79,6 +80,14 @@ class CompanyInfo:
         """
         self.__fetchInfo()
         return self.__info
+
+    def getName(self):
+        """
+        :return: the name of the company
+        :rtype: str
+        """
+        self.__fetchInfo()
+        return self.__info['company_name']
 
     def getOffice(self):
         """
@@ -159,12 +168,6 @@ class CompanyInfo:
             os.mkdir(dirpath)
         if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:
             with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/xhtml+xml'}, params={'Accept': 'application/xhtml+xml'}) as response:
-                class IXBRLWrapper:
-                    def __init__(self, s):
-                        self.s = s
-
-                    def read(self):
-                        return self.s
                 information = [
                     {
                         'name': stat['name'],
@@ -174,7 +177,7 @@ class CompanyInfo:
                         'startdate': stat['startdate'],
                         'enddate': stat['enddate'],
                     }
-                    for stat in IXBRL(IXBRLWrapper(response.text)).to_table()
+                    for stat in IXBRL(io.StringIO(response.text)).to_table()
                 ]
         else:
             with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/pdf'}, params={'Accept': 'application/pdf'}) as response:
@@ -185,8 +188,7 @@ class CompanyInfo:
         pkl.dump(information, open(pklpath, 'wb'))
         return information
 
-
-    def getlongtext(self, year):
+    def getLongText(self, year):
         dirpath = 'companies_house/{}/{}'.format(self.__company_number, year)
         pklpath = 'companies_house/{}/{}/accounts_{}.pkl'.format(self.__company_number, year, year)
         if os.path.exists(pklpath):
@@ -205,15 +207,7 @@ class CompanyInfo:
             os.mkdir(dirpath)
         if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:
             with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/xhtml+xml'}, params={'Accept': 'application/xhtml+xml'}) as response:
-
-                class IXBRLWrapper:  # could use io.StringIO instead
-                    def __init__(self, s):
-                        self.s = s
-
-                    def read(self):
-                        return self.s
-
-                d = IXBRL(IXBRLWrapper(response.text))
+                d = IXBRL(io.StringIO(response.text))
                 return "\n".join([i for i in d.parser.soup.get_text().split("\n") if len(i)>99 and "{" not in i])
         else:
             return ""
