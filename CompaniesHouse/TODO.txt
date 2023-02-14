@@ -1,9 +1,14 @@
 - Use "requests-cache"
   This library caches requests, increasing performance and reducing probability of blocks
 
-- make classes async?
+- Make classes async?
   Many queries are known very early so could be made early and used later, reducing latency. Be careful about overloading via "multithreaded queries".
 
 - Rate Limit
   CH can block -- if this happens in a demo it's really bad
   Currently I rely on "it seems unlikely we'd hit the rate cap if used properly" -- but safer not to test
+
+- CompanyInfo API change
+  Currently there's no way to distinguish between a ScannedPdf and ixbrl
+  So it'll stall for ages if you query a scanned pdf.
+  Make this more transparent
