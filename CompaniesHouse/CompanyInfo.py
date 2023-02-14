@@ -16,6 +16,7 @@ if platform.system() == 'Darwin':
 else:
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
+
 # Sample Usage:
 # company = CompanyInfo('03824658')
 # accountInfo = company.getAccountInformation(2022)
