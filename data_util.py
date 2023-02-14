@@ -1,5 +1,8 @@
-from CompaniesHouse.CompanyInfo import CompanyInfo
 import typing
+
+import numpy as np
+
+from CompaniesHouse.CompanyInfo import CompanyInfo
 
 trend_map = {1: "increased", -1: "decreased", 0: "remained steady"}
 
@@ -33,6 +36,18 @@ def compare(a: float, b: float) -> int:
 		return 0
 
 
+def three_sigfig(n: float, comma=False) -> str:
+	output = float(
+		np.format_float_positional(
+			n, precision=3, unique=False, fractional=False, trim="-"
+		)
+	)
+	if comma:
+		return f"{output:,}"
+	else:
+		return str(output)
+
+
 def extract_data(
 		company_id: str,
 		start_year: int,
@@ -45,7 +60,6 @@ def extract_data(
 	for year in range(start_year, end_year):
 		try:
 			account_info = company.getAccountInformation(year)
-			print(account_info)
 		except IndexError:
 			continue
 		except (

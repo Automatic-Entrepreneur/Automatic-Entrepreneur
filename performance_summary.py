@@ -1,6 +1,7 @@
-from data_util import trend_map, attribute_map, compare, extract_data
+from data_util import trend_map, attribute_map, compare, three_sigfig, extract_data
 
-GRADIENT_THRESHOLD = 0.15
+SHARP_THRESHOLD = 0.15
+DRAMATIC_THRESHOLD = 0.7
 
 
 def data_summary(
@@ -74,14 +75,20 @@ def format_summary(
 				s = section["sign"]
 				t = s * trend["trend"]
 				gradient = abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]
-				gradient_word = "sharply" if gradient >= GRADIENT_THRESHOLD else "slightly"
+				gradient_word = "gradually"
+				if gradient >= SHARP_THRESHOLD:
+					gradient_word = "sharply"
+				if gradient >= DRAMATIC_THRESHOLD:
+					gradient_word = "dramatically"
 				keywords1 = (
-					f"{sign_map[s]}" if s == 0 else f"{sign_map[s]} {trend_map[t]} {gradient_word} by {gradient:.1%}"
+					f"{sign_map[s]}"
+					if s == 0
+					else f"{sign_map[s]} {trend_map[t]} {gradient_word} by {three_sigfig(gradient * 100)}%"
 				)
 				keywords2 = (
-					f"at {trend['startVal']} GBP."
+					f"at {three_sigfig(trend['startVal'], True)} GBP."
 					if t == 0
-					else f"from {trend['startVal']} to {trend['endVal']} GBP."
+					else f"from {three_sigfig(trend['startVal'], True)} to {three_sigfig(trend['endVal'], True)} GBP."
 				)
 				output.append(
 					f"{trend['startYear']}-{trend['endYear']}: {keywords1} {keywords2}"
