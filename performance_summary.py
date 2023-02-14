@@ -1,6 +1,7 @@
 from data_util import trend_map, attribute_map, compare, three_sigfig, extract_data
 
-GRADIENT_THRESHOLD = 0.15
+SHARP_THRESHOLD = 0.15
+DRAMATIC_THRESHOLD = 0.7
 
 
 def data_summary(
@@ -74,9 +75,11 @@ def format_summary(
 				s = section["sign"]
 				t = s * trend["trend"]
 				gradient = abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]
-				gradient_word = (
-					"sharply" if gradient >= GRADIENT_THRESHOLD else "slightly"
-				)
+				gradient_word = "gradually"
+				if gradient >= SHARP_THRESHOLD:
+					gradient_word = "sharply"
+				if gradient >= DRAMATIC_THRESHOLD:
+					gradient_word = "dramatically"
 				keywords1 = (
 					f"{sign_map[s]}"
 					if s == 0
