@@ -37,7 +37,7 @@ def body_write(
 
 def html_write(
 		filename: str,
-		company_id: str,
+		company_name: str,
 		CEO_summary: str,
 		QA_answers: str,
 		image_paths: dict[str, str],
@@ -45,7 +45,7 @@ def html_write(
 ) -> None:
 	with open(filename, "w") as html:
 		html.write(
-			f"<html>\n<head>\n<title>\n{company_id} Summary</title>\n</head><body>\n"
+			f"<html>\n<head>\n<title>{company_name} Summary</title>\n</head>\n<body>\n"
 		)
 		html.write(f"<h1>{company_id} Summary</h1>")
 		body_write(html, CEO_summary, QA_answers, image_paths, captions)
@@ -65,6 +65,7 @@ if __name__ == "__main__":
 	QA_answers = "<br><br>".join([f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers])
 
 	extracted_data = extract_data(company_id, start_year, end_year)
-	summary = overall_summary(extracted_data)
-	img_paths = generate_bar_graph(extracted_data, company_id, show_graph=False)
-	html_write("out/test.html", company_id, CEO_summary, QA_answers, img_paths, summary)
+
+	summary = overall_summary(extracted_data["data"])
+	img_paths = generate_bar_graph(extracted_data["data"], company_id, show_graph=False)
+	html_write("test.html", extracted_data["name"], CEO_summary, QA_answers, img_paths, summary)
