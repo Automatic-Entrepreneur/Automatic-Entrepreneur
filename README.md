@@ -1,12 +1,18 @@
 # Automatic-Entrepreneur.github.io
 
-Dependencies:
+## Dependencies:
 
 CompaniesHouse:
 
 - Tesseract.exe (TesseractOCR)
+
+  https://linuxhint.com/install-tesseract-windows/
+
+- Poppler
+
+  https://poppler.freedesktop.org/
+
 - pytesseract
-- Poppler (not python library)
 - requests
 - json
 - os
