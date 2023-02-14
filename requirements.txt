@@ -9,3 +9,7 @@ pytorch==1.12.1
 
 # tesseract: https://tesseract-ocr.github.io/tessdoc/Installation.html
 # poppler: https://github.com/oschwartz10612/poppler-windows/releases/
+selenium~=4.8.0
+beautifulsoup4~=4.11.2
+numpy~=1.24.1
+python-dateutil~=2.8.2
