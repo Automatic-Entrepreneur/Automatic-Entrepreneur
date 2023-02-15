@@ -86,7 +86,7 @@ if __name__ == "__main__":
 	start_year = 2010
 	end_year = 2023
 
-	NO_TORCH = False
+	NO_TORCH = True
 
 	CEO_text, QA_text = get_text(company_id)
 	CEO_summary = generate_summary(CEO_text, NO_TORCH)
