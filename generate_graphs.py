@@ -27,6 +27,8 @@ def generate_bar_graph(
 ) -> dict[str, str]:
     # print(extractedData)
 
+    plt.style.use('seaborn')
+
     output = {}
     for attribute in extracted_data:
         if len(extracted_data[attribute]["years"]) > 0:

@@ -11,7 +11,7 @@ def p_write(html: TextIO, text: str) -> None:
 
 
 def img_write(html: TextIO, img_path: str) -> None:
-	html.write(f"<img src={img_path} alt={img_path}>\n")
+	html.write(f"<img src={img_path} alt={img_path} width='500'>\n")
 
 
 def body_write(
@@ -21,16 +21,19 @@ def body_write(
 		image_paths: dict[str, str],
 		captions: dict[str, list[str]],
 ) -> None:
-	html.write(f"<h4>Report summary</h4>\n")
+	html.write(f"<h3>Report summary</h3>\n")
 	p_write(html, CEO_summary+"\n\n")
 	html.write(f"<h4>FAQ</h4>\n")
 	p_write(html, QA_answers)
 	html.write("<br>\n")
 	html.write("<br>\n")
 	for attribute in image_paths:
+		html.write("<div style='display:flex'>\n")
 		img_write(html, image_paths[attribute])
+		html.write("<div>")
 		for line in captions[attribute]:
 			p_write(html, line)
+		html.write("</div>\n</div>\n")
 		html.write("<br>\n")
 		html.write("<br>\n")
 
@@ -45,9 +48,35 @@ def html_write(
 ) -> None:
 	with open(filename, "w") as html:
 		html.write(
-			f"<html>\n<head>\n<title>{company_name} Summary</title>\n</head>\n<body>\n"
+			f"<html>\n<head>\n<title>{company_name} Summary</title>\n</head>\n<body style='margin-right:250px;margin-left:250px;'>\n"
 		)
-		html.write(f"<h1>{company_id} Summary</h1>")
+		html.write(f'''<br style='line-height:0px'><h1 style='text-align:left;'>
+						{company_name} Summary
+						<span style='float:right;font-size:20px'>
+						<span style='color:#4285F4'>A</span>
+						<span style='color:#DB4437'>u</span>
+						<span style='color:#F4B400'>t</span>
+						<span style='color:#0F9D58'>o</span>
+						<span style='color:#DB4437'>m</span>
+						<span style='color:#4285F4'>a</span>
+						<span style='color:#F4B400'>t</span>
+						<span style='color:#0F9D58'>i</span>
+						<span style='color:#DB4437'>c</span>
+						<span style='color:#F4B400'>E</span>
+						<span style='color:#DB4437'>n</span>
+						<span style='color:#F4B400'>t</span>
+						<span style='color:#4285F4'>r</span>
+						<span style='color:#F4B400'>e</span>
+						<span style='color:#0F9D58'>p</span>
+						<span style='color:#DB4437'>r</span>
+						<span style='color:#F4B400'>e</span>
+						<span style='color:#0F9D58'>n</span>
+						<span style='color:#F4B400'>e</span>
+						<span style='color:#DB4437'>u</span>
+						<span style='color:#4285F4'>r</span>
+						</span>
+					</h1>
+					<hr>''')
 		body_write(html, CEO_summary, QA_answers, image_paths, captions)
 		html.write("</body>\n</html>")
 
@@ -57,7 +86,7 @@ if __name__ == "__main__":
 	start_year = 2010
 	end_year = 2023
 
-	NO_TORCH = True
+	NO_TORCH = False
 
 	CEO_text, QA_text = get_text(company_id)
 	CEO_summary = generate_summary(CEO_text, NO_TORCH)

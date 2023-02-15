@@ -15,6 +15,7 @@ def generate_summary(text: str, debug=False) -> str:
     if debug:
         return "The directors present their annual report and financial statements for the year ended 31 December 2020. The principal activity of the company and group continued to be that of computer software development. Ordinary dividends were paid amounting to £2,377,000. The directors do not recommend payment of a further dividend. Taylor Associates were appointed auditor to the group. A resolution proposing that they be re-appointed will be put at a General Meeting."
 
+    # TODO: maybe test https://huggingface.co/philschmid/flan-t5-base-samsum
     summarizer = pipeline('summarization', model="philschmid/bart-large-cnn-samsum")
     return summarizer(text, max_length=150, min_length=50, do_sample=False)[0]["summary_text"]
 
@@ -33,12 +34,12 @@ def answer_question(text: str, questions: str, debug=False) -> str:
 
     ans = model(q)
 
-    return [{"q": j, "a": i["answer"]} for j,i in zip(questions, ans) if i["score"] > 0.5]
+    return [{"q": j, "a": i["answer"]} for j,i in zip(questions, ans) if i["score"] > 0.1]
 
 questions = ['Who bought the company this year?',
              'How do they make money?',
              'Why did the total headcount change?',
-             'How is the company helping fight climate change?'],
+             'How is the company helping fight climate change?']
 
 
 if __name__ == "__main__":
@@ -47,7 +48,7 @@ if __name__ == "__main__":
 
     CEO_text, QA_text = get_text(company_id)
     CEO_summary = generate_summary(CEO_text)
-    QA_answers = answer_questions(QA_text, questions)
+    QA_answers = answer_question(QA_text, questions)
     
     print(f"{QA_answers}\n\nCEO summary:\n\n{CEO_summary}")
 
