@@ -1,7 +1,5 @@
 import typing
-
 import numpy as np
-
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
 trend_map = {1: "increased", -1: "decreased", 0: "remained steady"}
@@ -52,7 +50,7 @@ def extract_data(
 		company_id: str,
 		start_year: int,
 		end_year: int,
-) -> dict[str, str | dict[str, dict[str, list[typing.Union[int, float]]]]]:
+) -> dict[str, typing.Union[str, dict[str, dict[str, list[typing.Union[int, float]]]]]]:
 	company = CompanyInfo(company_id)
 	extracted_data = {}
 	for attribute in attribute_map:

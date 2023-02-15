@@ -1,3 +1,4 @@
+import typing
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 
@@ -20,11 +21,13 @@ test_data = {
 
 
 def generate_bar_graph(
-        extracted_data: dict[str, dict[str, list[int | float]]],
+        extracted_data: dict[str, dict[str, list[typing.Union[int, float]]]],
         company_id: str,
         show_graph: bool = True,
 ) -> dict[str, str]:
     # print(extractedData)
+
+    plt.style.use('seaborn')
 
     output = {}
     for attribute in extracted_data:
@@ -49,7 +52,6 @@ def generate_bar_graph(
             )
 
             ax.set_ylim([0, max(extracted_data[attribute]["values"]) * 1.2])
-
             plt.savefig(f"{company_id}_{attribute}.png", bbox_inches="tight")
             output[attribute] = f"{company_id}_{attribute}.png"
 

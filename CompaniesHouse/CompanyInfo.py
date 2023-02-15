@@ -1,14 +1,20 @@
+import time
+
 import CompaniesHouse.key
 import requests
 import json
 import pytesseract
 import os
+import platform
 from ixbrlparse import IXBRL
 import pickle as pkl
 import io
 from CompaniesHouse.ScannedReportReader import ScannedReportReader
 
-pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
+if platform.system() == 'Darwin':
+    pytesseract.pytesseract.tesseract_cmd = "/usr/local/bin/tesseract"
+else:
+    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
 
 # Sample Usage:
@@ -141,13 +147,19 @@ class CompanyInfo:
         self.__fetchAccounts()
         return self.__accounts
 
-    def getAccountInformation(self, year):
+    def getAccountInformation(self, year, pdf_accept=False, pdf_time=10, pdf_pages=50):
         """
         This can be a VERY expensive function.
         It may have to transcribe dozens or even hundreds of pages of pdf.
         It caches as much as possible to reduce load.
         :param year: the year in which the account was filed
         :type year: int
+        :param pdf_accept: allows/disallows processing scanned pdfs
+        :type pdf_accept: bool
+        :param pdf_time: maximum amount of time in s to spend trying to read a scanned pdf
+        :type pdf_time: int
+        :param pdf_pages: maximum number of pages in a scanned pdf to attempt to read
+        :type pdf_pages: int
         :return: list[dict[str, str]]
         """
         dirpath = 'companies_house/{}/{}'.format(self.__company_number, year)
@@ -155,7 +167,10 @@ class CompanyInfo:
         if os.path.exists(pklpath):
             return pkl.load(open(pklpath, 'rb'))
         self.__fetchAccounts()
-        file = sorted((f for f in self.__accounts if f['date'][:4] == str(year) and f['category'] == 'accounts'), key=lambda x: x['date'])[0]
+        files = sorted((f for f in self.__accounts if f['date'][:4] == str(year) and f['category'] == 'accounts'), key=lambda x: x['date'])
+        if not files:
+            return []
+        file = files[0]
         query = file['links']['document_metadata']
         response = requests.get(query, auth=(self.__key, ''))
         decoded = json.JSONDecoder().decode(response.text)
@@ -180,31 +195,26 @@ class CompanyInfo:
                     for stat in IXBRL(io.StringIO(response.text)).to_table()
                 ]
         else:
+            if not pdf_accept:
+                return []
+            t = time.monotonic()
             with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/pdf'}, params={'Accept': 'application/pdf'}) as response:
                 scanner = ScannedReportReader(response.content, year)
                 information = []
-                for i in range(min(len(scanner), 5)):
+                for i in range(min(pdf_pages, len(scanner))):
+                    if time.monotonic() - t > pdf_time:
+                        break
                     information.extend(scanner.readPage(i))
         pkl.dump(information, open(pklpath, 'wb'))
         return information
 
     def getLongText(self, year):
-        dirpath = 'companies_house/{}/{}'.format(self.__company_number, year)
-        pklpath = 'companies_house/{}/{}/accounts_{}.pkl'.format(self.__company_number, year, year)
-        if os.path.exists(pklpath):
-            return pkl.load(open(pklpath, 'rb'))
         self.__fetchAccounts()
         file = sorted((f for f in self.__accounts if f['date'][:4] == str(year) and f['category'] == 'accounts'), key=lambda x: x['date'])[0]
         query = file['links']['document_metadata']
         response = requests.get(query, auth=(self.__key, ''))
         decoded = json.JSONDecoder().decode(response.text)
         query = decoded['links']['document']
-        if not os.path.exists(dirpath[:dirpath.index('/')]):
-            os.mkdir(dirpath[:dirpath.index('/')])
-        if not os.path.exists(dirpath[:dirpath.rindex('/')]):
-            os.mkdir(dirpath[:dirpath.rindex('/')])
-        if not os.path.exists(dirpath):
-            os.mkdir(dirpath)
         if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:
             with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/xhtml+xml'}, params={'Accept': 'application/xhtml+xml'}) as response:
                 d = IXBRL(io.StringIO(response.text))

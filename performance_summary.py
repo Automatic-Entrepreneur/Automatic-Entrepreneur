@@ -1,3 +1,4 @@
+import typing
 from data_util import trend_map, attribute_map, compare, three_sigfig, extract_data
 
 SHARP_THRESHOLD = 0.15
@@ -5,8 +6,8 @@ DRAMATIC_THRESHOLD = 0.7
 
 
 def data_summary(
-		records: dict[str, list[int | float]]
-) -> list[dict[str, int | list[dict[str, int | float]]]]:
+		records: dict[str, list[typing.Union[int, float]]]
+) -> list[dict[str, typing.Union[int, list[dict[str, typing.Union[int, float]]]]]]:
 	values_by_year = list(zip(records["values"], records["years"]))
 	prev = values_by_year[0]
 	# a list of dictionaries, each one representing a continued profit/loss
@@ -65,7 +66,7 @@ def data_summary(
 
 
 def format_summary(
-		values_by_year: list[dict[str, int | list[dict[str, int | float]]]],
+		values_by_year: list[dict[str, typing.Union[int, list[dict[str, typing.Union[int, float]]]]]],
 		sign_map: dict[int, str],
 ) -> list[str]:
 	output = []
@@ -97,7 +98,7 @@ def format_summary(
 
 
 def overall_summary(
-		extracted_data: dict[str, dict[str, list[int | float]]]
+		extracted_data: dict[str, dict[str, list[typing.Union[int, float]]]]
 ) -> dict[str, list[str]]:
 	output = {}
 	for attribute, record in extracted_data.items():
