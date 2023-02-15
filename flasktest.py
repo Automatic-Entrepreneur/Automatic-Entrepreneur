@@ -168,8 +168,8 @@ def get_graph(companyName):
 
     companySearch = CompanySearch()
     companyHouseID = companySearch.search(companyName)[0]['company_number']
-    extracted_data = data_util.extract_data(companyHouseID,2019,2021);
-    graphName = generate_graphs.generate_bar_graph(extracted_data,companyHouseID)
+    extracted_data = data_util.extract_data(companyHouseID,2019,2021)
+    graphName = generate_graphs.generate_bar_graph(extracted_data["data"], companyHouseID)
 
     return graphName
 
