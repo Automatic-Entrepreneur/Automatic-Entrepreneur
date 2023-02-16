@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 import webbrowser
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import json
 from bs4 import BeautifulSoup as bs
@@ -110,23 +112,68 @@ def glassdoorScrape(driver, companyName, ret):
     # Get Company Type
     try:
         for i in soup.find(attrs={"data-test": "employer-type"}):
-            typ = i
-        if 'Public' in typ:
-            dashInd = typ.index('-')
-            ticker = typ[dashInd + 10:-1]
+            ret['Company Type'] = i
+        if 'Public' in ret['Company Type']:
+            dashInd = ret['Company Type'].index('-')
+            ret['Ticker'] = ret['Company Type'][dashInd + 10:-1]
         else:
-            ticker = 'N/A'
+            ret['Ticker'] = 'N/A'
     except:
-        typ = 'N/A'
+        ret['Company Type'] = 'N/A'
+        ret['Ticker'] = 'N/A'
+    
+    sleep(1)
+    # Getting more ratings
+    try:
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, './/div[@class="css-aztz7y eky1qiu1"]'))).click()
+        sleep(3)
+        soup = bs(driver.page_source, 'html.parser')
+        # Get Extra Ratings
+        for cat in ["cultureAndValues", "diversityAndInclusion", "workLife", "seniorManagement", "compAndBenefits", "careerOpportunities"]:
+            for i in soup.find(attrs={"data-category":cat}):
+                x = str(i)
+                x = x[-15:-12]
+                j = 0
+                while j < len(x):
+                    if (not(x[j].isnumeric())):
+                        j += 1
+                    elif j == 2:
+                        x = x[j:]
+                        break
+                    else:
+                        break
+                #print(i)
+                if cat == "cultureAndValues":
+                    ret['Culture & Values Rating'] = x
+                elif cat == "diversityAndInclusion":
+                    ret['Diversity & Inclusion Rating'] = x
+                elif cat == "workLife":
+                    ret['Work/Life Balance Rating'] = x
+                elif cat == "seniorManagement":
+                    ret['Senior Management Rating'] = x
+                elif cat == "compAndBenefits":
+                    ret['Compensation & Benefits Rating'] = x
+                elif cat == "careerOpportunities":
+                    ret['Career Opportunities Rating'] = x
+        
+        
+        print('Culture:' , ret['Culture & Values Rating'])
+        print('Diversity:', ret['Diversity & Inclusion Rating'])
+        print('Work Life:', ret['Work/Life Balance Rating'])
+        print('Senior Management:', ret['Senior Management Rating'])
+        print('Compensation:', ret['Compensation & Benefits Rating'])
+        print('Career:', ret['Career Opportunities Rating'])
 
-    # script_label = driver.find_element(By.XPATH, "//script[@type = 'text/javascript']").text
-
-    # Look to get more ratings
+    except:
+        ret['Culture & Values Rating'] = 'N/A'
+        ret['Diversity & Inclusion Rating'] = 'N/A'
+        ret['Work/Life Balance Rating'] = 'N/A'
+        ret['Senior Management Rating'] = 'N/A'
+        ret['Compensation & Benefits Rating'] = 'N/A'
+        ret['Career Opportunities Rating'] = 'N/A'
 
     # ret['Company'] = company
-    ret['Company Type'] = typ
     ret['Revenue'] = rev
-    ret['Ticker'] = ticker
 
 
 def financeScrape(ticker, ret):
@@ -151,5 +198,6 @@ def financeScrape(ticker, ret):
             ret['Income Statement'] = data["annualReports"]
         if i == 'CASH_FLOW':
             ret['Cash Flow'] = data["annualReports"]
-        if i == 'EARNINGS':
-            ret['Annual Earnings'] = data["annualEarnings"]
+        #if i == 'EARNINGS':
+        #   ret['Annual Earnings'] = data["annualEarnings"]
+        # API only allows 5 calls per minute, so may have to get a new key or request for more access
