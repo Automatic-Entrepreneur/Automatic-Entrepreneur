@@ -13,6 +13,8 @@ def get_CEO(companyName):
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("useAutomationExtension", False)
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2}) #disables cookies
+
 
         #This line prevents the pop-up
         chrome_options.add_argument("--headless")
