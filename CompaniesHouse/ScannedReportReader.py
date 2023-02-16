@@ -24,8 +24,8 @@ class ScannedReportReader:
         """
         self.__images = convert_from_bytes(pdf_bytes)
         self.__year = year
-        self.__num = re.compile("\d{1,3}(,\d\d\d)*(\.\d\d)?|\(\d{1,3}(,\d\d\d)*(\.\d\d)?\)")
-        self.__text = re.compile("(\S*[a-zA-Z\d]{2,}\S*){2,}")
+        self.__num = re.compile(r"\d{1,3}(,\d\d\d)*(\.\d\d)?|\(\d{1,3}(,\d\d\d)*(\.\d\d)?\)")
+        self.__text = re.compile(r"(\S*[a-zA-Z\d]{2,}\S*){2,}")
 
     def __len__(self):
         return len(self.__images)

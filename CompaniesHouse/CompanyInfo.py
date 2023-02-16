@@ -30,10 +30,9 @@ class CompanyInfo:
     Create a key on the Company House API
     This must be a live key
     Create a new file key.py with a global variable api_key set to your key
-    N.B. IP addresses can change on Eduroam!
 
     Their API does not like changing IP addresses
-    You will therefore need to create new keys very frequently!
+    You will therefore need to create new keys if you access off university wifi!
 
     Install tesseract
     pytesseract.pytesseract.tesseract_cmd = ##path to tesseract.exe
@@ -163,10 +162,10 @@ class CompanyInfo:
         :type pdf_pages: int
         :return: list[dict[str, str]]
         """
-        dirpath = os.path.join(self.path, "companies_house/{}/{}".format(self.__company_number, year))
-        pklpath = os.path.join(self.path, "companies_house/{}/{}/accounts_{}.pkl".format(self.__company_number, year, year))
-        if os.path.exists(pklpath):
-            return pkl.load(open(pklpath, 'rb'))
+        dir_path = os.path.join(self.path, "companies_house/{}/{}".format(self.__company_number, year))
+        pkl_path = os.path.join(self.path, "companies_house/{}/{}/accounts_{}.pkl".format(self.__company_number, year, year))
+        if os.path.exists(pkl_path):
+            return pkl.load(open(pkl_path, 'rb'))
         self.__fetchAccounts()
         files = sorted((f for f in self.__accounts if f['date'][:4] == str(year) and f['category'] == 'accounts'), key=lambda x: x['date'])
         if not files:
@@ -180,8 +179,8 @@ class CompanyInfo:
             os.mkdir(os.path.join(self.path, "companies_house"))
         if not os.path.exists(os.path.join(self.path, "companies_house/{}".format(self.__company_number))):
             os.mkdir(os.path.join(self.path, "companies_house/{}".format(self.__company_number)))
-        if not os.path.exists(dirpath):
-            os.mkdir(dirpath)
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
         if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:
             with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/xhtml+xml'}, params={'Accept': 'application/xhtml+xml'}) as response:
                 information = [
@@ -206,7 +205,7 @@ class CompanyInfo:
                     if time.monotonic() - t > pdf_time:
                         break
                     information.extend(scanner.readPage(i))
-        pkl.dump(information, open(pklpath, 'wb'))
+        pkl.dump(information, open(pkl_path, 'wb'))
         return information
 
     def getLongText(self, year):
@@ -219,6 +218,6 @@ class CompanyInfo:
         if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:
             with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/xhtml+xml'}, params={'Accept': 'application/xhtml+xml'}) as response:
                 d = IXBRL(io.StringIO(response.text))
-                return "\n".join([i for i in d.parser.soup.get_text().split("\n") if len(i)>99 and "{" not in i])
+                return "\n".join([i for i in d.parser.soup.get_text().split("\n") if len(i) > 99 and "{" not in i])
         else:
             return ""

@@ -12,9 +12,12 @@ def getMainPage():
 
 @app.post('/')
 def searchCompanies():
-    company_search = CompanySearch()
-    results = company_search.search(request.form.get('title'))
-    return render_template("searchpage.html", results=results)
+    if request.form.get('title'):
+        company_search = CompanySearch()
+        results = company_search.search(request.form.get('title'))
+        return render_template("searchpage.html", results=results)
+    else:
+        return render_template("searchpage.html")
 
 
 @app.get('/<company_number>')

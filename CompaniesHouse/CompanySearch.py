@@ -2,24 +2,34 @@ import requests
 import json
 import pickle as pkl
 import CompaniesHouse.key
+from functools import lru_cache
 import os
 
 
 class TooManyResults(UserWarning):
-    def __init__(self, msg='Number of results for CompanySearch must be ≤ 20'):
+    """
+    To be raised when a search requests more than 500 companies
+    """
+    def __init__(self, msg='Number of results for CompanySearch must be ≤ 500'):
         super().__init__(msg)
 
 
 class CompanySearch:
+    """
+    A class to wrap searches for companies on CompaniesHouse
+    """
     def __init__(self):
         self.__key = CompaniesHouse.key.api_key
         self.path = os.path.dirname(__file__)
 
+    @lru_cache(maxsize=5)
     def search(self, company_name, active=True, start=0, n=20):
         """
         Searches query on companies house
-        :param query: company to search for
-        :type query: str
+        :param company_name: company to search for
+        :type company_name: str
+        :param active: if true search only shows results for active companies
+        :type active: bool
         :param start: position of the first result (used for multiple pages)
         :type start: int
         :param n: maximum number of results
@@ -47,7 +57,7 @@ class CompanySearch:
             'company_name_includes': company_name,
             'start_index': start,
             'size': n
-                  }
+        }
         if active:
             params['company_status'] = 'active'
         results = json.JSONDecoder().decode(requests.get(query, auth=(self.__key, ''), params=params).text)['items']
@@ -72,5 +82,5 @@ class CompanySearch:
         codes_to_text = pkl.load(open(os.path.join(self.path, "sic_codes.pkl"), 'rb'))
         for company in companies.values():
             if 'sic_codes' in company:
-                 company['industry'] = [codes_to_text[sic] for sic in company['sic_codes'] if sic in codes_to_text]
+                company['industry'] = [codes_to_text[sic] for sic in company['sic_codes'] if sic in codes_to_text]
         return sorted(companies.values(), key=lambda x: x['date_of_creation'] if 'date_of_creation' in x else "9999-99-99")
