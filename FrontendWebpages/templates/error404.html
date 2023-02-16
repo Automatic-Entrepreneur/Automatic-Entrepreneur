@@ -29,22 +29,11 @@
     <span style="color:#DB4437">u</span>
     <span style="color:#4285F4">r</span></h1>
     
-   <form method="post">
-    <div class="form-group">
-        <input type="search" list="searchresults" name="title" id="search"
-               placeholder="Input Company Name" class="form-control"
-               autocomplete="off" value="{{ request.form['title'] }}">
-            <datalist id="searchresults">
-                {% for result in results %}
-                    <option value="{{result.company_name}}">
-                        {{ result.company_number }}
-                    </option>
-                {% endfor %}
-            </datalist>
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-    </form>
+   <h1>
+       Error 404: Page not found
+   </h1>
+    <p centre style="text-align:center">
+         A report for the company with ID {{ company_number }} has not been generated </centre>
+    </p>
 </body>
 </html>
