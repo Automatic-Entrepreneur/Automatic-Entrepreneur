@@ -198,5 +198,6 @@ def financeScrape(ticker, ret):
             ret['Income Statement'] = data["annualReports"]
         if i == 'CASH_FLOW':
             ret['Cash Flow'] = data["annualReports"]
-        if i == 'EARNINGS':
-            ret['Annual Earnings'] = data["annualEarnings"]
+        #if i == 'EARNINGS':
+        #   ret['Annual Earnings'] = data["annualEarnings"]
+        # API only allows 5 calls per minute, so may have to get a new key or request for more access
