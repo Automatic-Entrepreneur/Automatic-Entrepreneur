@@ -51,6 +51,7 @@ class CompanyInfo:
         self.__info = None
         self.__people = None
         self.__accounts = None
+        self.path = os.path.dirname(__file__)
 
     def __fetchInfo(self):
         """
@@ -162,8 +163,8 @@ class CompanyInfo:
         :type pdf_pages: int
         :return: list[dict[str, str]]
         """
-        dirpath = 'companies_house/{}/{}'.format(self.__company_number, year)
-        pklpath = 'companies_house/{}/{}/accounts_{}.pkl'.format(self.__company_number, year, year)
+        dirpath = os.path.join(self.path, "companies_house/{}/{}".format(self.__company_number, year))
+        pklpath = os.path.join(self.path, "companies_house/{}/{}/accounts_{}.pkl".format(self.__company_number, year, year))
         if os.path.exists(pklpath):
             return pkl.load(open(pklpath, 'rb'))
         self.__fetchAccounts()
@@ -175,10 +176,10 @@ class CompanyInfo:
         response = requests.get(query, auth=(self.__key, ''))
         decoded = json.JSONDecoder().decode(response.text)
         query = decoded['links']['document']
-        if not os.path.exists(dirpath[:dirpath.index('/')]):
-            os.mkdir(dirpath[:dirpath.index('/')])
-        if not os.path.exists(dirpath[:dirpath.rindex('/')]):
-            os.mkdir(dirpath[:dirpath.rindex('/')])
+        if not os.path.exists(os.path.join(self.path, "companies_house")):
+            os.mkdir(os.path.join(self.path, "companies_house"))
+        if not os.path.exists(os.path.join(self.path, "companies_house/{}".format(self.__company_number))):
+            os.mkdir(os.path.join(self.path, "companies_house/{}".format(self.__company_number)))
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
         if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:

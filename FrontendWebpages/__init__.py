@@ -1,0 +1,1 @@
+from FrontendWebpages.FrontPage import openFrontPage

@@ -2,6 +2,7 @@ import requests
 import json
 import pickle as pkl
 import CompaniesHouse.key
+import os
 
 
 class TooManyResults(UserWarning):
@@ -12,6 +13,7 @@ class TooManyResults(UserWarning):
 class CompanySearch:
     def __init__(self):
         self.__key = CompaniesHouse.key.api_key
+        self.path = os.path.dirname(__file__)
 
     def search(self, company_name, active=True, start=0, n=50):
         """
@@ -66,7 +68,7 @@ class CompanySearch:
                 companies[company['company_number']]['registered_office_address'] = company['registered_office_address']
             if 'sic_codes' in company:
                 companies[company['company_number']]['sic_codes'] = company['sic_codes']
-        codes_to_text = pkl.load(open('CompaniesHouse\sic_codes.pkl', 'rb'))
+        codes_to_text = pkl.load(open(os.path.join(self.path, "sic_codes.pkl"), 'rb'))
         for company in companies.values():
             if 'sic_codes' in company:
                  company['industry'] = [codes_to_text[sic] for sic in company['sic_codes'] if sic in codes_to_text]
