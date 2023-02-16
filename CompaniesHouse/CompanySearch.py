@@ -34,8 +34,8 @@ class CompanySearch:
         # return['company_number'] is the Companies House ID for the company
         # return['company_status'] is the status of the company ie active/dissolved/...
         # return['company_type'] is the type of the company ie ltd/private/...
-        # return ['date_of_creation'] is the date the company was created on yyyy-mm-dd
         # Optional:
+        # return ['date_of_creation'] is the date the company was created on yyyy-mm-dd (almost always present)
         # return['date_of_cessation'] the date the company closed on yyyy-mm-dd
         # return['registered_office_address'] a dictionary containing the office address of the company:
         # return['sic_codes'] a list of unique identifiers for what the company does
@@ -56,12 +56,13 @@ class CompanySearch:
                 'company_name': company['company_name'],
                 'company_number': company['company_number'],
                 'company_status': company['company_status'],
-                'company_type': company['company_type'],
-                'date_of_creation': company['date_of_creation'],
+                'company_type': company['company_type']
             }
             for company in results
         }
         for company in results:
+            if 'date_of_creation' in company:
+                companies[company['company_number']]['date_of_creation'] = company['date_of_creation']
             if 'date_of_cessation' in company:
                 companies[company['company_number']]['date_of_cessation'] = company['date_of_cessation']
             if 'registered_office_address' in company:
@@ -72,4 +73,4 @@ class CompanySearch:
         for company in companies.values():
             if 'sic_codes' in company:
                  company['industry'] = [codes_to_text[sic] for sic in company['sic_codes'] if sic in codes_to_text]
-        return sorted(companies.values(), key=lambda x: x['date_of_creation'])
+        return sorted(companies.values(), key=lambda x: x['date_of_creation'] if 'date_of_creation' in x else "9999-99-99")
