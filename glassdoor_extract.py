@@ -25,7 +25,8 @@ def glassdoorScrape(driver, companyName, ret):
 
     # Get Company Mission
     try:
-        ret['Mission'] = driver.find_elements(By.XPATH, './/span[@class="css-dwl48b css-1cnqmgc"]')[1].text
+        for i in soup.find(attrs={"data-test": "employerMission"}):
+            ret['Mission'] = i
 
     except:
         ret['Mission'] = 'N/A'
@@ -91,7 +92,6 @@ def glassdoorScrape(driver, companyName, ret):
         ret['Overall Rating'] = driver.find_element(By.XPATH, './/div[@class="mr-xsm css-1c86vvj eky1qiu0"]').text
     except:
         ret['Overall Rating'] = 'N/A'
-    # recommendParagraph = driver.find_element(By.XPATH,'.//div[@class="pb-std pt-std d-none css-ujzx5o e1r4hxna3"]').text
 
     # Get CEO
     try:
@@ -125,6 +125,10 @@ def glassdoorScrape(driver, companyName, ret):
     sleep(1)
     # Getting more ratings
     try:
+        for i in range(3):
+            sleep(2)
+            driver.refresh()
+
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, './/div[@class="css-aztz7y eky1qiu1"]'))).click()
         sleep(3)
         soup = bs(driver.page_source, 'html.parser')
@@ -155,14 +159,6 @@ def glassdoorScrape(driver, companyName, ret):
                     ret['Compensation & Benefits Rating'] = x
                 elif cat == "careerOpportunities":
                     ret['Career Opportunities Rating'] = x
-        
-        
-        print('Culture:' , ret['Culture & Values Rating'])
-        print('Diversity:', ret['Diversity & Inclusion Rating'])
-        print('Work Life:', ret['Work/Life Balance Rating'])
-        print('Senior Management:', ret['Senior Management Rating'])
-        print('Compensation:', ret['Compensation & Benefits Rating'])
-        print('Career:', ret['Career Opportunities Rating'])
 
     except:
         ret['Culture & Values Rating'] = 'N/A'
