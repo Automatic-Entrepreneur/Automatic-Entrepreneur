@@ -75,7 +75,7 @@ def format_summary(
 			if trend["startYear"] != trend["endYear"]:
 				s = section["sign"]
 				t = s * trend["trend"]
-				gradient = abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]
+				gradient = (abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]) / (trend["endYear"] - trend["startYear"])
 				gradient_word = "gradually"
 				if gradient >= SHARP_THRESHOLD:
 					gradient_word = "sharply"
@@ -84,7 +84,7 @@ def format_summary(
 				keywords1 = (
 					f"{sign_map[s]}"
 					if s == 0
-					else f"{sign_map[s]} {trend_map[t]} {gradient_word} by {three_sigfig(gradient * 100)}%"
+					else f"{sign_map[s]} {trend_map[t]} {gradient_word} by {three_sigfig(gradient * 100)}% per year"
 				)
 				keywords2 = (
 					f"at {three_sigfig(trend['startVal'], True)} GBP."
