@@ -15,7 +15,7 @@ class CompanySearch:
         self.__key = CompaniesHouse.key.api_key
         self.path = os.path.dirname(__file__)
 
-    def search(self, company_name, active=True, start=0, n=50):
+    def search(self, company_name, active=True, start=0, n=20):
         """
         Searches query on companies house
         :param query: company to search for
