@@ -5,12 +5,12 @@ app = Flask(__name__)
 
 
 @app.get('/')
-def indices():
+def getMainPage():
     return render_template("index.html")
 
 
 @app.post('/')
-def search():
+def searchCompany():
     srch = CompanySearch()
     results = srch.search(request.form.get('title'))
     return render_template("index.html", results=results)
@@ -18,3 +18,7 @@ def search():
 
 def openFrontPage():
     app.run()
+
+
+if __name__ == '__main__':
+    openFrontPage()
