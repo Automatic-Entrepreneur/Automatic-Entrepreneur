@@ -5,14 +5,36 @@ from generate_graphs import generate_bar_graph
 from performance_summary import overall_summary
 from generate_summary import get_text, generate_summary, answer_question, questions
 
+from glassdoor_extract import *
 
 def p_write(html: TextIO, text: str) -> None:
 	html.write(f"<p>{text}</p>\n")
 
-
 def img_write(html: TextIO, img_path: str) -> None:
 	html.write(f"<img src={img_path} alt={img_path} width='500'>\n")
 
+def facts_write(html, glassdoor_extract):
+	elements = ['Industry', 'Size', 'Founded', 'Overall Rating', 'CEO']
+	facts = [glassdoor_extract[e] for e in elements]
+	facts[2] = "Founded in " + facts[2]
+	facts[3] = "Glassdoor rating: " + facts[3]
+	facts[4] = "CEO: " + facts[4]
+
+	html.write(f'''<style>	.grid-container	{{
+	display: grid;
+	grid-template-columns: auto auto auto auto auto;
+	padding: 0px;	}}
+
+	.grid-item	{{
+	padding: 10px;
+	text-align: center;
+	}}	</style>''')
+
+	print(glassdoor_extract)
+	html.write('<div class="grid-container">')
+	for fact in facts:
+		html.write(f'<div class="grid-item">{fact}</div>')
+	html.write("</div>")
 
 def body_write(
 		html: TextIO,
@@ -45,6 +67,7 @@ def html_write(
 		QA_answers: str,
 		image_paths: dict[str, str],
 		captions: dict[str, list[str]],
+		glassdoor_extract: dict[str, str]
 ) -> None:
 	with open(filename, "w") as html:
 		html.write(
@@ -77,8 +100,33 @@ def html_write(
 						</span>
 					</h1>
 					<hr>''')
+		facts_write(html, glassdoor_extract)
 		body_write(html, CEO_summary, QA_answers, image_paths, captions)
 		html.write("</body>\n</html>")
+
+
+def glassdoor_info(companyName):
+	chrome_options = webdriver.ChromeOptions()
+	chrome_options.add_experimental_option("useAutomationExtension", False)
+	chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+	chrome_options.add_experimental_option("prefs",
+										   {"profile.default_content_setting_values.cookies": 2})  # disables cookies
+	# This line prevents the pop-up
+	# chrome_options.add_argument("--headless") - WHY DOES THIS NOT WORK ANYMORE :(
+	chrome_options.add_argument('--ignore-certificate-errors')
+	chrome_options.add_argument('--incognito')
+
+	driver = webdriver.Chrome(options=chrome_options)
+	ret = dict()
+	glassdoorScrape(driver, companyName, ret)
+	if ret['Ticker'] != 'N/A':
+		financeScrape(ret['Ticker'], ret)
+	else:
+		for i in ['Price', 'Description', 'ProfitMargin', '52WeekHigh', '52WeekLow', '50DayMovingAverage',
+				  '200DayMovingAverage']:
+			ret[i] = 'N/A'
+	#print(ret)
+	return ret
 
 
 if __name__ == "__main__":
@@ -94,7 +142,10 @@ if __name__ == "__main__":
 	QA_answers = "<br><br>".join([f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers])
 
 	extracted_data = extract_data(company_id, start_year, end_year)
+	#glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])
+	glassdoor_extract = {'Mission': 'N/A', 'Website': 'www.softwire.com', 'Industry': 'Software Development', 'Headquarters': 'London, United Kingdom', 'Size': '201 to 500 Employees', 'Founded': '2000', 'Recommended to Friends': '99', 'Approve of CEO': '100', 'Overall Rating': '4.8', 'CEO': 'Andrew Thomas', 'Company Type': 'Company - Private', 'Ticker': 'N/A', 'Culture & Values Rating': 'N/A', 'Diversity & Inclusion Rating': 'N/A', 'Work/Life Balance Rating': 'N/A', 'Senior Management Rating': 'N/A', 'Compensation & Benefits Rating': 'N/A', 'Career Opportunities Rating': 'N/A', 'Revenue': '$25 to $100 million (USD)', 'Price': 'N/A', 'Description': 'N/A', 'ProfitMargin': 'N/A', '52WeekHigh': 'N/A', '52WeekLow': 'N/A', '50DayMovingAverage': 'N/A', '200DayMovingAverage': 'N/A'}
 
 	summary = overall_summary(extracted_data["data"])
 	img_paths = generate_bar_graph(extracted_data["data"], company_id, show_graph=False)
-	html_write("test.html", extracted_data["name"], CEO_summary, QA_answers, img_paths, summary)
+	html_write("test.html", extracted_data["name"], CEO_summary, QA_answers, img_paths, summary,
+			   glassdoor_extract)

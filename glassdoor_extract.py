@@ -197,3 +197,30 @@ def financeScrape(ticker, ret):
         #if i == 'EARNINGS':
         #   ret['Annual Earnings'] = data["annualEarnings"]
         # API only allows 5 calls per minute, so may have to get a new key or request for more access
+
+if __name__ == "__main__":
+    companyName = "Softwire"
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option("prefs",
+                                           {"profile.default_content_setting_values.cookies": 2})  # disables cookies
+
+    # This line prevents the pop-up
+    #chrome_options.add_argument("--headless")
+   # chrome_options.add_argument('--ignore-certificate-errors')
+    #chrome_options.add_argument('--incognito')
+
+    driver = webdriver.Chrome(options=chrome_options)
+
+    ret = dict()
+
+    glassdoorScrape(driver, companyName, ret)
+
+    if ret['Ticker'] != 'N/A':
+        financeScrape(ret['Ticker'], ret)
+    else:
+        for i in ['Price', 'Description', 'ProfitMargin', '52WeekHigh', '52WeekLow', '50DayMovingAverage',
+                  '200DayMovingAverage']:
+            ret[i] = 'N/A'
+    print(ret)
