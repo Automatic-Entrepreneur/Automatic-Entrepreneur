@@ -112,7 +112,7 @@ def glassdoor_info(companyName):
 	chrome_options.add_experimental_option("prefs",
 										   {"profile.default_content_setting_values.cookies": 2})  # disables cookies
 	# This line prevents the pop-up
-	# chrome_options.add_argument("--headless") - WHY DOES THIS NOT WORK ANYMORE :(
+	#chrome_options.add_argument("--headless") #- WHY DOES THIS NOT WORK ANYMORE :(
 	chrome_options.add_argument('--ignore-certificate-errors')
 	chrome_options.add_argument('--incognito')
 
@@ -142,8 +142,8 @@ if __name__ == "__main__":
 	QA_answers = "<br><br>".join([f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers])
 
 	extracted_data = extract_data(company_id, start_year, end_year)
-	#glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])
-	glassdoor_extract = {'Mission': 'N/A', 'Website': 'www.softwire.com', 'Industry': 'Software Development', 'Headquarters': 'London, United Kingdom', 'Size': '201 to 500 Employees', 'Founded': '2000', 'Recommended to Friends': '99', 'Approve of CEO': '100', 'Overall Rating': '4.8', 'CEO': 'Andrew Thomas', 'Company Type': 'Company - Private', 'Ticker': 'N/A', 'Culture & Values Rating': 'N/A', 'Diversity & Inclusion Rating': 'N/A', 'Work/Life Balance Rating': 'N/A', 'Senior Management Rating': 'N/A', 'Compensation & Benefits Rating': 'N/A', 'Career Opportunities Rating': 'N/A', 'Revenue': '$25 to $100 million (USD)', 'Price': 'N/A', 'Description': 'N/A', 'ProfitMargin': 'N/A', '52WeekHigh': 'N/A', '52WeekLow': 'N/A', '50DayMovingAverage': 'N/A', '200DayMovingAverage': 'N/A'}
+	glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])
+	#glassdoor_extract = {'Mission': 'N/A', 'Website': 'www.softwire.com', 'Industry': 'Software Development', 'Headquarters': 'London, United Kingdom', 'Size': '201 to 500 Employees', 'Founded': '2000', 'Recommended to Friends': '99', 'Approve of CEO': '100', 'Overall Rating': '4.8', 'CEO': 'Andrew Thomas', 'Company Type': 'Company - Private', 'Ticker': 'N/A', 'Culture & Values Rating': 'N/A', 'Diversity & Inclusion Rating': 'N/A', 'Work/Life Balance Rating': 'N/A', 'Senior Management Rating': 'N/A', 'Compensation & Benefits Rating': 'N/A', 'Career Opportunities Rating': 'N/A', 'Revenue': '$25 to $100 million (USD)', 'Price': 'N/A', 'Description': 'N/A', 'ProfitMargin': 'N/A', '52WeekHigh': 'N/A', '52WeekLow': 'N/A', '50DayMovingAverage': 'N/A', '200DayMovingAverage': 'N/A'}
 
 	summary = overall_summary(extracted_data["data"])
 	img_paths = generate_bar_graph(extracted_data["data"], company_id, show_graph=False)
