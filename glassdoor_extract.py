@@ -83,124 +83,122 @@ def getElements(driver, companyName, ret):
     try:
         ret['Company'] = driver.find_element(By.XPATH,'.//span[@id="DivisionsDropdownComponent"]').text
         #print('got company')
-    except:
-        print('error')
-        #driver.refresh()
-        sleep(5)
-        glassdoorScrape(driver, companyName, ret)
-        
-    # Get Company Mission
-    try:
-        for i in soup.find(attrs={"data-test": "employerMission"}):
-            ret['Mission'] = i
-            break
-    except:
-        ret['Mission'] = 'N/A'
-
-    # Get Company Website
-    try:
-        for i in soup.find(attrs={"data-test": "employer-website"}):
-            ret['Website'] = i
-    except:
-        ret['Website'] = 'N/A'
-
-    # Get Company Industry
-    try:
-        for i in soup.find(attrs={"data-test": "employer-industry"}):
-            ret['Industry'] = i
-    except:
-        ret['Industry'] = 'N/A'
-    #print(ret['Industry'])
-
-    # Get Company Headquarters
-    try:
-        for i in soup.find(attrs={"data-test": "employer-headquarters"}):
-            ret['Headquarters'] = i
-    except:
-        ret['Headquarters'] = 'N/A'
-
-    # Get Company Size
-    try:
-        for i in soup.find(attrs={"data-test": "employer-size"}):
-            ret['Size'] = i
-    except:
-        ret['Size'] = 'N/A'
-
-    # Get Company Founded
-    try:
-        for i in soup.find(attrs={"data-test": "employer-founded"}):
-            found = i
-    except:
-        found = 'N/A'
-
-    # Get Company Revenue
-    try:
-        for i in soup.find(attrs={"data-test": "employer-revenue"}):
-            rev = i
-        if not(rev[1].isnumeric()):
-            rev = 'N/A'
-    except:
-        rev = 'N/A'
-
-    # Get the recommended percentage
-    try:
-        ret['Recommended to Friends'] = driver.find_elements(By.CLASS_NAME,'textVal')[0].text
-    except:
-        ret['Recommended to Friends'] = 'N/A'
-
-    # Get CEO approval percentage
-    try:
-        ret['Approve of CEO'] = driver.find_elements(By.CLASS_NAME, 'textVal')[1].text
-    except:
-        ret['Approve of CEO'] = 'N/A'
-
-    # Get Rating out of 5
-    try:
-        ret['Overall Rating'] = driver.find_element(By.XPATH,'.//div[@class="mr-xsm css-1c86vvj eky1qiu0"]').text
-    except:
-        ret['Overall Rating'] = 'N/A'
-
-    # Get Diversity Rating
-    try:
-        for i in soup.find(attrs={"data-test": "reviewScoreNumber"}):
-            ret['Diversity & Inclusion Rating'] = i
-    except:
-        ret['Diversity & Inclusion Rating'] = 'N/A'
-
-    # Get CEO
-    try:
-        ceo = driver.find_element(By.XPATH, './/div[@class="d-lg-table-cell ceoName pt-sm pt-lg-0 px-lg-sm css-dwl48b css-1cnqmgc"]').text
-        i = 0
-        while i < len(ceo):
-            if ceo[i].isnumeric():
-                ceo = ceo[0:i]
-                break
-            else:
-                i += 1
-        ret['CEO'] = ceo.strip()
-    except:
-        ret['CEO'] = 'N/A'
-    # Need to strip numbers at the end
-
-    # Get Company Type
-    try:
-        for i in soup.find(attrs={"data-test": "employer-type"}):
-            ret['Company Type'] = i
-        if 'Public' in ret['Company Type']:
-            dashInd = ret['Company Type'].index('-')
-            ret['Ticker'] = ret['Company Type'][dashInd + 10:-1]
-        else:
-            ret['Ticker'] = 'N/A'
-    except:
-        ret['Company Type'] = 'N/A'
-        ret['Ticker'] = 'N/A'
-    sleep(5)
     
-    getPopupElements(driver, ret)
-  
-    #ret['Company'] = company
-    ret['Founded'] = found
-    ret['Revenue'] = rev
+        
+        # Get Company Mission
+        try:
+            for i in soup.find(attrs={"data-test": "employerMission"}):
+                ret['Mission'] = i
+                break
+        except:
+            ret['Mission'] = 'N/A'
+
+        # Get Company Website
+        try:
+            for i in soup.find(attrs={"data-test": "employer-website"}):
+                ret['Website'] = i
+        except:
+            ret['Website'] = 'N/A'
+
+        # Get Company Industry
+        try:
+            for i in soup.find(attrs={"data-test": "employer-industry"}):
+                ret['Industry'] = i
+        except:
+            ret['Industry'] = 'N/A'
+        #print(ret['Industry'])
+
+        # Get Company Headquarters
+        try:
+            for i in soup.find(attrs={"data-test": "employer-headquarters"}):
+                ret['Headquarters'] = i
+        except:
+            ret['Headquarters'] = 'N/A'
+
+        # Get Company Size
+        try:
+            for i in soup.find(attrs={"data-test": "employer-size"}):
+                ret['Size'] = i
+        except:
+            ret['Size'] = 'N/A'
+
+        # Get Company Founded
+        try:
+            for i in soup.find(attrs={"data-test": "employer-founded"}):
+                found = i
+        except:
+            found = 'N/A'
+
+        # Get Company Revenue
+        try:
+            for i in soup.find(attrs={"data-test": "employer-revenue"}):
+                rev = i
+            if not(rev[1].isnumeric()):
+                rev = 'N/A'
+        except:
+            rev = 'N/A'
+
+        # Get the recommended percentage
+        try:
+            ret['Recommended to Friends'] = driver.find_elements(By.CLASS_NAME,'textVal')[0].text
+        except:
+            ret['Recommended to Friends'] = 'N/A'
+
+        # Get CEO approval percentage
+        try:
+            ret['Approve of CEO'] = driver.find_elements(By.CLASS_NAME, 'textVal')[1].text
+        except:
+            ret['Approve of CEO'] = 'N/A'
+
+        # Get Rating out of 5
+        try:
+            ret['Overall Rating'] = driver.find_element(By.XPATH,'.//div[@class="mr-xsm css-1c86vvj eky1qiu0"]').text
+        except:
+            ret['Overall Rating'] = 'N/A'
+
+        # Get Diversity Rating
+        try:
+            for i in soup.find(attrs={"data-test": "reviewScoreNumber"}):
+                ret['Diversity & Inclusion Rating'] = i
+        except:
+            ret['Diversity & Inclusion Rating'] = 'N/A'
+
+        # Get CEO
+        try:
+            ceo = driver.find_element(By.XPATH, './/div[@class="d-lg-table-cell ceoName pt-sm pt-lg-0 px-lg-sm css-dwl48b css-1cnqmgc"]').text
+            i = 0
+            while i < len(ceo):
+                if ceo[i].isnumeric():
+                    ceo = ceo[0:i]
+                    break
+                else:
+                    i += 1
+            ret['CEO'] = ceo.strip()
+        except:
+            ret['CEO'] = 'N/A'
+        # Need to strip numbers at the end
+
+        # Get Company Type
+        try:
+            for i in soup.find(attrs={"data-test": "employer-type"}):
+                ret['Company Type'] = i
+            if 'Public' in ret['Company Type']:
+                dashInd = ret['Company Type'].index('-')
+                ret['Ticker'] = ret['Company Type'][dashInd + 10:-1]
+            else:
+                ret['Ticker'] = 'N/A'
+        except:
+            ret['Company Type'] = 'N/A'
+            ret['Ticker'] = 'N/A'
+        sleep(5)
+        
+        getPopupElements(driver, ret)
+    
+        #ret['Company'] = company
+        ret['Founded'] = found
+        ret['Revenue'] = rev
+    except:
+        print('Glassdoor Scrape Failure')
 
 def financeScrape(ticker, ret):
     key = 'O8YBYOA6EAO0EANF'

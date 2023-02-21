@@ -31,11 +31,13 @@ def get_CEO(companyName):
         driver = webdriver.Chrome(options=chrome_options)
 
         ret = dict()
+        try:
+            glassdoorScrape(driver, companyName, ret)
 
-        glassdoorScrape(driver, companyName, ret)
-
-        if ret['Ticker'] != 'N/A':
-            financeScrape(ret['Ticker'], ret)
+            if ret['Ticker'] != 'N/A':
+                financeScrape(ret['Ticker'], ret)
+        except:
+             print('Please Try Again')
         
         return ret['CEO']
 
