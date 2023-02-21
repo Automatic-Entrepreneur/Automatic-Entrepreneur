@@ -12,22 +12,88 @@ import requests
 
 def glassdoorScrape(driver, companyName, ret):
     # scraping glassdoor
-
-    url = 'https://www.glassdoor.com/Search/results.htm?keyword=' + companyName
-
+    
+    url = 'https://www.glassdoor.com/Search/results.htm?keyword='+companyName
+    
     driver.get(url)
-    element = driver.find_element(By.XPATH, "//a[contains(@href, '/Overview/')]")
-
-    # click on the first instance
+    #print('got url')
+    element = driver.find_element(By.XPATH, ".//a[contains(@href, '/Overview/')]")
+    #print('got overview')
+    #click on the first instance
     driver.execute_script("arguments[0].click();", element)
+    #print('clicked first')
+    #html = driver.page_source
+    #file = open("boo.html","w")
+    #file.write(html)
+    #file.close()
+    #for i in range(3): 
+    #        sleep(1)
+    #        driver.refresh()
+    getElements(driver, companyName, ret)
+    
+def getPopupElements(driver, ret):
+    try:
+        #for i in range(3): 
+        #    sleep(2)
+        #    driver.refresh()
+    
+        #driver.find_element(By.XPATH, './/div[@class="css-aztz7y eky1qiu1"]').click()
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, './/div[@class="css-aztz7y eky1qiu1"]'))).click()
+        sleep(3)
+        soup = bs(driver.page_source, 'html.parser')
+        # Get Extra Ratings
+        for cat in ["cultureAndValues", "diversityAndInclusion", "workLife", "seniorManagement", "compAndBenefits", "careerOpportunities"]:
+            for i in soup.find(attrs={"data-category":cat}):
+                x = str(i)
+                x = x[-15:-12]
+                j = 0
+                while j < len(x):
+                    if (not(x[j].isnumeric())):
+                        j += 1
+                    elif j == 2:
+                        x = x[j:]
+                        break
+                    else:
+                        break
+                #print(i)
+                if cat == "cultureAndValues":
+                    ret['Culture & Values Rating'] = x
+                #elif cat == "diversityAndInclusion":
+                    #ret['Diversity & Inclusion Rating'] = x
+                elif cat == "workLife":
+                    ret['Work/Life Balance Rating'] = x
+                elif cat == "seniorManagement":
+                    ret['Senior Management Rating'] = x
+                elif cat == "compAndBenefits":
+                    ret['Compensation & Benefits Rating'] = x
+                elif cat == "careerOpportunities":
+                    ret['Career Opportunities Rating'] = x
+    except:
+        ret['Culture & Values Rating'] = 'N/A'
+        #ret['Diversity & Inclusion Rating'] = 'N/A'
+        ret['Work/Life Balance Rating'] = 'N/A'
+        ret['Senior Management Rating'] = 'N/A'
+        ret['Compensation & Benefits Rating'] = 'N/A'
+        ret['Career Opportunities Rating'] = 'N/A'
 
+def getElements(driver, companyName, ret):
     soup = bs(driver.page_source, 'html.parser')
-
+    #print('got soup')
+    # Get Company Name
+    try:
+        ret['Company'] = driver.find_element(By.XPATH,'.//span[@id="DivisionsDropdownComponent"]').text
+        #print('got company')
+    except:
+        print('error')
+        #driver.refresh()
+        sleep(5)
+        glassdoorScrape(driver, companyName, ret)
+        
     # Get Company Mission
     try:
         for i in soup.find(attrs={"data-test": "employerMission"}):
             ret['Mission'] = i
-
+            break
     except:
         ret['Mission'] = 'N/A'
 
@@ -44,6 +110,7 @@ def glassdoorScrape(driver, companyName, ret):
             ret['Industry'] = i
     except:
         ret['Industry'] = 'N/A'
+    #print(ret['Industry'])
 
     # Get Company Headquarters
     try:
@@ -62,22 +129,22 @@ def glassdoorScrape(driver, companyName, ret):
     # Get Company Founded
     try:
         for i in soup.find(attrs={"data-test": "employer-founded"}):
-            ret['Founded'] = i
+            found = i
     except:
-        ret['Founded'] = 'N/A'
+        found = 'N/A'
 
     # Get Company Revenue
     try:
         for i in soup.find(attrs={"data-test": "employer-revenue"}):
             rev = i
-        if not (rev[1].isnumeric()):
+        if not(rev[1].isnumeric()):
             rev = 'N/A'
     except:
         rev = 'N/A'
 
     # Get the recommended percentage
     try:
-        ret['Recommended to Friends'] = driver.find_elements(By.CLASS_NAME, 'textVal')[0].text
+        ret['Recommended to Friends'] = driver.find_elements(By.CLASS_NAME,'textVal')[0].text
     except:
         ret['Recommended to Friends'] = 'N/A'
 
@@ -89,14 +156,20 @@ def glassdoorScrape(driver, companyName, ret):
 
     # Get Rating out of 5
     try:
-        ret['Overall Rating'] = driver.find_element(By.XPATH, './/div[@class="mr-xsm css-1c86vvj eky1qiu0"]').text
+        ret['Overall Rating'] = driver.find_element(By.XPATH,'.//div[@class="mr-xsm css-1c86vvj eky1qiu0"]').text
     except:
         ret['Overall Rating'] = 'N/A'
 
+    # Get Diversity Rating
+    try:
+        for i in soup.find(attrs={"data-test": "reviewScoreNumber"}):
+            ret['Diversity & Inclusion Rating'] = i
+    except:
+        ret['Diversity & Inclusion Rating'] = 'N/A'
+
     # Get CEO
     try:
-        ceo = driver.find_element(By.XPATH,
-                                  './/div[@class="d-lg-table-cell ceoName pt-sm pt-lg-0 px-lg-sm css-dwl48b css-1cnqmgc"]').text
+        ceo = driver.find_element(By.XPATH, './/div[@class="d-lg-table-cell ceoName pt-sm pt-lg-0 px-lg-sm css-dwl48b css-1cnqmgc"]').text
         i = 0
         while i < len(ceo):
             if ceo[i].isnumeric():
@@ -121,79 +194,39 @@ def glassdoorScrape(driver, companyName, ret):
     except:
         ret['Company Type'] = 'N/A'
         ret['Ticker'] = 'N/A'
+    sleep(5)
     
-    sleep(1)
-    # Getting more ratings
-    try:
-        for i in range(3):
-            sleep(2)
-            driver.refresh()
-
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, './/div[@class="css-aztz7y eky1qiu1"]'))).click()
-        sleep(3)
-        soup = bs(driver.page_source, 'html.parser')
-        # Get Extra Ratings
-        for cat in ["cultureAndValues", "diversityAndInclusion", "workLife", "seniorManagement", "compAndBenefits", "careerOpportunities"]:
-            for i in soup.find(attrs={"data-category":cat}):
-                x = str(i)
-                x = x[-15:-12]
-                j = 0
-                while j < len(x):
-                    if (not(x[j].isnumeric())):
-                        j += 1
-                    elif j == 2:
-                        x = x[j:]
-                        break
-                    else:
-                        break
-                #print(i)
-                if cat == "cultureAndValues":
-                    ret['Culture & Values Rating'] = x
-                elif cat == "diversityAndInclusion":
-                    ret['Diversity & Inclusion Rating'] = x
-                elif cat == "workLife":
-                    ret['Work/Life Balance Rating'] = x
-                elif cat == "seniorManagement":
-                    ret['Senior Management Rating'] = x
-                elif cat == "compAndBenefits":
-                    ret['Compensation & Benefits Rating'] = x
-                elif cat == "careerOpportunities":
-                    ret['Career Opportunities Rating'] = x
-
-    except:
-        ret['Culture & Values Rating'] = 'N/A'
-        ret['Diversity & Inclusion Rating'] = 'N/A'
-        ret['Work/Life Balance Rating'] = 'N/A'
-        ret['Senior Management Rating'] = 'N/A'
-        ret['Compensation & Benefits Rating'] = 'N/A'
-        ret['Career Opportunities Rating'] = 'N/A'
-
-    # ret['Company'] = company
+    getPopupElements(driver, ret)
+  
+    #ret['Company'] = company
+    ret['Founded'] = found
     ret['Revenue'] = rev
-
 
 def financeScrape(ticker, ret):
     key = 'O8YBYOA6EAO0EANF'
 
-    for i in ['GLOBAL_QUOTE', 'OVERVIEW', 'BALANCE_SHEET', 'INCOME_STATEMENT', 'CASH_FLOW', 'EARNINGS']:
-        url = 'https://www.alphavantage.co/query?function=' + i + '&symbol=' + ticker + '&apikey=' + key
+    for i in ['GLOBAL_QUOTE', 'OVERVIEW', 'BALANCE_SHEET', 'INCOME_STATEMENT', 'CASH_FLOW', 'EARNINGS', 'TIME_SERIES_MONTHLY']:
+        url = 'https://www.alphavantage.co/query?function='+i+'&symbol='+ticker+'&apikey='+key
         r = requests.get(url)
         data = json.loads(r.text)
-        # data = r.json()
+        #data = r.json()
         if i == 'GLOBAL_QUOTE':
             quote = data['Global Quote']
             ret['Price'] = quote['05. price']
             ret['Trade Volume (Day)'] = quote['06. volume']
             ret['Change Percentage (Day)'] = quote['10. change percent']
+            print('Stock Price: ', ret['Price'])
         if i == 'OVERVIEW':
             for k, v in data.items():
                 ret[k] = v
+            print(ret['Symbol'])
         if i == 'BALANCE_SHEET':
             ret['Balance Sheet'] = data["annualReports"]
         if i == 'INCOME_STATEMENT':
             ret['Income Statement'] = data["annualReports"]
         if i == 'CASH_FLOW':
             ret['Cash Flow'] = data["annualReports"]
-        #if i == 'EARNINGS':
-        #   ret['Annual Earnings'] = data["annualEarnings"]
-        # API only allows 5 calls per minute, so may have to get a new key or request for more access
+        if i == 'EARNINGS':
+           ret['Annual Earnings'] = data["annualEarnings"]
+        if i == 'TIME_SERIES_MONTHLY':
+            ret['Monthly Time Series'] = data['Monthly Time Series']

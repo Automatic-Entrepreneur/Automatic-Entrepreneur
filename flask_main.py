@@ -10,11 +10,17 @@ def get_(companyName):
     return companySearch.search(companyName)[0]['company_number']
 
 def get_CEO(companyName):
+        header = Headers(
+        browser="chrome",  # Generate only Chrome UA
+        os="win",  # Generate only Windows platform
+        headers=False # generate misc headers
+        )
+        customUserAgent = header.generate()['User-Agent']
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("useAutomationExtension", False)
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2}) #disables cookies
-
+        chrome_options.add_argument(f"user-agent={customUserAgent}")
 
         #This line prevents the pop-up
         chrome_options.add_argument("--headless")
@@ -29,9 +35,7 @@ def get_CEO(companyName):
 
         if ret['Ticker'] != 'N/A':
             financeScrape(ret['Ticker'], ret)
-        else:
-            for i in ['Price', 'Description', 'ProfitMargin', '52WeekHigh', '52WeekLow', '50DayMovingAverage', '200DayMovingAverage']:
-                ret[i] = 'N/A'
+        
         return ret['CEO']
 
 @app.route('/', methods =["GET", "POST"])
