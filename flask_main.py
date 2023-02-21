@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from fake_headers import Headers
 from selenium import webdriver
 from glassdoor_extract import glassdoorScrape, financeScrape
 from CompaniesHouse.CompanySearch import CompanySearch
