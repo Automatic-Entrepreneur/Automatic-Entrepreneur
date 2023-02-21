@@ -142,7 +142,7 @@ if __name__ == "__main__":
 	start_year = 2010
 	end_year = 2023
 
-	NO_TORCH = False
+	NO_TORCH = True
 
 	extracted_data = extract_data(company_id, start_year, end_year)
 
