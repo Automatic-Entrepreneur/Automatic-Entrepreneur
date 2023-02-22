@@ -75,7 +75,7 @@ def html_write(
 ) -> None:
 	with open(filename, "w") as html:
 		html.write(
-			f"<html>\n<head>\n<title>{company_name} Summary</title>\n<style>.only-print " \
+			f"<!doctype html><html>\n<head>\n<meta charset='UTF-8'>\n<title>{company_name} Summary</title>\n<style>.only-print " \
 			 "{margin-right:250px;margin-left:250px;}@media print {.only-print {margin-r" \
 			 "ight:0px;margin-left:0px;}}</style>\n</head>\n<body class='only-print' >\n"
 		)
@@ -156,5 +156,4 @@ if __name__ == "__main__":
 
 	summary = overall_summary(extracted_data["data"])
 	img_paths = generate_bar_graph(extracted_data["data"], company_id, show_graph=False)
-	html_write("test.html", extracted_data["name"], CEO_summary, QA_answers, img_paths, summary,
-			   glassdoor_extract)
+	html_write("test.html", extracted_data["name"], CEO_summary, QA_answers, img_paths, summary, glassdoor_extract)

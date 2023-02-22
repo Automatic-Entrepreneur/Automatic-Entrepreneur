@@ -1,5 +1,8 @@
 from data_util import attribute_map, extract_data
-from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
+try:
+    from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
+except:
+    pass
 import typing
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
@@ -13,7 +16,7 @@ def get_text(company_id: str) -> tuple[str, str]:
 def generate_summary(text: str, debug=False) -> str:
 
     if debug:
-        return "The directors present their annual report and financial statements for the year ended 31 December 2020. The principal activity of the company and group continued to be that of computer software development. Ordinary dividends were paid amounting to £2,377,000. The directors do not recommend payment of a further dividend. Taylor Associates were appointed auditor to the group. A resolution proposing that they be re-appointed will be put at a General Meeting."
+        return "The directors present their annual report and financial statements for the year ended 31 December 2020. The principal activity of the company and group continued to be that of computer software development. Ordinary dividends were paid amounting to GBP 2,377,000. The directors do not recommend payment of a further dividend. Taylor Associates were appointed auditor to the group. A resolution proposing that they be re-appointed will be put at a General Meeting."
 
     # TODO: maybe test https://huggingface.co/philschmid/flan-t5-base-samsum
     summarizer = pipeline('summarization', model="philschmid/flan-t5-base-samsum")
@@ -69,7 +72,7 @@ if __name__ == "__main__":
 
     The directors present their annual report and financial statements for the year ended 31
     December 2020. The principal activity of the company and group continued to be that of
-    computer software development. Ordinary dividends were paid amounting to £2,377,000. The
+    computer software development. Ordinary dividends were paid amounting to GBP 2,377,000. The
     directors do not recommend payment of a further dividend. Taylor Associates were appointed
     auditor to the group. A resolution proposing that they be re-appointed will be put at a
     General Meeting.

@@ -5,18 +5,11 @@ import os
 from data_util import extract_data
 from generate_graphs import generate_bar_graph
 from generate_summary import get_text, generate_summary, answer_question, questions
-from html_writer import html_write
+from html_writer import html_write, glassdoor_info
 from performance_summary import overall_summary
 
 
 def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) -> None:
-    '''
-    CEO_text, QA_text = get_text(company_id)
-    CEO_summary = generate_summary(CEO_text)
-    QA_answers = answer_question(QA_text, questions)
-    QA_answers = "<br><br>".join([f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers])
-    '''
-
     NO_TORCH = True
     CEO_text, QA_text = get_text(company_id)
     CEO_summary = generate_summary(CEO_text, NO_TORCH)
@@ -24,10 +17,11 @@ def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) 
     QA_answers = "<br><br>".join([f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers])
 
     extracted_data = extract_data(company_id, start_year, end_year)
+    glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])
 
     summary = overall_summary(extracted_data["data"])
     img_paths = generate_bar_graph(extracted_data["data"], "static/", company_id, show_graph=False)
-    html_write(f"templates/{company_id}.html", extracted_data["name"], CEO_summary, QA_answers, img_paths, summary)
+    html_write(f"templates/{company_id}.html", extracted_data["name"], CEO_summary, QA_answers, img_paths, summary, glassdoor_extract)
 
 
 app = Flask(__name__)
@@ -64,9 +58,9 @@ def generateReport():
 @app.get('/<company_number>')
 def showData(company_number):
     global err_404_refreshed
-    path_to_report = os.path.join(os.path.dirname(__file__), "reports/{}.html".format(company_number))
+    path_to_report = os.path.join(os.path.dirname(__file__), "templates/{}.html".format(company_number))
     if os.path.exists(path_to_report):
-        return render_template(path_to_report)
+        return render_template(f"{company_number}.html")
     err_404_refreshed = not err_404_refreshed
     if not err_404_refreshed:
         return redirect('/')

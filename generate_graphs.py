@@ -54,7 +54,7 @@ def generate_bar_graph(
 
             ax.set_ylim([0, max(extracted_data[attribute]["values"]) * 1.2])
             plt.savefig(f"{path}{company_id}_{attribute}.png", bbox_inches="tight")
-            output[attribute] = f"{company_id}_{attribute}.png"
+            output[attribute] = f"{path}{company_id}_{attribute}.png"
 
             if show_graph:
                 plt.show()
