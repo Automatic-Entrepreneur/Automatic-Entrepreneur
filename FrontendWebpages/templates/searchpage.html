@@ -47,5 +47,23 @@
         <button style="margin-bottom:3cm;" type="submit" class="btn btn-primary">Search</button>
     </div>
     </form>
+   <button style="margin-bottom:3cm;" id="reportBtn" class="btn btn-primary">Generate Report</button>
+   <script type="text/javascript">
+        function generateReport(companyName) {
+            $.ajax({
+                type: "POST",
+                url: "/report",
+                async: false,
+                data: { companyName: companyName },
+                success: function(response) {
+                    document.location.href = "/" + response
+                },
+            });
+        }
+
+        $("#reportBtn").click(function(){
+            generateReport($("#search").val());
+        });
+    </script>
 </body>
 </html>
