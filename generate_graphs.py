@@ -28,7 +28,7 @@ def generate_bar_graph(
 ) -> dict[str, str]:
     # print(extractedData)
 
-    plt.style.use('seaborn')
+    plt.style.use("seaborn")
 
     output = {}
     for attribute in extracted_data:

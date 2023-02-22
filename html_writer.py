@@ -7,20 +7,24 @@ from generate_summary import get_text, generate_summary, answer_question, get_qu
 
 from glassdoor_extract import *
 
+
 def p_write(html: TextIO, text: str) -> None:
 	html.write(f"<p>{text}</p>\n")
+
 
 def img_write(html: TextIO, img_path: str) -> None:
 	html.write(f"<img src={img_path} alt={img_path} width='500'>\n")
 
+
 def facts_write(html, glassdoor_extract):
-	elements = ['Industry', 'Size', 'Founded', 'Overall Rating', 'CEO']
+	elements = ["Industry", "Size", "Founded", "Overall Rating", "CEO"]
 	facts = [glassdoor_extract[e] for e in elements]
 	facts[2] = "Founded in " + facts[2]
 	facts[3] = "Glassdoor rating: " + facts[3]
 	facts[4] = "CEO: " + facts[4]
 
-	html.write(f'''<style>	.grid-container	{{
+	html.write(
+		f"""<style>	.grid-container	{{
 	display: grid;
 	grid-template-columns: auto auto auto auto auto;
 	padding: 0px;	}}
@@ -28,7 +32,8 @@ def facts_write(html, glassdoor_extract):
 	.grid-item	{{
 	padding: 10px;
 	text-align: center;
-	}}	</style>''')
+	}}	</style>"""
+	)
 
 	print(glassdoor_extract)
 	html.write('<div class="grid-container">')
@@ -36,9 +41,11 @@ def facts_write(html, glassdoor_extract):
 		html.write(f'<div class="grid-item">{fact}</div>')
 	html.write("</div>")
 
+
 def write_mission_statement(html, glassdoor_extract):
-	if glassdoor_extract['Mission'] != 'N/A':
-		p_write(html, glassdoor_extract['Mission'])
+	if glassdoor_extract["Mission"] != "N/A":
+		p_write(html, glassdoor_extract["Mission"])
+
 
 def body_write(
 		html: TextIO,
@@ -48,7 +55,7 @@ def body_write(
 		captions: dict[str, list[str]],
 ) -> None:
 	html.write(f"<h3>Report summary</h3>\n")
-	p_write(html, CEO_summary+"\n\n")
+	p_write(html, CEO_summary + "\n\n")
 	html.write(f"<h4>FAQ</h4>\n")
 	p_write(html, QA_answers)
 	html.write("<br>\n")
@@ -71,15 +78,18 @@ def html_write(
 		QA_answers: str,
 		image_paths: dict[str, str],
 		captions: dict[str, list[str]],
-		glassdoor_extract: dict[str, str]
+		glassdoor_extract: dict[str, str],
 ) -> None:
 	with open(filename, "w") as html:
 		html.write(
-			f"<!doctype html><html>\n<head>\n<meta charset='UTF-8'>\n<title>{company_name} Summary</title>\n<style>.only-print " \
-			 "{margin-right:250px;margin-left:250px;}@media print {.only-print {margin-r" \
-			 "ight:0px;margin-left:0px;}}</style>\n</head>\n<body class='only-print' >\n"
+			f"<!doctype html><html>\n<head>\n<meta charset='UTF-8'>\n"
+			f"<title>{company_name} Summary</title>\n"
+			f"<style>\n.only-print {{margin-right:250px;margin-left:250px;}}"
+			f"@media print {{.only-print {{margin-right:0px;margin-left:0px;}}}}</style>\n</head>\n"
+			f"<body class='only-print'>\n"
 		)
-		html.write(f'''<br style='line-height:0px'><h1 style='text-align:left;'>
+		html.write(
+			f"""<br style='line-height:0px'><h1 style='text-align:left;'>
 						{company_name} Summary
 						<span style='float:right;font-size:20px'>
 						<span style='color:#4285F4'>A</span>
@@ -105,11 +115,14 @@ def html_write(
 						<span style='color:#4285F4'>r</span>
 						</span>
 					</h1>
-					<hr>''')
+					<hr>"""
+		)
 		facts_write(html, glassdoor_extract)
 		write_mission_statement(html, glassdoor_extract)
 		body_write(html, CEO_summary, QA_answers, image_paths, captions)
-		html.write("<a href='javascript:if(window.print)window.print()'>create pdf</a>\n")
+		html.write(
+			"<a href='javascript:if(window.print)window.print()'>create pdf</a>\n"
+		)
 		html.write("</body>\n</html>")
 
 
@@ -117,23 +130,31 @@ def glassdoor_info(companyName):
 	chrome_options = webdriver.ChromeOptions()
 	chrome_options.add_experimental_option("useAutomationExtension", False)
 	chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-	chrome_options.add_experimental_option("prefs",
-										   {"profile.default_content_setting_values.cookies": 2})  # disables cookies
+	chrome_options.add_experimental_option(
+		"prefs", {"profile.default_content_setting_values.cookies": 2}
+	)  # disables cookies
 	# This line prevents the pop-up
-	#chrome_options.add_argument("--headless") #- WHY DOES THIS NOT WORK ANYMORE :(
-	chrome_options.add_argument('--ignore-certificate-errors')
-	chrome_options.add_argument('--incognito')
+	# chrome_options.add_argument("--headless") #- WHY DOES THIS NOT WORK ANYMORE :(
+	chrome_options.add_argument("--ignore-certificate-errors")
+	chrome_options.add_argument("--incognito")
 
 	driver = webdriver.Chrome(options=chrome_options)
 	ret = dict()
 	glassdoorScrape(driver, companyName, ret)
-	if ret['Ticker'] != 'N/A':
-		financeScrape(ret['Ticker'], ret)
+	if ret["Ticker"] != "N/A":
+		financeScrape(ret["Ticker"], ret)
 	else:
-		for i in ['Price', 'Description', 'ProfitMargin', '52WeekHigh', '52WeekLow', '50DayMovingAverage',
-				  '200DayMovingAverage']:
-			ret[i] = 'N/A'
-	#print(ret)
+		for i in [
+			"Price",
+			"Description",
+			"ProfitMargin",
+			"52WeekHigh",
+			"52WeekLow",
+			"50DayMovingAverage",
+			"200DayMovingAverage",
+		]:
+			ret[i] = "N/A"
+	# print(ret)
 	return ret
 
 
@@ -148,12 +169,24 @@ if __name__ == "__main__":
 
 	CEO_text, QA_text = get_text(company_id)
 	CEO_summary = generate_summary(CEO_text, NO_TORCH)
-	QA_answers = answer_question(QA_text, get_questions(extracted_data["name"]), NO_TORCH)
-	QA_answers = "<br><br>".join([f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers])
+	QA_answers = answer_question(
+		QA_text, get_questions(extracted_data["name"]), NO_TORCH
+	)
+	QA_answers = "<br><br>".join(
+		[f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers]
+	)
 
 	glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])
-	#glassdoor_extract = {'Mission': 'N/A', 'Website': 'www.softwire.com', 'Industry': 'Software Development', 'Headquarters': 'London, United Kingdom', 'Size': '201 to 500 Employees', 'Founded': '2000', 'Recommended to Friends': '99', 'Approve of CEO': '100', 'Overall Rating': '4.8', 'CEO': 'Andrew Thomas', 'Company Type': 'Company - Private', 'Ticker': 'N/A', 'Culture & Values Rating': 'N/A', 'Diversity & Inclusion Rating': 'N/A', 'Work/Life Balance Rating': 'N/A', 'Senior Management Rating': 'N/A', 'Compensation & Benefits Rating': 'N/A', 'Career Opportunities Rating': 'N/A', 'Revenue': '$25 to $100 million (USD)', 'Price': 'N/A', 'Description': 'N/A', 'ProfitMargin': 'N/A', '52WeekHigh': 'N/A', '52WeekLow': 'N/A', '50DayMovingAverage': 'N/A', '200DayMovingAverage': 'N/A'}
+	# glassdoor_extract = {'Mission': 'N/A', 'Website': 'www.softwire.com', 'Industry': 'Software Development', 'Headquarters': 'London, United Kingdom', 'Size': '201 to 500 Employees', 'Founded': '2000', 'Recommended to Friends': '99', 'Approve of CEO': '100', 'Overall Rating': '4.8', 'CEO': 'Andrew Thomas', 'Company Type': 'Company - Private', 'Ticker': 'N/A', 'Culture & Values Rating': 'N/A', 'Diversity & Inclusion Rating': 'N/A', 'Work/Life Balance Rating': 'N/A', 'Senior Management Rating': 'N/A', 'Compensation & Benefits Rating': 'N/A', 'Career Opportunities Rating': 'N/A', 'Revenue': '$25 to $100 million (USD)', 'Price': 'N/A', 'Description': 'N/A', 'ProfitMargin': 'N/A', '52WeekHigh': 'N/A', '52WeekLow': 'N/A', '50DayMovingAverage': 'N/A', '200DayMovingAverage': 'N/A'}
 
 	summary = overall_summary(extracted_data["data"])
 	img_paths = generate_bar_graph(extracted_data["data"], company_id, show_graph=False)
-	html_write("test.html", extracted_data["name"], CEO_summary, QA_answers, img_paths, summary, glassdoor_extract)
+	html_write(
+		"test.html",
+		extracted_data["name"],
+		CEO_summary,
+		QA_answers,
+		img_paths,
+		summary,
+		glassdoor_extract,
+	)
