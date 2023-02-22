@@ -22,6 +22,7 @@ test_data = {
 
 def generate_bar_graph(
         extracted_data: dict[str, dict[str, list[typing.Union[int, float]]]],
+        path: str,
         company_id: str,
         show_graph: bool = True,
 ) -> dict[str, str]:
@@ -52,7 +53,7 @@ def generate_bar_graph(
             )
 
             ax.set_ylim([0, max(extracted_data[attribute]["values"]) * 1.2])
-            plt.savefig(f"{company_id}_{attribute}.png", bbox_inches="tight")
+            plt.savefig(f"{path}{company_id}_{attribute}.png", bbox_inches="tight")
             output[attribute] = f"{company_id}_{attribute}.png"
 
             if show_graph:
@@ -67,4 +68,4 @@ if __name__ == "__main__":
     start_year = 2010
     end_year = 2023
     extracted_data = extract_data(company_id, start_year, end_year)["data"]
-    generate_bar_graph(extracted_data, company_id)
+    generate_bar_graph(extracted_data, "", company_id)
