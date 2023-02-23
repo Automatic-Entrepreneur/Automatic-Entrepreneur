@@ -94,7 +94,7 @@ def getElements(driver, ret):
     try:
         pic = driver.find_element(By.XPATH, ".//img[@alt=' Logo']")
         ret['Picture'] = pic.get_attribute('src')
-        print('image')
+        #print('image')
         
     except:
         try:
