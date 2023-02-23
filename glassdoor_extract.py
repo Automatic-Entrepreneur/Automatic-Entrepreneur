@@ -79,13 +79,29 @@ def getPopupElements(driver, ret):
 def getElements(driver, ret):
     soup = bs(driver.page_source, 'html.parser')
     #print('got soup')
+    
     # Get Company Name
     try:
         ret['Company'] = driver.find_element(By.XPATH,'.//span[@id="DivisionsDropdownComponent"]').text
-        #print('got company')
+        print('got company')
     except:
-        ret['Company'] = 'N/A'
+        try:
+            ret['Company'] = driver.find_element(By.XPATH,'.//h1[@class="employerName m-0"]').text
+        except:
+            ret['Company'] = 'N/A'
     
+    # Get Company Picture
+    try:
+        pic = driver.find_element(By.XPATH, ".//img[@alt=' Logo']")
+        ret['Picture'] = pic.get_attribute('src')
+        print('image')
+        
+    except:
+        try:
+            pic = driver.find_element(By.XPATH, ".//img[@alt='Logo']")
+            ret['Picture'] = pic.get_attribute('src')
+        except:
+            ret['Picture'] = 'N/A'
         
     # Get Company Mission
     try:
