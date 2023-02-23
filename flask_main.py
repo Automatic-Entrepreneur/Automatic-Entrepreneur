@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from fake_headers import Headers
 from selenium import webdriver
-from glassdoor_extract import glassdoorScrape, financeScrape
+from glassdoor_extract import glassdoorScrape, financeScrape, getSocials
 from CompaniesHouse.CompanySearch import CompanySearch
 
 app = Flask(__name__)
@@ -36,6 +36,9 @@ def get_CEO(companyName):
 
             if ret['Ticker'] != 'N/A':
                 financeScrape(ret['Ticker'], ret)
+
+            if ret['Website'] != 'N/A':
+                getSocials(driver, ret)
         except:
              print('Please Try Again')
         
