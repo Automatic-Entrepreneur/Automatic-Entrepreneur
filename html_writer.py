@@ -1,5 +1,5 @@
 from typing import TextIO
-
+from fake_headers import Headers
 from data_util import extract_data
 from generate_graphs import generate_bar_graph
 from performance_summary import overall_summary
@@ -127,33 +127,36 @@ def html_write(
 
 
 def glassdoor_info(companyName):
+	header = Headers(
+	browser="chrome",  # Generate only Chrome UA
+	os="win",  # Generate only Windows platform
+	headers=False # generate misc headers
+	)
+	customUserAgent = header.generate()['User-Agent']
 	chrome_options = webdriver.ChromeOptions()
 	chrome_options.add_experimental_option("useAutomationExtension", False)
 	chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-	chrome_options.add_experimental_option(
-		"prefs", {"profile.default_content_setting_values.cookies": 2}
-	)  # disables cookies
-	# This line prevents the pop-up
-	# chrome_options.add_argument("--headless") #- WHY DOES THIS NOT WORK ANYMORE :(
-	chrome_options.add_argument("--ignore-certificate-errors")
-	chrome_options.add_argument("--incognito")
+	chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2}) #disables cookies
+	chrome_options.add_argument(f"user-agent={customUserAgent}")
+
+	#This line prevents the pop-up
+	chrome_options.add_argument("--headless")
+	chrome_options.add_argument('--ignore-certificate-errors')
+	chrome_options.add_argument('--incognito')
 
 	driver = webdriver.Chrome(options=chrome_options)
+
 	ret = dict()
-	glassdoorScrape(driver, companyName, ret)
-	if ret["Ticker"] != "N/A":
-		financeScrape(ret["Ticker"], ret)
-	else:
-		for i in [
-			"Price",
-			"Description",
-			"ProfitMargin",
-			"52WeekHigh",
-			"52WeekLow",
-			"50DayMovingAverage",
-			"200DayMovingAverage",
-		]:
-			ret[i] = "N/A"
+	try:
+		glassdoorScrape(driver, companyName, ret)
+
+		if ret['Ticker'] != 'N/A':
+			financeScrape(ret['Ticker'], ret)
+
+		if ret['Website'] != 'N/A':
+			getSocials(driver, ret)
+	except:
+			print('Please Try Again')
 	# print(ret)
 	return ret
 
