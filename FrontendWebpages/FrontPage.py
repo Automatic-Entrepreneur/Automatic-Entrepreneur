@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
-from CompaniesHouse import CompanySearch
 import os
 
+from flask import Flask, render_template, request, redirect
+
+from CompaniesHouse import CompanySearch
 from data_util import extract_data
 from generate_graphs import generate_bar_graph
 from generate_summary import get_text, generate_summary, answer_question, questions
