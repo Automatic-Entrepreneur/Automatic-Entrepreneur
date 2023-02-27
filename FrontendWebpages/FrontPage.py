@@ -62,8 +62,9 @@ def generateReport():
         company_search = CompanySearch()
         results = company_search.search(request.form["companyName"])
         company_id = results[0]["company_number"]
-        generateHTML(company_id)
-        # print(company_id)
+        path_to_report = os.path.join(os.path.dirname(__file__), f"templates/{company_id}.html")
+        if not os.path.exists(path_to_report):
+            generateHTML(company_id)
         return company_id
         # return redirect(url_for("showData", company_number=company_id), code=302)
 
