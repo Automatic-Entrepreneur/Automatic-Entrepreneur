@@ -10,9 +10,12 @@ from performance_summary import overall_summary
 
 
 def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) -> None:
-    NO_TORCH = True
+    NO_TORCH = False
     CEO_text, QA_text = get_text(company_id)
-    CEO_summary = generate_summary(CEO_text, NO_TORCH)
+    try:
+        CEO_summary = generate_summary(CEO_text, NO_TORCH)
+    except:
+        NO_TORCH = True
     QA_answers = answer_question(QA_text, questions, NO_TORCH)
     QA_answers = "<br><br>".join(
         [f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers]
