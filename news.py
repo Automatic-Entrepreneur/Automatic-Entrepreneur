@@ -1,4 +1,7 @@
-from transformers import pipeline
+try:
+    from transformers import pipeline
+except:
+    pass
 from newsapi import NewsApiClient
 
 def get_news(company):
@@ -10,8 +13,11 @@ def get_news(company):
                                         sort_by='relevancy',
                                         page=2)
 
-    sentiment_pipeline = pipeline("sentiment-analysis")
-    sentiments = sentiment_pipeline([i["title"] for i in all_articles["articles"][:5]])
+    try:
+        sentiment_pipeline = pipeline("sentiment-analysis")
+        sentiments = sentiment_pipeline([i["title"] for i in all_articles["articles"][:5]])
+    except:
+        sentiments = []
 
     if len(sentiments) == 0:
       return f"could not find any mention of {company} in the news\n<br><br>\n"
@@ -20,6 +26,7 @@ def get_news(company):
          + i["source"]["Name"]+f": <a href={i['url']}>{i['title']}</a></b>  " \
          + f"(sentiment: {j['label']})\n" for i, j in zip(all_articles["articles"][:5],
            sentiments)]) + "\n<br>\n"
+
 
 if __name__ == "__main__":  
     print(get_news("Google"))
