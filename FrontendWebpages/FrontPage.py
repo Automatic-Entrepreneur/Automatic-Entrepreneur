@@ -14,14 +14,18 @@ def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) 
     CEO_text, QA_text = get_text(company_id)
     try:
         CEO_summary = generate_summary(CEO_text, False)
-        QA_answers = answer_question(QA_text, questions, False)
+        # QA_answers = answer_question(QA_text, questions, False)
     except:
         CEO_summary = generate_summary(CEO_text, True)
-        QA_answers = answer_question(QA_text, questions, True)
+        # QA_answers = answer_question(QA_text, questions, True)
 
+    """
     QA_answers = "<br><br>".join(
         [f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers]
     )
+    """
+
+    QA_answers = ""
 
     extracted_data = extract_data(company_id, start_year, end_year)
     glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])

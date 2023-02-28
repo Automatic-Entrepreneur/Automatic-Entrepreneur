@@ -57,8 +57,9 @@ def body_write(
 ) -> None:
 	html.write(f"<h3>Report summary</h3>\n")
 	p_write(html, CEO_summary + "\n\n")
-	html.write(f"<h4>FAQ</h4>\n")
-	p_write(html, QA_answers)
+	if QA_answers:
+		html.write(f"<h4>FAQ</h4>\n")
+		p_write(html, QA_answers)
 	html.write("<br>\n")
 	html.write("<br>\n")
 	for attribute in image_paths:
