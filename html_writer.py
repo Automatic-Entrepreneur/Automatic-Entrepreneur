@@ -4,6 +4,7 @@ from data_util import extract_data
 from generate_graphs import generate_bar_graph
 from performance_summary import overall_summary
 from generate_summary import get_text, generate_summary, answer_question, get_questions
+from news import get_news
 
 from glassdoor_extract import *
 
@@ -80,7 +81,7 @@ def html_write(
 		captions: dict[str, list[str]],
 		glassdoor_extract: dict[str, str],
 ) -> None:
-	with open(filename, "w") as html:
+	with open(filename, "w", encoding="utf-8") as html:
 		html.write(
 			f"<!doctype html><html>\n<head>\n<meta charset='UTF-8'>\n"
 			f"<title>{company_name} Summary</title>\n"
@@ -88,9 +89,12 @@ def html_write(
 			f"@media print {{.only-print {{margin-right:0px;margin-left:0px;}}}}</style>\n</head>\n"
 			f"<body class='only-print'>\n"
 		)
+		img = glassdoor_extract["Picture"]
+		link = glassdoor_extract["Website"]
 		html.write(
-			f"""<br style='line-height:0px'><h1 style='text-align:left;'>
-						{company_name} Summary
+			f"""<br style='line-height:0px'>
+						<h1 style='text-align:left;'>
+						<img src='{img}' target='{link}' style='height:60px;position:relative;top:20px'>   {company_name} Summary
 						<span style='float:right;font-size:20px'>
 						<span style='color:#4285F4'>A</span>
 						<span style='color:#DB4437'>u</span>
@@ -120,8 +124,15 @@ def html_write(
 		facts_write(html, glassdoor_extract)
 		write_mission_statement(html, glassdoor_extract)
 		body_write(html, CEO_summary, QA_answers, image_paths, captions)
+		try:
+			html.write(get_news(company_name)+"\n")
+		except:
+			pass
+		for i in ['Twitter','LinkedIn','Instagram','Facebook','YouTube']:
+			if i in glassdoor_extract.keys():
+				html.write(f"<a href={glassdoor_extract[i]}>{i}</a>; ")
 		html.write(
-			"<a href='javascript:if(window.print)window.print()'>create pdf</a>\n"
+			"<br><br><a href='javascript:if(window.print)window.print()'>create pdf</a>\n"
 		)
 		html.write("</body>\n</html>")
 

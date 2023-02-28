@@ -11,14 +11,15 @@ from performance_summary import overall_summary
 
 
 def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) -> None:
-    NO_TORCH = False
     CEO_text, QA_text = get_text(company_id)
     try:
-        CEO_summary = generate_summary(CEO_text, NO_TORCH)
+        print(1/0)  # TEMP
+        CEO_summary = generate_summary(CEO_text, False)
+        QA_answers = answer_question(QA_text, questions, False)
     except:
-        NO_TORCH = True
-        CEO_summary = generate_summary(CEO_text, NO_TORCH)
-    QA_answers = answer_question(QA_text, questions, NO_TORCH)
+        CEO_summary = generate_summary(CEO_text, True)
+        QA_answers = answer_question(QA_text, questions, True)
+
     QA_answers = "<br><br>".join(
         [f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers]
     )
@@ -31,7 +32,7 @@ def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) 
         extracted_data["data"], "static/", company_id, show_graph=False
     )
     html_write(
-        f"templates/{company_id}.html",
+        f"FrontendWebpages/templates/{company_id}.html",
         extracted_data["name"],
         CEO_summary,
         QA_answers,
@@ -44,7 +45,6 @@ def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) 
 app = Flask(__name__)
 
 err_404_refreshed = False
-
 
 @app.get("/")
 def getMainPage():

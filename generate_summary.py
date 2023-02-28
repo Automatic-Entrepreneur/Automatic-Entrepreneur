@@ -40,7 +40,7 @@ def answer_question(
     ans = model(q)
 
     return [
-        {"q": j, "a": i["answer"]} for j, i in zip(questions, ans) if i["score"] > 0.1
+        {"q": j, "a": i["answer"]} for j, i in zip(questions, ans) if i["score"] > 0.05
     ]
 
 
