@@ -19,6 +19,7 @@ def generate_summary(text: str, debug=False) -> str:
     if debug:
         return "The directors present their annual report and financial statements for the year ended 31 December 2020. The principal activity of the company and group continued to be that of computer software development. Ordinary dividends were paid amounting to GBP 2,377,000. The directors do not recommend payment of a further dividend. Taylor Associates were appointed auditor to the group. A resolution proposing that they be re-appointed will be put at a General Meeting."
     # TODO: maybe test https://huggingface.co/philschmid/flan-t5-base-samsum
+    print("Generating summary")
     summarizer = pipeline("summarization", model="philschmid/flan-t5-base-samsum")
     return summarizer(text, max_length=150, min_length=50, do_sample=False)[0][
         "summary_text"
@@ -38,7 +39,6 @@ def answer_question(
     q = {"question": questions, "context": [text] * len(questions)}
 
     ans = model(q)
-
     return [
         {"q": j, "a": i["answer"]} for j, i in zip(questions, ans) if i["score"] > 0.05
     ]

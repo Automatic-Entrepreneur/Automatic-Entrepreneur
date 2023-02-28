@@ -13,7 +13,6 @@ from performance_summary import overall_summary
 def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) -> None:
     CEO_text, QA_text = get_text(company_id)
     try:
-        print(1/0)  # TEMP
         CEO_summary = generate_summary(CEO_text, False)
         QA_answers = answer_question(QA_text, questions, False)
     except:
