@@ -29,7 +29,7 @@ def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) 
 
     summary = overall_summary(extracted_data["data"])
     img_paths = generate_bar_graph(
-        extracted_data["data"], "static/", company_id, show_graph=False
+        extracted_data["data"], "FrontendWebpages/static/", company_id, show_graph=False
     )
     html_write(
         f"FrontendWebpages/templates/{company_id}.html",
