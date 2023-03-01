@@ -52,7 +52,7 @@ class CompanyInfo:
         self.__accounts = None
         self.path = os.path.dirname(__file__)
 
-    def __fetchInfo(self):
+    def __fetch_info(self):
         """
         Function to reduce requests for information
         """
@@ -61,7 +61,7 @@ class CompanyInfo:
             response = requests.get(query, auth=(self.__key, ''))
             self.__info = json.JSONDecoder().decode(response.text)
 
-    def __fetchPeople(self):
+    def __fetch_people(self):
         """
         Function to reduce requests for information about people
         """
@@ -70,7 +70,7 @@ class CompanyInfo:
             response = requests.get(query, auth=(self.__key, ''))
             self.__people = json.JSONDecoder().decode(response.text)
 
-    def __fetchAccounts(self):
+    def __fetch_accounts(self):
         """
         Function to reduce requests for information about accounts
         """
@@ -79,23 +79,23 @@ class CompanyInfo:
             response = requests.get(query, auth=(self.__key, ''), headers={'category': 'accounts'}, params={'category': 'accounts'})
             self.__accounts = json.JSONDecoder().decode(response.text)['items']
 
-    def allInfo(self):
+    def all_info(self):
         """
         :return: "standard" information about the company
         :rtype: dict[str, any]
         """
-        self.__fetchInfo()
+        self.__fetch_info()
         return self.__info
 
-    def getName(self):
+    def get_name(self):
         """
         :return: the name of the company
         :rtype: str
         """
-        self.__fetchInfo()
+        self.__fetch_info()
         return self.__info['company_name']
 
-    def getOffice(self):
+    def get_office(self):
         """
         :return: A dictionary containing address of the company office.
         address_line_1: first line of address,
@@ -104,15 +104,15 @@ class CompanyInfo:
         postal_code: postcode
         :rtype: dict[str, str]
         """
-        self.__fetchInfo()
+        self.__fetch_info()
         return self.__info['registered_office_address']
 
-    def dateOfCreation(self):
+    def date_of_creation(self):
         """
         :return: The date the company was made in the form "yyyy-mm-dd"
         :rtype: str
         """
-        self.__fetchInfo()
+        self.__fetch_info()
         return self.__info['date_of_creation']
 
     def type(self):
@@ -120,23 +120,23 @@ class CompanyInfo:
         :return: the type of company
         :rtype: str
         """
-        self.__fetchInfo()
+        self.__fetch_info()
         return self.__info['type']
 
-    def currentDirectors(self):
+    def current_directors(self):
         """
         :return: list of "directors"
         :rtype: list[str]
         """
-        self.__fetchPeople()
+        self.__fetch_people()
         return [p['name'] for p in self.__people['items'] if p['officer_role'] == 'director' and 'resigned_on' not in p]
 
-    def currentSecretaries(self):
+    def current_secretaries(self):
         """
         :return: list of "secretaries"
         :rtype: list[str]
         """
-        self.__fetchPeople()
+        self.__fetch_people()
         return [p['name'] for p in self.__people['items'] if p['officer_role'] == 'secretary' and 'resigned_on' not in p]
 
     def getAccountHistory(self):
@@ -144,10 +144,10 @@ class CompanyInfo:
         :return: list of accounts filed by the company
         :rtype: dict[str, any]
         """
-        self.__fetchAccounts()
+        self.__fetch_accounts()
         return self.__accounts
 
-    def getAccountInformation(self, year, pdf_accept=True, pdf_time=10, pdf_pages=50):
+    def get_account_information(self, year, pdf_accept=True, pdf_time=10, pdf_pages=50):
         """
         This can be a VERY expensive function.
         It may have to transcribe dozens or even hundreds of pages of pdf.
@@ -166,7 +166,7 @@ class CompanyInfo:
         pkl_path = os.path.join(self.path, "companies_house/{}/{}/accounts_{}.pkl".format(self.__company_number, year, year))
         if os.path.exists(pkl_path):
             return pkl.load(open(pkl_path, 'rb'))
-        self.__fetchAccounts()
+        self.__fetch_accounts()
         files = sorted((f for f in self.__accounts if f['date'][:4] == str(year) and f['category'] == 'accounts'), key=lambda x: x['date'])
         if not files:
             return []
@@ -208,7 +208,7 @@ class CompanyInfo:
         pkl.dump(information, open(pkl_path, 'wb'))
         return information
 
-    def getLongText(self, year=None, pdf_accept=True, pdf_time=10, pdf_pages=50):
+    def get_long_text(self, year=None, pdf_accept=True, pdf_time=10, pdf_pages=50):
         """
         :param year: defaults to the most recent year!
         :param pdf_accept:
@@ -216,7 +216,7 @@ class CompanyInfo:
         :param pdf_pages:
         :return:
         """
-        self.__fetchAccounts()
+        self.__fetch_accounts()
         if not year:
             year = max(map(lambda x: int(x['date'][:4]), self.__accounts))
         dir_path = os.path.join(self.path, "companies_house/{}/{}".format(self.__company_number, year))
