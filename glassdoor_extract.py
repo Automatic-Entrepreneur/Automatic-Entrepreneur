@@ -114,7 +114,7 @@ def getElements(driver, ret):
     # Get Company Website
     try:
         for i in soup.find(attrs={"data-test": "employer-website"}):
-            ret['Website'] = i
+            ret['Website'] = 'https://'+i
     except:
         ret['Website'] = 'N/A'
 
