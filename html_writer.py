@@ -170,16 +170,15 @@ def glassdoor_info(company_name):
 	driver = webdriver.Chrome(options=chrome_options)
 
 	ret = dict()
-	try:
-		glassdoor_scrape(driver, company_name, ret)
+	
+	glassdoor_scrape(driver, company_name, ret)
 
-		if ret['Ticker'] != 'N/A':
-			finance_scrape(ret['Ticker'], ret)
+	ret['Ticker'] != 'N/A':
+		finance_scrape(ret['Ticker'], ret)
 
-		if ret['Website'] != 'N/A':
-			get_socials(driver, ret)
-	except:
-		print('Please Try Again')
+	
+	get_socials(driver, ret)
+	
 	return ret
 
 

@@ -284,6 +284,13 @@ def finance_scrape(ticker, ret):
 
 
 def get_socials(driver: WebDriver, ret: dict[str, any]) -> None:
+    if ret['Website'] == 'N/A':
+        ret['Twitter'] = 'N/A'
+        ret['LinkedIn'] = 'N/A'
+        ret['Instagram'] = 'N/A'
+        ret['Facebook'] = 'N/A'
+        ret['YouTube'] = 'N/A'
+        
     url = "https://" + str(ret["Website"])
     print(type(url))
     driver.get(url)
