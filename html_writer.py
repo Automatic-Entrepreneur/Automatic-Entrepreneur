@@ -173,7 +173,7 @@ def glassdoor_info(company_name):
 	
 	glassdoor_scrape(driver, company_name, ret)
 
-	ret['Ticker'] != 'N/A':
+	if ret['Ticker'] != 'N/A':
 		finance_scrape(ret['Ticker'], ret)
 
 	
