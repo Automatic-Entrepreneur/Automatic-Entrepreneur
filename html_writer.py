@@ -2,7 +2,7 @@ from typing import TextIO
 from fake_headers import Headers
 from data_util import extract_data
 from generate_graphs import generate_bar_graph
-from performance_summary import overall_summary
+from caption import overall_summary
 from generate_summary import get_text, generate_summary, answer_question, get_questions
 from news import get_news
 
@@ -171,13 +171,13 @@ def glassdoor_info(companyName):
 
 	ret = dict()
 	try:
-		glassdoorScrape(driver, companyName, ret)
+		glassdoor_scrape(driver, companyName, ret)
 
 		if ret['Ticker'] != 'N/A':
-			financeScrape(ret['Ticker'], ret)
+			finance_scrape(ret['Ticker'], ret)
 
 		if ret['Website'] != 'N/A':
-			getSocials(driver, ret)
+			get_socials(driver, ret)
 	except:
 		print('Please Try Again')
 	return ret
