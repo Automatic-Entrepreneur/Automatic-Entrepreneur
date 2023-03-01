@@ -17,6 +17,10 @@ input {
     background: #f1f1f1;
 }
 
+img {
+    padding : 20px;
+}
+
 /* Removes x next to the search */
 input[type=search]::-ms-clear {  display: none; width : 0; height: 0; }
 input[type=search]::-ms-reveal {  display: none; width : 0; height: 0; }
@@ -76,9 +80,11 @@ button{
     border-left: none;
     cursor: pointer;
 }
+
 html, body {
     height: 80%;
 }
+
 html {
     display: table;
     margin: auto;
@@ -100,4 +106,4 @@ button:active {
     color: gray;
     box-shadow: 0 5px #666;
     transform: translateY(4px);
-  }
+}

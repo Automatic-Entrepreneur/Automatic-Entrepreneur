@@ -175,6 +175,3 @@ def main():
         w = csv.writer(f)
         w.writerow(ret.keys())
         w.writerow(ret.values())
-        
-if __name__ == "__main__":
-    main()

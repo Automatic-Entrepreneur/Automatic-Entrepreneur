@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from fake_headers import Headers
 from selenium import webdriver
 from glassdoor_extract import glassdoorScrape, financeScrape, getSocials
-from CompaniesHouse.CompanySearch import CompanySearch
+from CompaniesHouse import CompanySearch
 
 app = Flask(__name__)
 
@@ -44,12 +44,12 @@ def get_CEO(companyName):
         
         return ret['CEO']
 
-@app.route('/', methods =["GET", "POST"])
-def index():
+@app.route('/', methods=["GET", "POST"])
+def indices():
     if request.method == "POST":
         companyName = request.form.get("title")
         return get_CEO(companyName)
-    return render_template("index.html") 
+    return render_template("index.html")
 
 if __name__=='__main__':
     app.run()

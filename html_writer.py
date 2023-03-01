@@ -126,12 +126,23 @@ def html_write(
 		write_mission_statement(html, glassdoor_extract)
 		body_write(html, CEO_summary, QA_answers, image_paths, captions)
 		try:
-			html.write(get_news(company_name)+"\n")
+			html.write(get_news(company_name) + "\n")
 		except:
 			pass
-		for i in ['Twitter','LinkedIn','Instagram','Facebook','YouTube']:
-			if i in glassdoor_extract.keys():
-				html.write(f"<a href={glassdoor_extract[i]}>{i}</a>; ")
+		social_image_links = [
+			"<center>",
+			*(
+				f"""<a target="_blank" href={glassdoor_extract[social]}>
+<img src=static/social_media_icons/{social}_icon.png alt={social} height="30" width="30">
+</a>
+
+"""
+				for social in ['Twitter', 'LinkedIn', 'Instagram', 'Facebook', 'YouTube']
+				if glassdoor_extract[social] != "N/A"
+			),
+			"</center>"]
+		if social_image_links:
+			html.writelines(social_image_links)
 		html.write(
 			"<br><br><a href='javascript:if(window.print)window.print()'>create pdf</a>\n"
 		)
@@ -140,18 +151,18 @@ def html_write(
 
 def glassdoor_info(companyName):
 	header = Headers(
-	browser="chrome",  # Generate only Chrome UA
-	os="win",  # Generate only Windows platform
-	headers=False # generate misc headers
+		browser="chrome",  # Generate only Chrome UA
+		os="win",  # Generate only Windows platform
+		headers=False  # generate misc headers
 	)
 	customUserAgent = header.generate()['User-Agent']
 	chrome_options = webdriver.ChromeOptions()
 	chrome_options.add_experimental_option("useAutomationExtension", False)
 	chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-	chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2}) #disables cookies
+	chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2})  # disables cookies
 	chrome_options.add_argument(f"user-agent={customUserAgent}")
 
-	#This line prevents the pop-up
+	# This line prevents the pop-up
 	chrome_options.add_argument("--headless")
 	chrome_options.add_argument('--ignore-certificate-errors')
 	chrome_options.add_argument('--incognito')
@@ -168,8 +179,7 @@ def glassdoor_info(companyName):
 		if ret['Website'] != 'N/A':
 			getSocials(driver, ret)
 	except:
-			print('Please Try Again')
-	# print(ret)
+		print('Please Try Again')
 	return ret
 
 
