@@ -10,7 +10,7 @@ from CompaniesHouse.CompanyInfo import CompanyInfo
 
 def get_text(company_id: str) -> tuple[str, str]:
     company = CompanyInfo(company_id)
-    text = company.getLongText(2021)
+    text = company.get_long_text(2021)
 
     return text[:2000], text
 
