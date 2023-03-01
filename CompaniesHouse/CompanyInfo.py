@@ -147,7 +147,7 @@ class CompanyInfo:
         self.__fetchAccounts()
         return self.__accounts
 
-    def getAccountInformation(self, year, pdf_accept=False, pdf_time=10, pdf_pages=50):
+    def getAccountInformation(self, year, pdf_accept=True, pdf_time=10, pdf_pages=50):
         """
         This can be a VERY expensive function.
         It may have to transcribe dozens or even hundreds of pages of pdf.
