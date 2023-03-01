@@ -7,16 +7,16 @@ from data_util import extract_data
 from generate_graphs import generate_bar_graph
 from generate_summary import get_text, generate_summary, answer_question, questions
 from html_writer import html_write, glassdoor_info
-from performance_summary import overall_summary
+from caption import overall_summary
 
 
-def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) -> None:
-    CEO_text, QA_text = get_text(company_id)
+def generate_html(company_id: str, start_year: int = 2010, end_year: int = 2023) -> None:
+    ceo_text, qa_text = get_text(company_id)
     try:
-        CEO_summary = generate_summary(CEO_text, False)
+        ceo_summary = generate_summary(ceo_text, False)
         # QA_answers = answer_question(QA_text, questions, False)
     except:
-        CEO_summary = generate_summary(CEO_text, True)
+        ceo_summary = generate_summary(ceo_text, True)
         # QA_answers = answer_question(QA_text, questions, True)
 
     """
@@ -25,7 +25,7 @@ def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) 
     )
     """
 
-    QA_answers = ""
+    qa_answers = ""
 
     extracted_data = extract_data(company_id, start_year, end_year)
     glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])
@@ -37,8 +37,8 @@ def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) 
     html_write(
         f"templates/{company_id}.html",
         extracted_data["name"],
-        CEO_summary,
-        QA_answers,
+        ceo_summary,
+        qa_answers,
         img_paths,
         summary,
         glassdoor_extract,
@@ -49,13 +49,14 @@ app = Flask(__name__)
 
 err_404_refreshed = False
 
+
 @app.get("/")
-def getMainPage():
+def get_main_page():
     return render_template("searchpage.html")
 
 
 @app.post("/")
-def searchCompanies():
+def search_companies():
     if request.form.get("title"):
         company_search = CompanySearch()
         results = company_search.search(request.form.get("title"))
@@ -65,20 +66,20 @@ def searchCompanies():
 
 
 @app.route("/report", methods=["GET", "POST"])
-def generateReport():
+def generate_report():
     if request.method == "POST":
         company_search = CompanySearch()
         results = company_search.search(request.form["companyName"])
         company_id = results[0]["company_number"]
         path_to_report = os.path.join(os.path.dirname(__file__), f"templates/{company_id}.html")
         if not os.path.exists(path_to_report):
-            generateHTML(company_id)
+            generate_html(company_id)
         return company_id
         # return redirect(url_for("showData", company_number=company_id), code=302)
 
 
 @app.get("/<company_number>")
-def showData(company_number):
+def show_data(company_number):
     global err_404_refreshed
     path_to_report = os.path.join(
         os.path.dirname(__file__), "templates/{}.html".format(company_number)
@@ -106,9 +107,9 @@ def not_found_4(str1, str2, str3, str4):
     return render_template("page_not_found_404.html")
 
 
-def openFrontPage():
+def open_front_page():
     app.run()
 
 
 if __name__ == "__main__":
-    openFrontPage()
+    open_front_page()
