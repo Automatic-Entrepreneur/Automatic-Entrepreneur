@@ -95,19 +95,13 @@ def show_data(company_number):
     return render_template("company_not_found_404.html", company_number=company_number)
 
 
-@app.get("/<str1>/<str2>")
-def not_found_2(str1, str2):
-    return render_template("page_not_found_404.html")
-
-
-@app.get("/<str1>/<str2>/<str3>")
-def not_found_3(str1, str2, str3):
-    return render_template("page_not_found_404.html")
-
-
-@app.get("/<str1>/<str2>/<str3>/<str4>")
-def not_found_4(str1, str2, str3, str4):
-    return render_template("page_not_found_404.html")
+@app.errorhandler(404)
+def page_not_found(e):
+    global err_404_refreshed
+    err_404_refreshed = not err_404_refreshed
+    if not err_404_refreshed:
+        return redirect("/")
+    return render_template('page_not_found_404.html'), 404
 
 
 def open_front_page():
