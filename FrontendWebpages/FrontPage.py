@@ -16,17 +16,16 @@ def generate_html(
     ceo_text, qa_text = get_text(company_id)
     try:
         ceo_summary = generate_summary(ceo_text, False)
-        # QA_answers = answer_question(QA_text, questions, False)
+        qa_answers = answer_question(qa_text, questions, False)
     except:
         ceo_summary = generate_summary(ceo_text, True)
-        # QA_answers = answer_question(QA_text, questions, True)
-    """
-    QA_answers = "<br><br>".join(
-        [f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers]
-    )
-    """
+        qa_answers = answer_question(qa_text, questions, True)
 
-    qa_answers = ""
+    qa_answers = "<br><br>".join(
+        [f"Question: {i['q']}<br>Answer: {i['a']}" for i in qa_answers]
+    )
+
+    # qa_answers = ""
 
     extracted_data = extract_data(company_id, start_year, end_year)
     glassdoor_extract = glassdoor_info(company_name=extracted_data["name"])
@@ -96,7 +95,7 @@ def show_data(company_number):
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found(_):
     global err_404_refreshed
     err_404_refreshed = not err_404_refreshed
     if not err_404_refreshed:
