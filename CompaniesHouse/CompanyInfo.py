@@ -139,7 +139,7 @@ class CompanyInfo:
         self.__fetch_people()
         return [p['name'] for p in self.__people['items'] if p['officer_role'] == 'secretary' and 'resigned_on' not in p]
 
-    def getAccountHistory(self):
+    def get_account_history(self):
         """
         :return: list of accounts filed by the company
         :rtype: dict[str, any]
