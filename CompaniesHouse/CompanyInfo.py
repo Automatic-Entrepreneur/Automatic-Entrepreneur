@@ -1,14 +1,15 @@
+import io
+import json
+import os
+import pickle as pkl
+import platform
 import time
 
-import CompaniesHouse.key
-import requests
-import json
 import pytesseract
-import os
-import platform
+import requests
 from ixbrlparse import IXBRL
-import pickle as pkl
-import io
+
+import CompaniesHouse.key
 from CompaniesHouse.ScannedReportReader import ScannedReportReader
 
 if platform.system() == "Darwin":
