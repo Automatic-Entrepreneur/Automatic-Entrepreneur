@@ -23,7 +23,7 @@ def get_news(company):
         sentiments = []
 
     if len(sentiments) == 0:
-      return f"could not find any mention of {company} in the news\n<br><br>\n"
+      return f"Could not find any mention of {company} in the news\n<br><br>\n"
 
     return f"<h2>{company} in the news</h2>\n\n"+"\n<hr>\n".join(["<b>" \
          + i["source"]["Name"]+f": <a href={i['url']}>{i['title']}</a></b>  " \
