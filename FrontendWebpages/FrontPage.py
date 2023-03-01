@@ -7,7 +7,7 @@ from data_util import extract_data
 from generate_graphs import generate_bar_graph
 from generate_summary import get_text, generate_summary, answer_question, questions
 from html_writer import html_write, glassdoor_info
-from performance_summary import overall_summary
+from caption import overall_summary
 
 
 def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) -> None:
