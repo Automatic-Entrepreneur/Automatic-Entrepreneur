@@ -55,7 +55,7 @@ def generate_bar_graph(
                 ticker.FuncFormatter(lambda y, p: format(int(y), ","))
             )
 
-            ax.set_ylim([0, max(extracted_data[attribute]["values"]) * 1.2])
+            ax.set_ylim([min(0, min(extracted_data[attribute]["values"])), max(extracted_data[attribute]["values"]) * 1.2])
             plt.savefig(f"{path}{company_id}_{attribute}.png", bbox_inches="tight")
             output[attribute] = f"{path}{company_id}_{attribute}.png"
 
