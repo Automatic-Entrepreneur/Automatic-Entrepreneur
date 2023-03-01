@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from fake_headers import Headers
 from selenium import webdriver
-from glassdoor_extract import glassdoorScrape, financeScrape, getSocials
+from glassdoor_extract import glassdoor_scrape, finance_scrape, get_socials
 from CompaniesHouse.CompanySearch import CompanySearch
 
 app = Flask(__name__)
@@ -32,13 +32,13 @@ def get_CEO(companyName):
 
         ret = dict()
         try:
-            glassdoorScrape(driver, companyName, ret)
+            glassdoor_scrape(driver, companyName, ret)
 
             if ret['Ticker'] != 'N/A':
-                financeScrape(ret['Ticker'], ret)
+                finance_scrape(ret['Ticker'], ret)
 
             if ret['Website'] != 'N/A':
-                getSocials(driver, ret)
+                get_socials(driver, ret)
         except:
              print('Please Try Again')
         

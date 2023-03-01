@@ -29,7 +29,7 @@ def generate_html(
     qa_answers = ""
 
     extracted_data = extract_data(company_id, start_year, end_year)
-    glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])
+    glassdoor_extract = glassdoor_info(company_name=extracted_data["name"])
 
     summary = overall_summary(extracted_data["data"])
     img_paths = generate_bar_graph(

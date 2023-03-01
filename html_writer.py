@@ -50,16 +50,16 @@ def write_mission_statement(html, glassdoor_extract):
 
 def body_write(
 		html: TextIO,
-		CEO_summary: str,
-		QA_answers: str,
+		ceo_summary: str,
+		qa_answers: str,
 		image_paths: dict[str, str],
 		captions: dict[str, list[str]],
 ) -> None:
 	html.write(f"<h3>Report summary</h3>\n")
-	p_write(html, CEO_summary + "\n\n")
-	if QA_answers:
+	p_write(html, ceo_summary + "\n\n")
+	if qa_answers:
 		html.write(f"<h4>FAQ</h4>\n")
-		p_write(html, QA_answers)
+		p_write(html, qa_answers)
 	html.write("<br>\n")
 	html.write("<br>\n")
 	for attribute in image_paths:
@@ -76,8 +76,8 @@ def body_write(
 def html_write(
 		filename: str,
 		company_name: str,
-		CEO_summary: str,
-		QA_answers: str,
+		ceo_summary: str,
+		qa_answers: str,
 		image_paths: dict[str, str],
 		captions: dict[str, list[str]],
 		glassdoor_extract: dict[str, str],
@@ -124,12 +124,12 @@ def html_write(
 		)
 		facts_write(html, glassdoor_extract)
 		write_mission_statement(html, glassdoor_extract)
-		body_write(html, CEO_summary, QA_answers, image_paths, captions)
+		body_write(html, ceo_summary, qa_answers, image_paths, captions)
 		try:
-			html.write(get_news(company_name)+"\n")
+			html.write(get_news(company_name) + "\n")
 		except:
 			pass
-		for i in ['Twitter','LinkedIn','Instagram','Facebook','YouTube']:
+		for i in ["Twitter", "LinkedIn", "Instagram", "Facebook", "YouTube"]:
 			if i in glassdoor_extract.keys():
 				html.write(f"<a href={glassdoor_extract[i]}>{i}</a>; ")
 		html.write(
@@ -138,37 +138,38 @@ def html_write(
 		html.write("</body>\n</html>")
 
 
-def glassdoor_info(companyName):
+def glassdoor_info(company_name: str) -> dict[str, any]:
 	header = Headers(
-	browser="chrome",  # Generate only Chrome UA
-	os="win",  # Generate only Windows platform
-	headers=False # generate misc headers
+		browser="chrome",  # Generate only Chrome UA
+		os="win",  # Generate only Windows platform
+		headers=False,  # generate misc headers
 	)
-	customUserAgent = header.generate()['User-Agent']
+	custom_user_agent = header.generate()["User-Agent"]
 	chrome_options = webdriver.ChromeOptions()
 	chrome_options.add_experimental_option("useAutomationExtension", False)
 	chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-	chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2}) #disables cookies
-	chrome_options.add_argument(f"user-agent={customUserAgent}")
+	chrome_options.add_experimental_option(
+		"prefs", {"profile.default_content_setting_values.cookies": 2}
+	)  # disables cookies
+	chrome_options.add_argument(f"user-agent={custom_user_agent}")
 
-	#This line prevents the pop-up
+	# This line prevents the pop-up
 	chrome_options.add_argument("--headless")
-	chrome_options.add_argument('--ignore-certificate-errors')
-	chrome_options.add_argument('--incognito')
+	chrome_options.add_argument("--ignore-certificate-errors")
+	chrome_options.add_argument("--incognito")
 
 	driver = webdriver.Chrome(options=chrome_options)
 
 	ret = dict()
 	try:
-		glassdoorScrape(driver, companyName, ret)
+		glassdoor_scrape(driver, company_name, ret)
 
-		if ret['Ticker'] != 'N/A':
-			financeScrape(ret['Ticker'], ret)
-
-		if ret['Website'] != 'N/A':
-			getSocials(driver, ret)
+		if ret["Ticker"] != "N/A":
+			finance_scrape(ret["Ticker"], ret)
+		if ret["Website"] != "N/A":
+			get_socials(driver, ret)
 	except:
-			print('Please Try Again')
+		print("Please Try Again")
 	# print(ret)
 	return ret
 
@@ -191,11 +192,13 @@ if __name__ == "__main__":
 		[f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers]
 	)
 
-	glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])
+	glassdoor_extract = glassdoor_info(company_name=extracted_data["name"])
 	# glassdoor_extract = {'Mission': 'N/A', 'Website': 'www.softwire.com', 'Industry': 'Software Development', 'Headquarters': 'London, United Kingdom', 'Size': '201 to 500 Employees', 'Founded': '2000', 'Recommended to Friends': '99', 'Approve of CEO': '100', 'Overall Rating': '4.8', 'CEO': 'Andrew Thomas', 'Company Type': 'Company - Private', 'Ticker': 'N/A', 'Culture & Values Rating': 'N/A', 'Diversity & Inclusion Rating': 'N/A', 'Work/Life Balance Rating': 'N/A', 'Senior Management Rating': 'N/A', 'Compensation & Benefits Rating': 'N/A', 'Career Opportunities Rating': 'N/A', 'Revenue': '$25 to $100 million (USD)', 'Price': 'N/A', 'Description': 'N/A', 'ProfitMargin': 'N/A', '52WeekHigh': 'N/A', '52WeekLow': 'N/A', '50DayMovingAverage': 'N/A', '200DayMovingAverage': 'N/A'}
 
 	summary = overall_summary(extracted_data["data"])
-	img_paths = generate_bar_graph(extracted_data["data"], "", company_id, show_graph=False)
+	img_paths = generate_bar_graph(
+		extracted_data["data"], "", company_id, show_graph=False
+	)
 	html_write(
 		"test.html",
 		extracted_data["name"],
