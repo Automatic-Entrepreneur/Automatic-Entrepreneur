@@ -11,12 +11,12 @@ import pickle as pkl
 import io
 from CompaniesHouse.ScannedReportReader import ScannedReportReader
 
-if platform.system() == 'Darwin':
+if platform.system() == "Darwin":
     pytesseract.pytesseract.tesseract_cmd = "/usr/local/bin/tesseract"
 else:
-    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
-
-
+    pytesseract.pytesseract.tesseract_cmd = (
+        "C:/Program Files/Tesseract-OCR/tesseract.exe"
+    )
 # Sample Usage:
 # company = CompanyInfo('03824658')
 # accountInfo = company.getAccountInformation(2022)
@@ -57,8 +57,10 @@ class CompanyInfo:
         Function to reduce requests for information
         """
         if not self.__info:
-            query = "https://api.company-information.service.gov.uk/company/{}".format(self.__company_number)
-            response = requests.get(query, auth=(self.__key, ''))
+            query = "https://api.company-information.service.gov.uk/company/{}".format(
+                self.__company_number
+            )
+            response = requests.get(query, auth=(self.__key, ""))
             self.__info = json.JSONDecoder().decode(response.text)
 
     def __fetch_people(self) -> None:
@@ -66,8 +68,10 @@ class CompanyInfo:
         Function to reduce requests for information about people
         """
         if not self.__people:
-            query = "https://api.company-information.service.gov.uk/company/{}/officers".format(self.__company_number)
-            response = requests.get(query, auth=(self.__key, ''))
+            query = "https://api.company-information.service.gov.uk/company/{}/officers".format(
+                self.__company_number
+            )
+            response = requests.get(query, auth=(self.__key, ""))
             self.__people = json.JSONDecoder().decode(response.text)
 
     def __fetch_accounts(self) -> None:
@@ -75,9 +79,16 @@ class CompanyInfo:
         Function to reduce requests for information about accounts
         """
         if not self.__info:
-            query = "https://api.company-information.service.gov.uk/company/{}/filing-history".format(self.__company_number)
-            response = requests.get(query, auth=(self.__key, ''), headers={'category': 'accounts'}, params={'category': 'accounts'})
-            self.__accounts = json.JSONDecoder().decode(response.text)['items']
+            query = "https://api.company-information.service.gov.uk/company/{}/filing-history".format(
+                self.__company_number
+            )
+            response = requests.get(
+                query,
+                auth=(self.__key, ""),
+                headers={"category": "accounts"},
+                params={"category": "accounts"},
+            )
+            self.__accounts = json.JSONDecoder().decode(response.text)["items"]
 
     def all_info(self) -> dict[str, any]:
         """
@@ -93,7 +104,7 @@ class CompanyInfo:
         :rtype: str
         """
         self.__fetch_info()
-        return self.__info['company_name']
+        return self.__info["company_name"]
 
     def get_office(self) -> dict[str, str]:
         """
@@ -105,7 +116,7 @@ class CompanyInfo:
         :rtype: dict[str, str]
         """
         self.__fetch_info()
-        return self.__info['registered_office_address']
+        return self.__info["registered_office_address"]
 
     def date_of_creation(self) -> str:
         """
@@ -113,7 +124,7 @@ class CompanyInfo:
         :rtype: str
         """
         self.__fetch_info()
-        return self.__info['date_of_creation']
+        return self.__info["date_of_creation"]
 
     def type(self) -> str:
         """
@@ -121,7 +132,7 @@ class CompanyInfo:
         :rtype: str
         """
         self.__fetch_info()
-        return self.__info['type']
+        return self.__info["type"]
 
     def current_directors(self) -> list[str]:
         """
@@ -129,7 +140,11 @@ class CompanyInfo:
         :rtype: list[str]
         """
         self.__fetch_people()
-        return [p['name'] for p in self.__people['items'] if p['officer_role'] == 'director' and 'resigned_on' not in p]
+        return [
+            p["name"]
+            for p in self.__people["items"]
+            if p["officer_role"] == "director" and "resigned_on" not in p
+        ]
 
     def current_secretaries(self) -> list[str]:
         """
@@ -137,7 +152,11 @@ class CompanyInfo:
         :rtype: list[str]
         """
         self.__fetch_people()
-        return [p['name'] for p in self.__people['items'] if p['officer_role'] == 'secretary' and 'resigned_on' not in p]
+        return [
+            p["name"]
+            for p in self.__people["items"]
+            if p["officer_role"] == "secretary" and "resigned_on" not in p
+        ]
 
     def get_account_history(self) -> dict[str, any]:
         """
@@ -147,7 +166,13 @@ class CompanyInfo:
         self.__fetch_accounts()
         return self.__accounts
 
-    def get_account_information(self, year: int, pdf_accept: bool = True, pdf_time: float = 10, pdf_pages: int = 50):
+    def get_account_information(
+            self,
+            year: int,
+            pdf_accept: bool = True,
+            pdf_time: float = 10,
+            pdf_pages: int = 50,
+    ):
         """
         This can be a VERY expensive function.
         It may have to transcribe dozens or even hundreds of pages of pdf.
@@ -162,35 +187,60 @@ class CompanyInfo:
         :type pdf_pages: int
         :return: list[dict[str, str]]
         """
-        dir_path = os.path.join(self.path, "companies_house/{}/{}".format(self.__company_number, year))
-        pkl_path = os.path.join(self.path, "companies_house/{}/{}/accounts_{}.pkl".format(self.__company_number, year, year))
+        dir_path = os.path.join(
+            self.path, "companies_house/{}/{}".format(self.__company_number, year)
+        )
+        pkl_path = os.path.join(
+            self.path,
+            "companies_house/{}/{}/accounts_{}.pkl".format(
+                self.__company_number, year, year
+            ),
+        )
         if os.path.exists(pkl_path):
-            return pkl.load(open(pkl_path, 'rb'))
+            return pkl.load(open(pkl_path, "rb"))
         self.__fetch_accounts()
-        files = sorted((f for f in self.__accounts if f['date'][:4] == str(year) and f['category'] == 'accounts'), key=lambda x: x['date'])
+        files = sorted(
+            (
+                f
+                for f in self.__accounts
+                if f["date"][:4] == str(year) and f["category"] == "accounts"
+            ),
+            key=lambda x: x["date"],
+        )
         if not files:
             return []
         file = files[0]
-        query = file['links']['document_metadata']
-        response = requests.get(query, auth=(self.__key, ''))
+        query = file["links"]["document_metadata"]
+        response = requests.get(query, auth=(self.__key, ""))
         decoded = json.JSONDecoder().decode(response.text)
-        query = decoded['links']['document']
+        query = decoded["links"]["document"]
         if not os.path.exists(os.path.join(self.path, "companies_house")):
             os.mkdir(os.path.join(self.path, "companies_house"))
-        if not os.path.exists(os.path.join(self.path, "companies_house/{}".format(self.__company_number))):
-            os.mkdir(os.path.join(self.path, "companies_house/{}".format(self.__company_number)))
+        if not os.path.exists(
+                os.path.join(self.path, "companies_house/{}".format(self.__company_number))
+        ):
+            os.mkdir(
+                os.path.join(
+                    self.path, "companies_house/{}".format(self.__company_number)
+                )
+            )
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
-        if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:
-            with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/xhtml+xml'}, params={'Accept': 'application/xhtml+xml'}) as response:
+        if "resources" in decoded and "application/xhtml+xml" in decoded["resources"]:
+            with requests.get(
+                    query,
+                    auth=(self.__key, ""),
+                    headers={"Accept": "application/xhtml+xml"},
+                    params={"Accept": "application/xhtml+xml"},
+            ) as response:
                 information = [
                     {
-                        'name': stat['name'],
-                        'value': stat['value'],
-                        'unit': stat['unit'],
-                        'instant': stat['instant'],
-                        'startdate': stat['startdate'],
-                        'enddate': stat['enddate'],
+                        "name": stat["name"],
+                        "value": stat["value"],
+                        "unit": stat["unit"],
+                        "instant": stat["instant"],
+                        "startdate": stat["startdate"],
+                        "enddate": stat["enddate"],
                     }
                     for stat in IXBRL(io.StringIO(response.text)).to_table()
                 ]
@@ -198,26 +248,49 @@ class CompanyInfo:
             if not pdf_accept:
                 return []
             t = time.monotonic()
-            with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/pdf'}, params={'Accept': 'application/pdf'}) as response:
+            with requests.get(
+                    query,
+                    auth=(self.__key, ""),
+                    headers={"Accept": "application/pdf"},
+                    params={"Accept": "application/pdf"},
+            ) as response:
                 scanner = ScannedReportReader(response.content, year)
                 information = []
                 for i in range(min(pdf_pages, len(scanner))):
                     if time.monotonic() - t > pdf_time:
                         break
                     information.extend(scanner.readPage(i))
-        pkl.dump(information, open(pkl_path, 'wb'))
+        pkl.dump(information, open(pkl_path, "wb"))
         return information
 
     def get_long_text(self, year: int) -> str:
         self.__fetch_accounts()
-        file = sorted((f for f in self.__accounts if f['date'][:4] == str(year) and f['category'] == 'accounts'), key=lambda x: x['date'])[0]
-        query = file['links']['document_metadata']
-        response = requests.get(query, auth=(self.__key, ''))
+        file = sorted(
+            (
+                f
+                for f in self.__accounts
+                if f["date"][:4] == str(year) and f["category"] == "accounts"
+            ),
+            key=lambda x: x["date"],
+        )[0]
+        query = file["links"]["document_metadata"]
+        response = requests.get(query, auth=(self.__key, ""))
         decoded = json.JSONDecoder().decode(response.text)
-        query = decoded['links']['document']
-        if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:
-            with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/xhtml+xml'}, params={'Accept': 'application/xhtml+xml'}) as response:
+        query = decoded["links"]["document"]
+        if "resources" in decoded and "application/xhtml+xml" in decoded["resources"]:
+            with requests.get(
+                    query,
+                    auth=(self.__key, ""),
+                    headers={"Accept": "application/xhtml+xml"},
+                    params={"Accept": "application/xhtml+xml"},
+            ) as response:
                 d = IXBRL(io.StringIO(response.text))
-                return "\n".join([i for i in d.parser.soup.get_text().split("\n") if len(i) > 99 and "{" not in i])
+                return "\n".join(
+                    [
+                        i
+                        for i in d.parser.soup.get_text().split("\n")
+                        if len(i) > 99 and "{" not in i
+                    ]
+                )
         else:
             return ""
