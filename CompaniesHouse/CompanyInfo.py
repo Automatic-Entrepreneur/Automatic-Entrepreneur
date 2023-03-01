@@ -204,7 +204,7 @@ class CompanyInfo:
                 for i in range(min(pdf_pages, len(scanner))):
                     if time.monotonic() - t > pdf_time:
                         break
-                    information.extend(scanner.readPageTable(i))
+                    information.extend(scanner.read_page_table(i))
         pkl.dump(information, open(pkl_path, 'wb'))
         return information
 
@@ -244,7 +244,7 @@ class CompanyInfo:
                 for i in range(min(pdf_pages, len(scanner))):
                     if time.monotonic() - t > pdf_time:
                         break
-                    for block in scanner.readPageText(i).split("\n\n"):
+                    for block in scanner.read_page_text(i).split("\n\n"):
                         if len(block) > 200 and any(map(lambda x: len(x) > 80, block.split("\n"))):
                             clean_text.append(block.replace("\n", " "))
                             length += len(clean_text[-1])
