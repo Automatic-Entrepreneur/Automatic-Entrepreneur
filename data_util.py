@@ -57,7 +57,7 @@ def extract_data(
 		extracted_data[attribute] = {}
 	for year in range(start_year, end_year):
 		try:
-			account_info = company.getAccountInformation(year)
+			account_info = company.get_account_information(year, pdf_accept=True)
 		except IndexError:
 			continue
 		except (
@@ -83,4 +83,4 @@ def extract_data(
 		for year, value in sorted(data_by_year.items(), key=lambda t: t[0]):
 			output[attribute]["years"].append(year)
 			output[attribute]["values"].append(value)
-	return {"name": company.getName().title(), "data": output}
+	return {"name": company.get_name().title(), "data": output}

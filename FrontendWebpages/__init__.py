@@ -1,1 +1,1 @@
-from FrontendWebpages.FrontPage import openFrontPage
+from FrontendWebpages.FrontPage import open_front_page

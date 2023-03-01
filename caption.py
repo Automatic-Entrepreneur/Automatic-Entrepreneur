@@ -66,7 +66,9 @@ def data_summary(
 
 
 def format_summary(
-		values_by_year: list[dict[str, typing.Union[int, list[dict[str, typing.Union[int, float]]]]]],
+		values_by_year: list[
+			dict[str, typing.Union[int, list[dict[str, typing.Union[int, float]]]]]
+		],
 		sign_map: dict[int, str],
 ) -> list[str]:
 	output = []
@@ -78,18 +80,19 @@ def format_summary(
 				if trend["startVal"] == 0:
 					gradient_word = "sharply"
 				else:
-					gradient = (abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]) / (trend["endYear"] - trend["startYear"])
+					duration = trend["endYear"] - trend["startYear"]
+					gradient = (abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]) / duration
 					gradient_percent = f"by {three_sigfig(gradient * 100)}% per year"
 					gradient_word = f"gradually {gradient_percent}"
 					if gradient >= SHARP_THRESHOLD:
 						gradient_word = f"sharply {gradient_percent}"
 					if gradient >= DRAMATIC_THRESHOLD:
 						gradient_word = f"dramatically {gradient_percent}"
-				keywords1 = (
-					f"{sign_map[s]}"
-					if s == 0
-					else f"{sign_map[s]} {trend_map[t]} {gradient_word if t == 0 else ''}"
-				)
+				keywords1 = sign_map[s]
+				if s != 0:
+					keywords1 += " " + trend_map[t]
+					if t != 0:
+						keywords1 += " " + gradient_word
 				keywords2 = (
 					f"at {three_sigfig(trend['startVal'], True)} GBP."
 					if t == 0
@@ -117,7 +120,7 @@ def overall_summary(
 
 
 if __name__ == "__main__":
-	company_id = "03824658"
+	company_id = "09289164"
 	start_year = 2010
 	end_year = 2023
 

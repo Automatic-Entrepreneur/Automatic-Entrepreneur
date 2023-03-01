@@ -7,28 +7,28 @@ from data_util import extract_data
 from generate_graphs import generate_bar_graph
 from generate_summary import get_text, generate_summary, answer_question, questions
 from html_writer import html_write, glassdoor_info
-from performance_summary import overall_summary
+from caption import overall_summary
 
 
-def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) -> None:
-    CEO_text, QA_text = get_text(company_id)
+def generate_html(
+        company_id: str, start_year: int = 2010, end_year: int = 2023
+) -> None:
+    ceo_text, qa_text = get_text(company_id)
     try:
-        CEO_summary = generate_summary(CEO_text, False)
-        # QA_answers = answer_question(QA_text, questions, False)
+        ceo_summary = generate_summary(ceo_text, False)
+        qa_answers = answer_question(qa_text, questions, False)
     except:
-        CEO_summary = generate_summary(CEO_text, True)
-        # QA_answers = answer_question(QA_text, questions, True)
+        ceo_summary = generate_summary(ceo_text, True)
+        qa_answers = answer_question(qa_text, questions, True)
 
-    """
-    QA_answers = "<br><br>".join(
-        [f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers]
+    qa_answers = "<br><br>".join(
+        [f"Question: {i['q']}<br>Answer: {i['a']}" for i in qa_answers]
     )
-    """
 
-    QA_answers = ""
+    # qa_answers = ""
 
     extracted_data = extract_data(company_id, start_year, end_year)
-    glassdoor_extract = glassdoor_info(companyName=extracted_data["name"])
+    glassdoor_extract = glassdoor_info(company_name=extracted_data["name"])
 
     summary = overall_summary(extracted_data["data"])
     img_paths = generate_bar_graph(
@@ -37,8 +37,8 @@ def generateHTML(company_id: str, start_year: int = 2010, end_year: int = 2023) 
     html_write(
         f"templates/{company_id}.html",
         extracted_data["name"],
-        CEO_summary,
-        QA_answers,
+        ceo_summary,
+        qa_answers,
         img_paths,
         summary,
         glassdoor_extract,
@@ -49,13 +49,14 @@ app = Flask(__name__)
 
 err_404_refreshed = False
 
+
 @app.get("/")
-def getMainPage():
+def get_main_page():
     return render_template("searchpage.html")
 
 
 @app.post("/")
-def searchCompanies():
+def search_companies():
     if request.form.get("title"):
         company_search = CompanySearch()
         results = company_search.search(request.form.get("title"))
@@ -65,20 +66,22 @@ def searchCompanies():
 
 
 @app.route("/report", methods=["GET", "POST"])
-def generateReport():
+def generate_report():
     if request.method == "POST":
         company_search = CompanySearch()
         results = company_search.search(request.form["companyName"])
         company_id = results[0]["company_number"]
-        path_to_report = os.path.join(os.path.dirname(__file__), f"templates/{company_id}.html")
+        path_to_report = os.path.join(
+            os.path.dirname(__file__), f"templates/{company_id}.html"
+        )
         if not os.path.exists(path_to_report):
-            generateHTML(company_id)
+            generate_html(company_id)
         return company_id
         # return redirect(url_for("showData", company_number=company_id), code=302)
 
 
 @app.get("/<company_number>")
-def showData(company_number):
+def show_data(company_number):
     global err_404_refreshed
     path_to_report = os.path.join(
         os.path.dirname(__file__), "templates/{}.html".format(company_number)
@@ -91,24 +94,18 @@ def showData(company_number):
     return render_template("company_not_found_404.html", company_number=company_number)
 
 
-@app.get("/<str1>/<str2>")
-def not_found_2(str1, str2):
-    return render_template("page_not_found_404.html")
+@app.errorhandler(404)
+def page_not_found(_):
+    global err_404_refreshed
+    err_404_refreshed = not err_404_refreshed
+    if not err_404_refreshed:
+        return redirect("/")
+    return render_template('page_not_found_404.html'), 404
 
 
-@app.get("/<str1>/<str2>/<str3>")
-def not_found_3(str1, str2, str3):
-    return render_template("page_not_found_404.html")
-
-
-@app.get("/<str1>/<str2>/<str3>/<str4>")
-def not_found_4(str1, str2, str3, str4):
-    return render_template("page_not_found_404.html")
-
-
-def openFrontPage():
+def open_front_page():
     app.run()
 
 
 if __name__ == "__main__":
-    openFrontPage()
+    open_front_page()
