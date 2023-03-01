@@ -66,7 +66,9 @@ def data_summary(
 
 
 def format_summary(
-		values_by_year: list[dict[str, typing.Union[int, list[dict[str, typing.Union[int, float]]]]]],
+		values_by_year: list[
+			dict[str, typing.Union[int, list[dict[str, typing.Union[int, float]]]]]
+		],
 		sign_map: dict[int, str],
 ) -> list[str]:
 	output = []
@@ -78,7 +80,8 @@ def format_summary(
 				if trend["startVal"] == 0:
 					gradient_word = "sharply"
 				else:
-					gradient = (abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]) / (trend["endYear"] - trend["startYear"])
+					duration = trend["endYear"] - trend["startYear"]
+					gradient = (abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]) / duration
 					gradient_percent = f"by {three_sigfig(gradient * 100)}% per year"
 					gradient_word = f"gradually {gradient_percent}"
 					if gradient >= SHARP_THRESHOLD:

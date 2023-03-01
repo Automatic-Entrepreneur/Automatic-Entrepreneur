@@ -10,7 +10,9 @@ from html_writer import html_write, glassdoor_info
 from caption import overall_summary
 
 
-def generate_html(company_id: str, start_year: int = 2010, end_year: int = 2023) -> None:
+def generate_html(
+        company_id: str, start_year: int = 2010, end_year: int = 2023
+) -> None:
     ceo_text, qa_text = get_text(company_id)
     try:
         ceo_summary = generate_summary(ceo_text, False)
@@ -18,7 +20,6 @@ def generate_html(company_id: str, start_year: int = 2010, end_year: int = 2023)
     except:
         ceo_summary = generate_summary(ceo_text, True)
         # QA_answers = answer_question(QA_text, questions, True)
-
     """
     QA_answers = "<br><br>".join(
         [f"Question: {i['q']}<br>Answer: {i['a']}" for i in QA_answers]
@@ -71,7 +72,9 @@ def generate_report():
         company_search = CompanySearch()
         results = company_search.search(request.form["companyName"])
         company_id = results[0]["company_number"]
-        path_to_report = os.path.join(os.path.dirname(__file__), f"templates/{company_id}.html")
+        path_to_report = os.path.join(
+            os.path.dirname(__file__), f"templates/{company_id}.html"
+        )
         if not os.path.exists(path_to_report):
             generate_html(company_id)
         return company_id
