@@ -57,7 +57,7 @@ def extract_data(
 		extracted_data[attribute] = {}
 	for year in range(start_year, end_year):
 		try:
-			account_info = company.get_account_information(year)
+			account_info = company.get_account_information(year, pdf_accept=True)
 		except IndexError:
 			continue
 		except (
