@@ -204,12 +204,26 @@ class CompanyInfo:
                 for i in range(min(pdf_pages, len(scanner))):
                     if time.monotonic() - t > pdf_time:
                         break
-                    information.extend(scanner.readPage(i))
+                    information.extend(scanner.readPageTable(i))
         pkl.dump(information, open(pkl_path, 'wb'))
         return information
 
-    def getLongText(self, year):
+    def getLongText(self, year=None, pdf_accept=True, pdf_time=10, pdf_pages=50):
+        """
+        :param year: defaults to the most recent year!
+        :param pdf_accept:
+        :param pdf_time:
+        :param pdf_pages:
+        :return:
+        """
         self.__fetchAccounts()
+        if not year:
+            year = max(map(lambda x: int(x['date'][:4]), self.__accounts))
+        dir_path = os.path.join(self.path, "companies_house/{}/{}".format(self.__company_number, year))
+        text_path = os.path.join(dir_path, "text_{}.txt".format(year))
+        if os.path.exists(text_path):
+            return open(text_path, "r").read()
+
         file = sorted((f for f in self.__accounts if f['date'][:4] == str(year) and f['category'] == 'accounts'), key=lambda x: x['date'])[0]
         query = file['links']['document_metadata']
         response = requests.get(query, auth=(self.__key, ''))
@@ -218,6 +232,32 @@ class CompanyInfo:
         if 'resources' in decoded and 'application/xhtml+xml' in decoded['resources']:
             with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/xhtml+xml'}, params={'Accept': 'application/xhtml+xml'}) as response:
                 d = IXBRL(io.StringIO(response.text))
-                return "\n".join([i for i in d.parser.soup.get_text().split("\n") if len(i) > 99 and "{" not in i])
+                text = "\n".join([i for i in d.parser.soup.get_text().split("\n") if len(i) > 99 and "{" not in i])
         else:
-            return ""
+            if not pdf_accept:
+                return ""
+            t = time.monotonic()
+            with requests.get(query, auth=(self.__key, ''), headers={'Accept': 'application/pdf'}, params={'Accept': 'application/pdf'}) as response:
+                scanner = ScannedReportReader(response.content, year)
+                clean_text = []
+                length = 0
+                for i in range(min(pdf_pages, len(scanner))):
+                    if time.monotonic() - t > pdf_time:
+                        break
+                    for block in scanner.readPageText(i).split("\n\n"):
+                        if len(block) > 200 and any(map(lambda x: len(x) > 80, block.split("\n"))):
+                            clean_text.append(block.replace("\n", " "))
+                            length += len(clean_text[-1])
+                            if length > 2000:
+                                break
+                text = " ".join(clean_text)
+        dir_path = os.path.join(self.path, "companies_house/{}/{}".format(self.__company_number, year))
+        if not os.path.exists(os.path.join(self.path, "companies_house")):
+            os.mkdir(os.path.join(self.path, "companies_house"))
+        if not os.path.exists(os.path.join(self.path, "companies_house/{}".format(self.__company_number))):
+            os.mkdir(os.path.join(self.path, "companies_house/{}".format(self.__company_number)))
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+        with open(os.path.join(dir_path, "text_{}.txt".format(year)), "w") as text_cache:
+            text_cache.write(text[:2000])
+        return text

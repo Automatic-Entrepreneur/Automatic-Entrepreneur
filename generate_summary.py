@@ -1,17 +1,13 @@
-from data_util import attribute_map, extract_data
-
 try:
     from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 except:
     pass
-import typing
 from CompaniesHouse.CompanyInfo import CompanyInfo
 
 
 def get_text(company_id: str) -> tuple[str, str]:
     company = CompanyInfo(company_id)
-    text = company.getLongText(2021)
-
+    text = company.getLongText(pdf_time=50)
     return text[:2000], text
 
 
@@ -64,6 +60,13 @@ def get_questions(name):
 
 
 if __name__ == "__main__":
+    company = CompanyInfo('09857705')
+    text = company.getLongText(pdf_time=50)
+    print(generate_summary(text))
+
+    from sys import exit
+    exit()
+
     company_id = "03824658"
 
     CEO_text, QA_text = get_text(company_id)

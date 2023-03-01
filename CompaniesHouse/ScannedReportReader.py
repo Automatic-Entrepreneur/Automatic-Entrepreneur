@@ -72,7 +72,12 @@ class ScannedReportReader:
         """
         return (x.left > (y.left + y.width)) and (x.top < (y.top + y.height)) and (y.top < (x.top + x.height))
 
-    def readPage(self, i):
+    def readPageText(self, i):
+        image = self.__images[i]
+        attributes = []
+        return pytesseract.image_to_string(image, lang='eng')
+
+    def readPageTable(self, i):
         """
         extracts tables from page i in the pdf
         :param i: the page to parse
