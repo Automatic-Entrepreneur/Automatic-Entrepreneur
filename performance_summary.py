@@ -85,11 +85,11 @@ def format_summary(
 						gradient_word = f"sharply {gradient_percent}"
 					if gradient >= DRAMATIC_THRESHOLD:
 						gradient_word = f"dramatically {gradient_percent}"
-				keywords1 = (
-					f"{sign_map[s]}"
-					if s == 0
-					else f"{sign_map[s]} {trend_map[t]} {gradient_word if t == 0 else ''}"
-				)
+				keywords1 = sign_map[s]
+				if s != 0:
+					keywords1 += " " + trend_map[t]
+					if t != 0:
+						keywords1 += " " + gradient_word
 				keywords2 = (
 					f"at {three_sigfig(trend['startVal'], True)} GBP."
 					if t == 0
@@ -117,7 +117,7 @@ def overall_summary(
 
 
 if __name__ == "__main__":
-	company_id = "03824658"
+	company_id = "09289164"
 	start_year = 2010
 	end_year = 2023
 
