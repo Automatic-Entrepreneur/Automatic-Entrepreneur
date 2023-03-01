@@ -125,6 +125,13 @@ def get_elements(driver: WebDriver, ret: dict[str, any]) -> None:
             break
     except:
         ret["Mission"] = "N/A"
+    # Get Company Description
+    try:
+        for i in soup.find(attrs={"data-test": "employerDescription"}):
+            ret['Description'] = i
+            break
+    except:
+        ret['Description'] = 'N/A'
     # Get Company Website
     try:
         for i in soup.find(attrs={"data-test": "employer-website"}):
