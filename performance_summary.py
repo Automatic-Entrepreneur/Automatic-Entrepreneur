@@ -88,7 +88,7 @@ def format_summary(
 				keywords1 = (
 					f"{sign_map[s]}"
 					if s == 0
-					else f"{sign_map[s]} {trend_map[t]} {gradient_word}"
+					else f"{sign_map[s]} {trend_map[t]} {gradient_word if t == 0 else ''}"
 				)
 				keywords2 = (
 					f"at {three_sigfig(trend['startVal'], True)} GBP."
