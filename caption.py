@@ -81,7 +81,7 @@ def format_summary(
 					gradient_word = "sharply"
 				else:
 					duration = trend["endYear"] - trend["startYear"]
-					gradient = (abs(trend["startVal"] - trend["endVal"]) / trend["startVal"]) / duration
+					gradient = abs((trend["startVal"] - trend["endVal"]) / trend["startVal"]) / duration
 					gradient_percent = f"by {three_sigfig(gradient * 100)}% per year"
 					gradient_word = f"gradually {gradient_percent}"
 					if gradient >= SHARP_THRESHOLD:
