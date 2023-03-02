@@ -18,7 +18,8 @@ def generate_summary(company_id: str, text: str, debug=False) -> str:
     if debug:
         return "The directors present their annual report and financial statements for the year ended 31 December 2020. The principal activity of the company and group continued to be that of computer software development. Ordinary dividends were paid amounting to GBP 2,377,000. The directors do not recommend payment of a further dividend. Taylor Associates were appointed auditor to the group. A resolution proposing that they be re-appointed will be put at a General Meeting."
     # TODO: maybe test https://huggingface.co/philschmid/flan-t5-base-samsum
-    path = f"summarizer/{company_id}.pkl"
+    root = os.path.dirname(__file__)
+    path = os.path.join(root, f"summarizer/cache/{company_id}.pkl")
     if os.path.exists(path):
         return pkl.load(open(path, "rb"))
     summarizer = pipeline("summarization", model="philschmid/flan-t5-base-samsum")
