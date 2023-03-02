@@ -166,9 +166,12 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 
 
 def glassdoor_info(company_id, company_name):
-	path = f"glassdoor/{company_id}.pkl"
+	root = os.path.dirname(__file__)
+	path = os.path.join(root, f"glassdoor/cache/{company_id}.pkl")
+	'''
 	if os.path.exists(path):
 		return pkl.load(open(path, "rb"))
+	'''
 	header = Headers(
 		browser="chrome",  # Generate only Chrome UA
 		os="win",  # Generate only Windows platform
@@ -198,7 +201,7 @@ def glassdoor_info(company_id, company_name):
 		finance_scrape(ret["Ticker"], ret)
 	get_socials(driver, ret)
 
-	pkl.dump(ret, open(path, "wb"))
+	# pkl.dump(ret, open(path, "wb"))
 	return ret
 
 
