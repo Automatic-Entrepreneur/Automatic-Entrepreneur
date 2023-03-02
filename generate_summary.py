@@ -18,16 +18,21 @@ def generate_summary(company_id: str, text: str, debug=False) -> str:
     if debug:
         return "The directors present their annual report and financial statements for the year ended 31 December 2020. The principal activity of the company and group continued to be that of computer software development. Ordinary dividends were paid amounting to GBP 2,377,000. The directors do not recommend payment of a further dividend. Taylor Associates were appointed auditor to the group. A resolution proposing that they be re-appointed will be put at a General Meeting."
     # TODO: maybe test https://huggingface.co/philschmid/flan-t5-base-samsum
-    root = os.path.dirname(__file__)
-    path = os.path.join(root, f"summarizer/cache/{company_id}.pkl")
-    if os.path.exists(path):
-        return pkl.load(open(path, "rb"))
+    summ_path = os.path.join(os.path.dirname(__file__), "summarizer")
+    if not os.path.exists(summ_path):
+        os.mkdir(summ_path)
+    cache_path = os.path.join(summ_path, "cache")
+    if not os.path.exists(cache_path):
+        os.mkdir(cache_path)
+    file_path = os.path.join(cache_path, f"{company_id}.pkl")
+    if os.path.exists(file_path):
+        return pkl.load(open(file_path, "rb"))
     summarizer = pipeline("summarization", model="philschmid/flan-t5-base-samsum")
-    model = summarizer(text, max_length=150, min_length=50, do_sample=False)[0][
+    summary = summarizer(text, max_length=150, min_length=50, do_sample=False)[0][
         "summary_text"
     ]
-    pkl.dump(model, open(path, "wb"))
-    return model
+    pkl.dump(summary, open(file_path, "wb"))
+    return summary
 
 
 def answer_question(
