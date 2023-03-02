@@ -13,18 +13,14 @@ from templates import *
 def get_report(company_id, start_year=2010, end_year=2023):
 	name, CH_data, GD_data, CEO_summary, QA_answers, img_paths, captions, news = get_data(company_id)
 	out = ""
-
 	print(GD_data)
 
 	# == TITLE ==
-
 	out += HEAD.format(name=name, website=GD_data.get("Website", ""))
-
 	if "Picture" in GD_data:
 		out += TITLE_P.format(name=name, logo=GD_data["Picture"])
 	else:
 		out += TITLE_N.format(name=name)
-	
 	out += LOGO
 
 	items = ["Industry", "Size", "Founded", "Overall Rating", "CEO"]
@@ -33,70 +29,55 @@ def get_report(company_id, start_year=2010, end_year=2023):
 	# == BODY ==
 
 	# = FACTS =
-
 	out += MAIN
 
 	# = MISSION =
-
 	if GD_data["Mission"] != "N/A":
 		out += MISSION.format(mission=GD_data["Mission"])
 
 	# = REPORT =
-
 	if CEO_summary != "":
 		out += REPORT.format(report=CEO_summary, id=company_id)
 
 	# = FINANCE =
-
 	out += FINANCE_OPEN
 
 	# GRAPHS
-
 	if len(img_paths) != 0:
 		out += GRAPHS_OPEN
-
 		for i, (attribute, path) in enumerate(img_paths.items()):
 			if i % 2 == 0:
 				T = IMAGE_L
 			else:
 				T = IMAGE_R
 			out += T.format(img=path, caption="<p>" + ("</p>\n"+"	"*5+"<p>").join(captions[attribute]) + "</p>")
-
 		out += GRAPHS_CLOSE
 
 	# STOCKS
-
 	if True:  # if we have stock data (TODO)
-
 		if len(img_paths) != 0:
 			out += DIVIDER
-
 		out += STOCK_OPEN
 		out += ""  # stock data (TODO)
 		out += STOCK_CLOSE
-
 	out += FINANCE_CLOSE
 
 	# = WHAT PEOPLE ARE SAYING =
-
 	out += SAYING_OPEN
 
 	# SATISFACTION
-
 	if True:  # if we have satisfaction data (TODO)
 		out += SATISFACTION_OPEN.format(name=name)
 		out += ""  # satisfaction data (TODO)
 		out += SATISFACTION_CLOSE
 
 	# NEWS
-
 	if news != "":
 		out += NEWS_OPEN.format(name=name) + news + NEWS_CLOSE
 
 	out += SAYING_CLOSE
 
 	# = FAQS =
-
 	if len(QA_answers) != 0:
 		out += FAQS_OPEN
 		for i in QA_answers:
@@ -104,9 +85,7 @@ def get_report(company_id, start_year=2010, end_year=2023):
 		out += FAQS_CLOSE
 
 	# = SOCIALS =
-
 	out += SOCIALS_OPEN
-
 	images = [
 		("Twitter", "https://upload.wikimedia.org/wikipedia/commons/4/4f/Twitter-logo.svg"),
 		("LinkedIn", "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"),
@@ -114,7 +93,6 @@ def get_report(company_id, start_year=2010, end_year=2023):
 		("Facebook", "https://upload.wikimedia.org/wikipedia/commons/f/fb/Facebook_icon_2013.svg"),
 		("YouTube", "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg")
 	]
-
 	for data, image in images:
 		if GD_data[data] != "N/A":
 			out += SOCIALS.format(data=GD_data[data], image=image)
@@ -122,7 +100,6 @@ def get_report(company_id, start_year=2010, end_year=2023):
 		out += WEBSITE.format(website=GD_data["Website"])
 
 	out += SOCIALS_CLOSE.format(time=datetime.now().strftime("%H:%M %d/%d/%Y"))
-
 	return out
 
 
@@ -184,9 +161,7 @@ def glassdoor_info(company_name):
 	if ret['Ticker'] != 'N/A':
 		finance_scrape(ret['Ticker'], ret)
 
-	
 	get_socials(driver, ret)
-	
 	return ret
 
 
