@@ -4,6 +4,7 @@ except:
     pass
 from newsapi import NewsApiClient
 from datetime import date, timedelta
+from templates import NEWS, SENTIMENT
 
 
 def get_news(company):
@@ -18,6 +19,7 @@ def get_news(company):
         sort_by="relevancy",
         page=2,
     )
+
     try:
         sentiment_pipeline = pipeline("sentiment-analysis")
         sentiments = sentiment_pipeline(
@@ -25,16 +27,18 @@ def get_news(company):
         )
     except:
         sentiments = []
+
     if len(sentiments) == 0:
-        return f"Could not find any mention of {company} in the news\n<br><br>\n"
+        return ""
     else:
-        content = "\n<hr>\n".join(
-            [
-                f"<b>{i['source']['Name']}: <a href={i['url']}>{i['title']}</a></b> (sentiment: {j['label']})\n"
-                for i, j in zip(all_articles["articles"][:5], sentiments)
-            ]
+        content = "".join([NEWS.format(title=i["title"],
+                                       date=i["publishedAt"].split("T")[0],
+                                       author=i["author"],
+                                       publisher=i["source"]["Name"],
+                                       link=i["url"]) for i in all_articles["articles"][:5]]
         )
-        return f"<h2>{company} in the news</h2>\n\n{content}\n<br>\n"
+        content += SENTIMENT.format(pos=str(int((100 * sum([i=="POSITIVE" for i in sentiments]) / len(sentiments)))))
+        return content
 
 
 if __name__ == "__main__":

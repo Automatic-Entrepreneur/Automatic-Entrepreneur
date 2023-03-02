@@ -36,7 +36,7 @@ def answer_question(
 
     ans = model(q)
     return [
-        {"q": j, "a": i["answer"]} for j, i in zip(questions, ans) if i["score"] > 0.05
+        {"q": j, "a": i["answer"]} for j, i in zip(questions, ans) if i["score"] > 0.1
     ]
 
 
@@ -62,10 +62,6 @@ def get_questions(name):
 if __name__ == "__main__":
     company = CompanyInfo('09857705')
     text = company.get_long_text(pdf_time=50)
-    print(generate_summary(text))
-
-    from sys import exit
-    exit()
 
     company_id = "03824658"
 

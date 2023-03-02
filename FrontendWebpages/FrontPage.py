@@ -1,49 +1,18 @@
 import os
-
 from flask import Flask, render_template, request, redirect
-
 from CompaniesHouse import CompanySearch
-from data_util import extract_data
-from generate_graphs import generate_bar_graph
-from generate_summary import get_text, generate_summary, answer_question, questions
-from html_writer import html_write, glassdoor_info
-from caption import overall_summary
+from html_writer import get_report
+
 
 
 def generate_html(
         company_id: str, start_year: int = 2010, end_year: int = 2023
 ) -> None:
-    ceo_text, qa_text = get_text(company_id)
-    try:
-        ceo_summary = generate_summary(ceo_text, False)
-        qa_answers = answer_question(qa_text, questions, False)
-    except:
-        ceo_summary = generate_summary(ceo_text, True)
-        qa_answers = answer_question(qa_text, questions, True)
 
-    qa_answers = "<br><br>".join(
-        [f"Question: {i['q']}<br>Answer: {i['a']}" for i in qa_answers]
-    )
+    report = get_report(company_id, start_year, end_year)
 
-    # qa_answers = ""
-
-    extracted_data = extract_data(company_id, start_year, end_year)
-    glassdoor_extract = glassdoor_info(extracted_data["name"])
-
-    summary = overall_summary(extracted_data["data"])
-    img_paths = generate_bar_graph(
-        extracted_data["data"], "static/", company_id, show_graph=False
-    )
-    html_write(
-        f"templates/{company_id}.html",
-        extracted_data["name"],
-        ceo_summary,
-        qa_answers,
-        img_paths,
-        summary,
-        glassdoor_extract,
-    )
-
+    with open(f"FrontendWebpages/templates/{company_id}.html", "w", encoding="utf-8") as f:
+        f.write(report)
 
 app = Flask(__name__)
 
