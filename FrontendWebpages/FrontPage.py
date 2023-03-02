@@ -3,6 +3,9 @@ from flask import Flask, render_template, request, redirect
 from CompaniesHouse import CompanySearch
 from html_writer import get_report
 
+app = Flask(__name__)
+err_404_refreshed = False
+
 
 def generate_html(
         company_id: str, start_year: int = 2010, end_year: int = 2023
@@ -12,10 +15,6 @@ def generate_html(
 
     with open(os.path.join(os.path.dirname(__file__), "templates", f"{company_id}.html"), "w", encoding="utf-8") as f:
         f.write(report)
-
-app = Flask(__name__)
-
-err_404_refreshed = False
 
 
 @app.get("/")

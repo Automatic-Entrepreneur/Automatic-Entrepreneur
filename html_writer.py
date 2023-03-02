@@ -9,8 +9,8 @@ from news import get_news
 from glassdoor_extract import *
 from templates import *
 
-def get_report(company_id, start_year=2010, end_year=2023):
 
+def get_report(company_id, start_year=2010, end_year=2023):
 	name, CH_data, GD_data, CEO_summary, QA_answers, img_paths, captions, news = get_data(company_id)
 	out = ""
 
@@ -125,8 +125,8 @@ def get_report(company_id, start_year=2010, end_year=2023):
 
 	return out
 
-def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 
+def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	print("extracting data from companies house")
 	CH_data = extract_data(company_id, start_year, end_year)
 	name = CH_data["name"]
@@ -195,7 +195,7 @@ if __name__ == "__main__":
 	start_year = 2010
 	end_year = 2023
 
-	report = generate_report(company_id, start_year, end_year)
+	report = get_report(company_id, start_year, end_year)
 
 	with open(f"templates/{company_id}.html", "w") as f:
 		f.write(report)
