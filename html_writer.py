@@ -13,7 +13,7 @@ from glassdoor_extract import *
 from templates import *
 
 
-def get_report(company_id, start_year=2010, end_year=2023):
+def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 	(
 		name,
 		CH_data,
@@ -23,7 +23,7 @@ def get_report(company_id, start_year=2010, end_year=2023):
 		img_paths,
 		captions,
 		news,
-	) = get_data(company_id)
+	) = get_data(company_id, torch=torch)
 
 	out = ""
 	print(GD_data)
@@ -73,12 +73,12 @@ def get_report(company_id, start_year=2010, end_year=2023):
 		out += GRAPHS_CLOSE
 
 	# STOCKS
-	if True:  
+	if False:
 		if len(img_paths) != 0:
 			out += DIVIDER
 		out += STOCK_OPEN
 		out += STOCK.format(
-			name = GD_data["Name"], 
+			name = GD_data["Name"],
 		    symbol = GD_data["Symbol"],
 			exchange = GD_data["Exchange"],
 			currency = GD_data["Currency"], 
@@ -104,8 +104,14 @@ def get_report(company_id, start_year=2010, end_year=2023):
 	# SATISFACTION
 	if True:  # if we have satisfaction data (TODO)
 		out += SATISFACTION_OPEN.format(name=name)
-		out += ""  # satisfaction data (TODO)
+		# Use the GD data to get generate a pie-chart of the satisfaction of the company
+		# satisfaction data (TODO)
+		employee_sat_attributes = {'overall_rating':float(GD_data['Overall Rating']),
+					  'recommended_to_friend':float(GD_data['Recommended to Friends']),
+					  'approve_of_CEO':float(GD_data['Approve of CEO'])}
+		out += generate_pie_charts(employee_sat_attributes)
 		out += SATISFACTION_CLOSE
+
 	# NEWS
 	if news != "":
 		out += NEWS_OPEN.format(name=name) + news + NEWS_CLOSE
@@ -156,7 +162,8 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	name = CH_data["name"]
 
 	print("extracting data from glassdoor")
-	GD_data = glassdoor_info(company_id=company_id, company_name=CH_data["name"])
+	#GD_data = glassdoor_info(company_id=company_id, company_name=CH_data["name"])
+	GD_data = {'Company': 'Softwire', 'Picture': 'https://media.glassdoor.com/sqls/251160/softwire-squarelogo-1506517702277.png', 'Mission': 'N/A', 'Description': 'Softwire is a privately owned software development company based in London, UK. We are specialists in the delivery of software consultancy and bespoke, custom-built software solutions.\r\n\r\nSoftwire focus on providing an exceptional level of service to a manageable number of', 'Website': 'www.softwire.com', 'Industry': 'Software Development', 'Headquarters': 'London, United Kingdom', 'Size': '201 to 500 Employees', 'Recommended to Friends': '99', 'Approve of CEO': '100', 'Overall Rating': '4.8', 'Diversity & Inclusion Rating': '4.6', 'CEO': 'Andrew Thomas', 'Company Type': 'Company - Private', 'Ticker': 'N/A', 'Culture & Values Rating': 'N/A', 'Work/Life Balance Rating': 'N/A', 'Senior Management Rating': 'N/A', 'Compensation & Benefits Rating': 'N/A', 'Career Opportunities Rating': 'N/A', 'Founded': '2000', 'Revenue': '$25 to $100 million (USD)', 'Twitter': 'https://twitter.com/softwireuk', 'LinkedIn': 'https://www.linkedin.com/company/softwire/', 'Instagram': 'https://www.instagram.com/softwireuk/', 'Facebook': 'https://www.facebook.com/softwire', 'YouTube': 'https://www.youtube.com/channel/UCVvQUh9ByC1dQB7x7mudReQ'}
 
 	print("generating summary")
 	questions = get_questions(name)
@@ -222,12 +229,51 @@ def glassdoor_info(company_id, company_name):
 	return ret
 
 
+def generate_pie_chart_html(name, degrees):
+	return f"""<style>
+        .{name}_piechart {{
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: auto;
+            background-image: conic-gradient( 
+                orange {degrees}deg, 
+                lightblue 0);
+        }}
+    </style>
+"""
+
+def generate_pie_charts(attributes):
+	return_string = """
+	<style>    	.grid-container-2	{
+			display: grid;
+			grid-template-columns: auto auto auto;
+			padding: 0px;
+		}
+		.grid-item-2	{
+			padding: 10px;
+			text-align: center;
+		}
+		</style>
+		"""
+	return_string += f"""<div class="grid-container-2" style="position:relative;top:-5px">"""
+	for name in attributes.keys():
+		return_string += generate_pie_chart_html(name, int(attributes[name] * 360/100))
+		return_string += f"""<div class="grid-item-2">
+			<div class="{name}_piechart"></div>
+			<div><strong>{name}</strong></div>
+		</div>"""
+	return_string += """</div>"""
+	return return_string
+
+
+
 if __name__ == "__main__":
 	company_id = "03824658"
 	start_year = 2010
 	end_year = 2023
 
-	report = get_report(company_id, start_year, end_year)
+	report = get_report(company_id, start_year, end_year, False)
 
-	with open(f"templates/{company_id}.html", "w") as f:
+	with open(f"{company_id}.html", "w") as f:
 		f.write(report)
