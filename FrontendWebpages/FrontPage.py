@@ -4,14 +4,13 @@ from CompaniesHouse import CompanySearch
 from html_writer import get_report
 
 
-
 def generate_html(
         company_id: str, start_year: int = 2010, end_year: int = 2023
 ) -> None:
 
     report = get_report(company_id, start_year, end_year)
 
-    with open(f"FrontendWebpages/templates/{company_id}.html", "w", encoding="utf-8") as f:
+    with open(os.path.join(os.path.dirname(__file__), "templates", f"{company_id}.html"), "w", encoding="utf-8") as f:
         f.write(report)
 
 app = Flask(__name__)
