@@ -7,3 +7,8 @@ A web app that allows users to search for UK companies by name and generate a re
 * [Setup](#setup)
 
 ## Setup
+```commandline
+git clone https://github.com/Automatic-Entrepreneur/Automatic-Entrepreneur.github.io.git
+cd Automatic-Entrepreneur/Automatic-Entrepreneur.github.io
+pip -r install requirements.txt
+```
