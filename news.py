@@ -8,7 +8,7 @@ from templates import NEWS, SENTIMENT
 
 
 def get_news(company):
-    newsapi = NewsApiClient(api_key="c818a98d769b414e8df42930ecdd6910")
+    newsapi = NewsApiClient(api_key="3382308b482b428b83a8fddf4ea6e611")
     today = date.today().strftime("%Y-%m-%d")
     last_month = (date.today() - timedelta(days=28)).strftime("%Y-%m-%d")
     all_articles = newsapi.get_everything(
