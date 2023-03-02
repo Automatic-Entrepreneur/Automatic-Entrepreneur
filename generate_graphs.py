@@ -49,13 +49,19 @@ def generate_bar_graph(
             ax.set_title(attribute)
             ax.set_ylabel(f"{attribute_map[attribute][1].title()} in GBP")
             ax.set_xlabel("Year")
+            ax.get_xaxis().set_major_formatter(
+                ticker.FuncFormatter(lambda x, _: "{:d}".format(int(x)))
+            )
 
             ax.yaxis.labelpad = 10
             ax.get_yaxis().set_major_formatter(
-                ticker.FuncFormatter(lambda y, p: format(int(y), ","))
+                ticker.FuncFormatter(lambda y, _: "{:,d}".format(int(y)))
             )
 
-            ax.set_ylim([min(0, min(extracted_data[attribute]["values"])), max(extracted_data[attribute]["values"]) * 1.2])
+            minimum = min(0, min(extracted_data[attribute]["values"])) * 1.2
+            if minimum < 0:
+                ax.axhline(color="black")
+            ax.set_ylim([minimum, max(extracted_data[attribute]["values"]) * 1.2])
             plt.savefig(f"{path}{company_id}_{attribute}.png", bbox_inches="tight")
             output[attribute] = f"{path}{company_id}_{attribute}.png"
 
