@@ -1,3 +1,6 @@
+import os
+import pickle as pkl
+
 from fake_headers import Headers
 from caption import overall_summary
 from datetime import datetime
@@ -153,12 +156,12 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	name = CH_data["name"]
 
 	print("extracting data from glassdoor")
-	GD_data = glassdoor_info(company_name=CH_data["name"])
+	GD_data = glassdoor_info(company_id=company_id, company_name=CH_data["name"])
 
 	print("generating summary")
 	questions = get_questions(name)
 	CEO_text, QA_text = get_text(company_id)
-	CEO_summary = generate_summary(CEO_text, not torch)
+	CEO_summary = generate_summary(company_id, CEO_text, not torch)
 	QA_answers = answer_question(QA_text, questions, not torch)
 
 	if GD_data["Headquarters"] != "N/A":
@@ -174,12 +177,18 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	captions = overall_summary(CH_data["data"])
 
 	print("getting news")
-	news = get_news(name)
+	news = get_news(GD_data['Company'])
 
 	return name, CH_data, GD_data, CEO_summary, QA_answers, img_paths, captions, news
 
 
-def glassdoor_info(company_name):
+def glassdoor_info(company_id, company_name):
+	root = os.path.dirname(__file__)
+	path = os.path.join(root, f"glassdoor/cache/{company_id}.pkl")
+	'''
+	if os.path.exists(path):
+		return pkl.load(open(path, "rb"))
+	'''
 	header = Headers(
 		browser="chrome",  # Generate only Chrome UA
 		os="win",  # Generate only Windows platform
@@ -208,6 +217,8 @@ def glassdoor_info(company_name):
 	if ret["Ticker"] != "N/A":
 		finance_scrape(ret["Ticker"], ret)
 	get_socials(driver, ret)
+
+	# pkl.dump(ret, open(path, "wb"))
 	return ret
 
 

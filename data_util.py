@@ -1,6 +1,7 @@
 import typing
 import numpy as np
 from CompaniesHouse.CompanyInfo import CompanyInfo
+from fuzzywuzzy import fuzz
 
 trend_map = {1: "increased", -1: "decreased", 0: "remained steady"}
 
@@ -53,34 +54,69 @@ def extract_data(
 ) -> dict[str, typing.Union[str, dict[str, dict[str, list[typing.Union[int, float]]]]]]:
 	company = CompanyInfo(company_id)
 	extracted_data = {}
-	for attribute in attribute_map:
-		extracted_data[attribute] = {}
+
 	for year in range(start_year, end_year):
 		try:
-			account_info = company.get_account_information(year, pdf_accept=True)
+			account_info_for_this_year = company.get_account_information(year, pdf_accept=True)
+			# print(f"grabbing info for {year}")
+			# for record in account_info_for_this_year:
+			# 	print(record)
 		except IndexError:
 			continue
 		except (
 				NotImplementedError
 		):  # Risky behaviour - how to indicate the graph isn't there
 			continue
-		for record in account_info:
-			for attribute in extracted_data:
-				if record["name"] == attribute:
+
+		for attribute in attribute_map:
+			for record in account_info_for_this_year: # find corresponding record
+				if fuzz.partial_ratio(record["name"], attribute) > 60:  # arbitrary cutoff 60
+					attribute_name = record["name"]
 					if record["startdate"] is None:
 						record_year = int(record["instant"][0:4])
 					else:
 						record_year = int(record["startdate"][0:4])
-					if record_year not in extracted_data[attribute]:
-						extracted_data[attribute][record_year] = record["value"]
+
+					if attribute_name not in extracted_data:
+						extracted_data[attribute_name] = {}
+
+					if record_year not in extracted_data[attribute_name]:
+						extracted_data[attribute_name][record_year] = record["value"]
 					else:
-						extracted_data[attribute][record_year] = max(
-							extracted_data[attribute][record_year], record["value"]
+						extracted_data[attribute_name][record_year] = max(
+							extracted_data[attribute_name][record_year], record["value"]
 						)
+
+	# choose which attributes to use
+	attributes_to_use = dict.fromkeys(attribute_map.keys())
+	for attribute in attribute_map:
+		ratio = 0
+		for contender in extracted_data:
+			if contender == attribute: # prioritise exact match
+				attributes_to_use[attribute] = attribute
+				break
+			this_ratio = fuzz.partial_ratio(contender, attribute)
+			if this_ratio > ratio:  # 60 is arbitrary cutoff
+				attributes_to_use[attribute] = contender
+
+	# prepare output
 	output = {}
-	for attribute, data_by_year in extracted_data.items():
-		output[attribute] = {"years": [], "values": []}
-		for year, value in sorted(data_by_year.items(), key=lambda t: t[0]):
-			output[attribute]["years"].append(year)
-			output[attribute]["values"].append(value)
+	for attribute in attributes_to_use:
+		if attributes_to_use[attribute] is not None:
+			actual_attribute = attributes_to_use[attribute]
+			data_by_year = extracted_data[actual_attribute]
+			output[actual_attribute] = {"years": [], "values": []}
+			for year, value in sorted(data_by_year.items(), key=lambda t: t[0]):
+				output[actual_attribute]["years"].append(year)
+				output[actual_attribute]["values"].append(value)
+		else:
+			print(f"no data found for {attribute}")
+
 	return {"name": company.get_name().title(), "data": output}
+
+
+if __name__ == "__main__":
+	extracted_data = extract_data('03824658', 2010, 2023)
+	for entry in extracted_data["data"]:
+		print(entry, ":", extracted_data["data"][entry])
+	# print(original_extract_data('03824658', 2010, 2023))

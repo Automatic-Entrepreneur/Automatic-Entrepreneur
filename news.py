@@ -3,27 +3,31 @@ try:
 except:
     pass
 from newsapi import NewsApiClient
-from datetime import date, timedelta
 from templates import NEWS, SENTIMENT
 
 
 def get_news(company):
-    newsapi = NewsApiClient(api_key="c818a98d769b414e8df42930ecdd6910")
-    today = date.today().strftime("%Y-%m-%d")
-    last_month = (date.today() - timedelta(days=28)).strftime("%Y-%m-%d")
+    newsapi = NewsApiClient(api_key="21bf39a548cc4dd6a594ee32b5b5781f")
     all_articles = newsapi.get_everything(
-        q=company.split(" ")[0],
-        from_param=last_month,
-        to=today,
-        language="en",
-        sort_by="relevancy",
-        page=2,
-    )
-
+        q=company,
+        sources='australian-financial-review,bloomberg,business-insider,business-insider-uk,financial-post,fortune,the-wall-street-journal,reuters',
+        language='en',
+        page_size=20,
+        sort_by="relevancy"
+    )['articles']
+    news_results = newsapi.get_everything(
+        q=company,
+        sources='bbc-news,google-news-uk,google-news',
+        language='en',
+        page_size=20,
+        sort_by="relevancy"
+    )['articles']
+    all_articles.extend(filter(lambda x: company.lower() in x['title'], news_results))
+    all_articles.extend(filter(lambda x: company.lower() not in x['title'], news_results))
     try:
         sentiment_pipeline = pipeline("sentiment-analysis")
         sentiments = sentiment_pipeline(
-            [i["title"] for i in all_articles["articles"][:5]]
+            [i["title"] for i in all_articles]
         )
     except:
         sentiments = []
@@ -35,11 +39,7 @@ def get_news(company):
                                        date=i["publishedAt"].split("T")[0],
                                        author=i["author"],
                                        publisher=i["source"]["Name"],
-                                       link=i["url"]) for i in all_articles["articles"][:5]]
-        )
-        content += SENTIMENT.format(pos=str(int((100 * sum([i=="POSITIVE" for i in sentiments]) / len(sentiments)))))
+                                       link=i["url"]) for i in all_articles[:5]]
+                          )
+        content += SENTIMENT.format(pos=str(int((100 * sum([i == "POSITIVE" for i in sentiments]) / len(sentiments)))))
         return content
-
-
-if __name__ == "__main__":
-    print(get_news("Google"))
