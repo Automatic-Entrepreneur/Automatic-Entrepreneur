@@ -135,6 +135,86 @@ GRAPHS_CLOSE = '''				</div>
 STOCK_OPEN = '''				<h3>Stock breakdown</h3>
 				<div>
 '''
+STOCK = '''				<h3>Stock breakdown</h3>
+						<h3> Daily Stock Information </h3>
+    
+					<table>
+						<tr>
+							<td> <b>Name</b></td>
+							<td>{name}</td>
+						</tr>
+						<tr>
+							<td><b>Symbol</b></td>
+							<td>{symbol}</td>
+						</tr>
+						<tr>
+							<td><b>Exchange</b></td>
+							<td>{exchange}</td>
+						</tr>
+						<tr>
+							<td><b>Currency</b></td>
+							<td>{currency}</td>
+						</tr>
+						<tr>
+							<td><b>Price</b></td>
+							<td>{price}</td>
+						</tr>
+						<tr>
+							<td><b>Trade Volume</b></td>
+							<td>{tradevol}</td>
+						</tr>
+						<tr>
+							<td><b>Change</b></td>
+							<td>{change}</td>
+						</tr>
+						<tr>
+							<td><b>52 Week High</b></td>
+							<td>{_52hi}</td>
+						</tr>
+						<tr>
+							<td><b>52 Week Low</b></td>
+							<td>{_52lo}</td>
+						</tr>
+						<tr>
+							<td><b>50 Day Average</b></td>
+							<td>{_50ave}</td>
+						</tr>
+						<tr>
+							<td><b>200 Day Average</b></td>
+							<td>{_200ave}</td>
+						</tr>
+					</table>
+					
+					<h3> Other Financial Information </h3>
+						
+					<table>
+						<tr>
+							<td> <b>Market Cap</b></td>
+							<td>{marketcap}</td>
+						</tr>
+						<tr>
+							<td><b>EBITDA</b></td>
+							<td>{ebitda}</td>
+						</tr>
+						<tr>
+							<td><b>PERatio</b></td>
+							<td>{peratio}</td>
+						</tr>
+						<tr>
+							<td><b>PEGRatio</b></td>
+							<td>{pegratio}</td>
+						</tr>
+						<tr>
+							<td><b>Book Value</b></td>
+							<td>{bookval}</td>
+						</tr>
+						<tr>
+							<td><b>Profit Margin</b></td>
+							<td>{profitmargin}</td>
+						</tr>
+						
+					</table>
+'''
 STOCK_CLOSE = '''				</div>
 '''
 FINANCE_CLOSE = '''			</div>
