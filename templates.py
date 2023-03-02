@@ -135,8 +135,8 @@ GRAPHS_CLOSE = '''				</div>
 STOCK_OPEN = '''				<h3>Stock breakdown</h3>
 				<div>
 '''
-STOCK = '''				<h3>Stock breakdown</h3>
-						<h3> Daily Stock Information </h3>
+STOCK = '''				
+						<h4> Daily Stock Information </h4>
     
 					<table>
 						<tr>
@@ -185,7 +185,7 @@ STOCK = '''				<h3>Stock breakdown</h3>
 						</tr>
 					</table>
 					
-					<h3> Other Financial Information </h3>
+					<h4> Other Financial Information </h4>
 						
 					<table>
 						<tr>
