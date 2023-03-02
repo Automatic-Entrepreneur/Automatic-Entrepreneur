@@ -142,7 +142,7 @@ class CompanyInfo:
     def get_account_history(self):
         """
         :return: list of accounts filed by the company
-        :rtype: dict[str, any]
+        :rtype: list[dict[str, any]]
         """
         self.__fetch_accounts()
         return self.__accounts
