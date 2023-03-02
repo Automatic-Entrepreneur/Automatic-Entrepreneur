@@ -41,5 +41,5 @@ def get_news(company):
                                        publisher=i["source"]["Name"],
                                        link=i["url"]) for i in all_articles[:5]]
                           )
-        content += SENTIMENT.format(pos=str(int((100 * sum([i == "POSITIVE" for i in sentiments]) / len(sentiments)))))
+        content += SENTIMENT.format(pos=str(int((100 * sum([i['label'] == "POSITIVE" for i in sentiments]) / len(sentiments)))))
         return content
