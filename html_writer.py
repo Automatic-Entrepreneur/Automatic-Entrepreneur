@@ -73,7 +73,7 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 		out += GRAPHS_CLOSE
 
 	# STOCKS
-	if False:
+	if True:
 		if len(img_paths) != 0:
 			out += DIVIDER
 		out += STOCK_OPEN
@@ -258,11 +258,25 @@ def generate_pie_charts(attributes):
 		"""
 	return_string += f"""<div class="grid-container-2" style="position:relative;top:-5px">"""
 	for name in attributes.keys():
-		return_string += generate_pie_chart_html(name, int(attributes[name] * 360/100))
-		return_string += f"""<div class="grid-item-2">
-			<div class="{name}_piechart"></div>
-			<div><strong>{name}</strong></div>
-		</div>"""
+		if name == "overall_rating":
+			return_string += generate_pie_chart_html(name, int(attributes[name] * 360 / 5))
+			return_string += f"""<div class="grid-item-2">
+				<div class="{name}_piechart"></div>
+				<div><strong>Glassdoor rating {attributes[name]} stars</strong></div>
+			</div>"""
+		elif name == "recommended_to_friend":
+			return_string += generate_pie_chart_html(name, int(attributes[name] * 360/100))
+			return_string += f"""<div class="grid-item-2">
+				<div class="{name}_piechart"></div>
+				<div><strong>{int(attributes[name])}% Recommended to a friend</strong></div>
+			</div>"""
+		else:
+			return_string += generate_pie_chart_html(name, int(attributes[name] * 360/100))
+			return_string += f"""<div class="grid-item-2">
+				<div class="{name}_piechart"></div>
+				<div><strong>{int(attributes[name])}% Approve of the CEO</strong></div>
+			</div>"""
+
 	return_string += """</div>"""
 	return return_string
 
