@@ -144,7 +144,7 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	print("generating summary")
 	questions = get_questions(name)
 	CEO_text, QA_text = get_text(company_id)
-	CEO_summary = generate_summary(CEO_text, not torch)
+	CEO_summary = generate_summary(company_id, CEO_text, not torch)
 	QA_answers = answer_question(QA_text, questions, not torch)
 
 	if GD_data["Headquarters"] != "N/A":
