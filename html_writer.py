@@ -157,7 +157,7 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	captions = overall_summary(CH_data["data"])
 
 	print("getting news")
-	news = get_news(name)
+	news = get_news(GD_data['Company'])
 
 	return name, CH_data, GD_data, CEO_summary, QA_answers, img_paths, captions, news
 
