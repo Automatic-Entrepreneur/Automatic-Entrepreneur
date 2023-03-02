@@ -36,7 +36,7 @@ HEAD = '''<!doctype html>
 		<div style="display:flex;justify-content:space-between">
 				<div>
 					<h1>
-						<a href="{website}">
+						<a href="https://{website}">
 '''
 TITLE_P = '''						<img src='{logo}' style='height:60px;position:relative;top:20px'></a>    {name} Summary
 '''
