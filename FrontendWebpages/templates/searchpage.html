@@ -49,22 +49,6 @@
        </div>
    </form>
    <button style="margin-bottom:3cm;" class="button2" id="reportBtn" type="button">Generate Report</button>
-   <script type="text/javascript">
-        function generateReport(companyName) {
-            $.ajax({
-                type: "POST",
-                url: "/report",
-                async: false,
-                data: { companyName: companyName },
-                success: function(response) {
-                    document.location.href = "/" + response
-                },
-            });
-        }
-
-        $("#reportBtn").click(function(){
-            generateReport($("#search").val());
-        });
-    </script>
+   <script type="text/javascript" src="{{url_for('static', filename='js/generateReport.js')}}"></script>
 </body>
 </html>
