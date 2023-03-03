@@ -73,7 +73,7 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 		out += GRAPHS_CLOSE
 
 	# STOCKS
-	if True:
+	if GD_data['Ticker'] != 'N/A':
 		if len(img_paths) != 0:
 			out += DIVIDER
 		out += STOCK_OPEN
