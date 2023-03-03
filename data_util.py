@@ -71,7 +71,7 @@ def extract_data(
 		for attribute in attribute_map:
 			for record in account_info_for_this_year: # find corresponding record
 				if fuzz.partial_ratio(record["name"], attribute) > 60:  # arbitrary cutoff 60
-					attribute_name = record["name"].replace(" ", "_").replace("/", "_or_").replace(".", "_")  # avoid invalid path
+					attribute_name = record["name"]
 					if record["startdate"] is None:
 						record_year = int(record["instant"][0:4])
 					else:
