@@ -51,7 +51,7 @@ def generate_bar_graph(
             ax.set_title(attribute)
             ax.set_ylabel(f"{attribute_map[attribute][1].title()} in GBP")
             ax.set_xlabel("Year")
-            ax.set_xticks(range(min(years), max(years) + 1))
+            ax.set_xticks(range(min(years), max(years) + 1, max(10, (max(years) - min(years)) // 10) + 1))
             ax.get_xaxis().set_major_formatter(ticker.FormatStrFormatter("%d"))
 
             ax.yaxis.labelpad = 10

@@ -193,7 +193,7 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 		)
 	print("generating graphs")
 	img_paths = generate_bar_graph(
-		CH_data["data"], "static/", company_id, show_graph=False
+		CH_data["data"], "static/img/", company_id, show_graph=False
 	)
 
 	print("generating captions")
