@@ -73,7 +73,7 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 		out += GRAPHS_CLOSE
 
 	# STOCKS
-	if True:  # TODO: attributes not found in GD_data
+	if False:  # TODO: attributes not found in GD_data
 		if len(img_paths) != 0:
 			out += DIVIDER
 		out += STOCK_OPEN
@@ -102,7 +102,7 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 	out += SAYING_OPEN
 
 	# SATISFACTION
-	if True:  # if we have satisfaction data (TODO)
+	if False:  # if we have satisfaction data (TODO)
 		out += SATISFACTION_OPEN.format(name=name)
 		# Use the GD data to get generate a pie-chart of the satisfaction of the company
 		# satisfaction data (TODO)
@@ -162,7 +162,9 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	name = CH_data["name"]
 
 	print("extracting data from glassdoor")
-	# GD_data = glassdoor_info(company_id=company_id, company_name=CH_data["name"])
+	GD_data = glassdoor_info(company_id=company_id, company_name=CH_data["name"])
+
+	'''
 	GD_data = {'Company': 'Softwire',
 	           'Picture': 'https://media.glassdoor.com/sqls/251160/softwire-squarelogo-1506517702277.png',
 	           'Mission': 'N/A',
@@ -177,6 +179,7 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	           'LinkedIn': 'https://www.linkedin.com/company/softwire/',
 	           'Instagram': 'https://www.instagram.com/softwireuk/', 'Facebook': 'https://www.facebook.com/softwire',
 	           'YouTube': 'https://www.youtube.com/channel/UCVvQUh9ByC1dQB7x7mudReQ'}
+	'''
 
 	print("generating summary")
 	questions = get_questions(name)
