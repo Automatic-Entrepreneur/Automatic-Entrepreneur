@@ -247,8 +247,14 @@ class ScannedReportReader:
                         if orphan in val_to_col:
                             val_to_col.pop(orphan)
             # else the file has multiple indent levels in the same page
+
+        # a fallback to reject all dates more than 1500 days away from the query date
+        threshold = 1500
+        query_year = datetime(year=self.__year, month=6, day=6)
         for val in set(val_to_col) & set(val_to_row):
-            # TODO make this float conversion more rigorous
+
+            # TODO make float conversion more rigorous
+
             match = re.match(r'[-+]?\d+(,\d{3})*(\.\d{2})?', page.text[val].replace("(", "").replace(")", ""))
             if match:
                 value = float(match.group().replace(",", ""))
@@ -256,12 +262,20 @@ class ScannedReportReader:
                 # unable to extract a float value
                 continue
             try:
-                instant = parser.parse(page.text[val_to_col[val]], dayfirst=True, fuzzy=True, default=datetime(self.__year, 12, 31)).strftime('%Y-%m-%d')
-                name = page.text[val_to_row[val]]
+                date = parser.parse(page.text[val_to_col[val]], dayfirst=True, fuzzy=True, default=datetime(self.__year, 12, 31))
+                if abs((date - query_year).days) < threshold:
+                    instant = date.strftime('%Y-%m-%d')
+                    name = page.text[val_to_row[val]]
+                else:
+                    instant = name = None
             except:
                 try:
-                    instant = parser.parse(page.text[val_to_row[val]], dayfirst=True, fuzzy=True, default=datetime(self.__year, 12, 31)).strftime('%Y-%m-%d')
-                    name = page.text[val_to_col[val]]
+                    date = parser.parse(page.text[val_to_row[val]], dayfirst=True, fuzzy=True, default=datetime(self.__year, 12, 31))
+                    if abs((date - query_year).days) < threshold:
+                        instant = date.strftime('%Y-%m-%d')
+                        name = page.text[val_to_col[val]]
+                    else:
+                        instant = name = None
                 except:
                     instant = None
                     name = None
