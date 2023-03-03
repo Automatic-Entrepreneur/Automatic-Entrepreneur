@@ -215,6 +215,9 @@ STOCK = '''
 						
 					</table>
 '''
+TABLE = '''				<h3>Finance Information</h3>
+									{table}
+'''
 STOCK_CLOSE = '''				</div>
 '''
 FINANCE_CLOSE = '''			</div>

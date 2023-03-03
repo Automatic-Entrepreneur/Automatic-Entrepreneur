@@ -7,6 +7,7 @@ from datetime import datetime
 from data_util import extract_data
 from generate_summary import get_text, generate_summary, answer_question, get_questions
 from generate_graphs import generate_bar_graph
+from generate_financetable import generate_table
 from news import get_news
 
 from glassdoor_extract import *
@@ -96,6 +97,7 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 			bookval=GD_data["BookValue"],
 			profitmargin=GD_data["ProfitMargin"])
 		out += STOCK_CLOSE
+		out += TABLE.format(table=generate_table(GD_data))
 	out += FINANCE_CLOSE
 
 	# = WHAT PEOPLE ARE SAYING =
