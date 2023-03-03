@@ -21,3 +21,7 @@ newsapi-python~=0.2.4
 
 bs4~=0.0.1
 bokeh~=3.0.3
+
+fuzzywuzzy~=0.18.0
+
+Levenshtein~=0.20.9
