@@ -35,27 +35,30 @@ def generate_bar_graph(
 
     output = {}
     for attribute in extracted_data:
-        if len(extracted_data[attribute]["years"]) > 0:
+        years = extracted_data[attribute]["years"]
+        if len(years) > 0:
             f, ax = plt.subplots(figsize=(8, 5))
 
             ax.set_axisbelow(True)
             plt.grid(axis="y", alpha=0.5)
 
             ax.bar(
-                extracted_data[attribute]["years"],
+                years,
                 extracted_data[attribute]["values"],
                 width=0.6,
             )
+
             ax.set_title(attribute)
             ax.set_ylabel(f"{attribute_map[attribute][1].title()} in GBP")
             ax.set_xlabel("Year")
+            ax.set_xticks(range(min(years), max(years) + 1))
             ax.get_xaxis().set_major_formatter(
-                ticker.FuncFormatter(lambda x, _: "{:d}".format(int(x)))
+                ticker.FormatStrFormatter("%d")
             )
 
             ax.yaxis.labelpad = 10
             ax.get_yaxis().set_major_formatter(
-                ticker.FuncFormatter(lambda y, _: "{:,d}".format(int(y)))
+                ticker.FuncFormatter(lambda y, _: format(int(y), ","))
             )
 
             minimum = min(0, min(extracted_data[attribute]["values"])) * 1.2
