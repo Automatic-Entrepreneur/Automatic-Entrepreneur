@@ -104,6 +104,7 @@ def extract_data(
 	for attribute in attributes_to_use:
 		if attributes_to_use[attribute] is not None:
 			actual_attribute = attributes_to_use[attribute]
+			attribute_map[actual_attribute] = attribute_map["FixedAssets"]  # put value in attribute_map
 			data_by_year = extracted_data[actual_attribute]
 			output[actual_attribute] = {"years": [], "values": []}
 			for year, value in sorted(data_by_year.items(), key=lambda t: t[0]):
