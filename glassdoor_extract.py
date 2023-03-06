@@ -21,12 +21,13 @@ def glassdoor_scrape(driver: WebDriver, company_name: str, ret: dict[str, any]) 
     element = driver.find_element(By.XPATH, ".//a[contains(@href, '/Overview/')]")
     # print('got overview')
     # click on the first instance
+    sleep(5)
     driver.execute_script("arguments[0].click();", element)
     # print('clicked first')
-    html = driver.page_source
-    file = open("boo.html","w")
-    file.write(html)
-    file.close()
+    # html = driver.page_source
+    # file = open("boo.html","w")
+    # file.write(html)
+    # file.close()
     # for i in range(3):
     #        sleep(1)
     #        driver.refresh()
