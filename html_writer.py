@@ -104,10 +104,11 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 	out += SAYING_OPEN
 
 	# SATISFACTION
-	if False:  # if we have satisfaction data (TODO)
+	if 'Overall Rating' in GD_data.keys() and 'Recommended to Friends' in GD_data.keys()\
+			and 'Approve of CEO' in GD_data.keys():  # if we have satisfaction data
 		out += SATISFACTION_OPEN.format(name=name)
 		# Use the GD data to get generate a pie-chart of the satisfaction of the company
-		# satisfaction data (TODO)
+		# satisfaction data
 		employee_sat_attributes = {'overall_rating': float(GD_data['Overall Rating']),
 		                           'recommended_to_friend': float(GD_data['Recommended to Friends']),
 		                           'approve_of_CEO': float(GD_data['Approve of CEO'])}
@@ -165,8 +166,7 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 
 	print("extracting data from glassdoor")
 	GD_data = glassdoor_info(company_id=company_id, company_name=CH_data["name"])
-
-	'''
+	"""
 	GD_data = {'Company': 'Softwire',
 	           'Picture': 'https://media.glassdoor.com/sqls/251160/softwire-squarelogo-1506517702277.png',
 	           'Mission': 'N/A',
@@ -181,8 +181,7 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	           'LinkedIn': 'https://www.linkedin.com/company/softwire/',
 	           'Instagram': 'https://www.instagram.com/softwireuk/', 'Facebook': 'https://www.facebook.com/softwire',
 	           'YouTube': 'https://www.youtube.com/channel/UCVvQUh9ByC1dQB7x7mudReQ'}
-	'''
-
+	"""
 	print("generating summary")
 	questions = get_questions(name)
 	CEO_text, QA_text = get_text(company_id)
