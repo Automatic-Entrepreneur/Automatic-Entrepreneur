@@ -5,7 +5,7 @@ def generate_table(GD_data):
     return_df = pd.DataFrame()
     for i in ['Balance Sheet', 'Income Statement', 'Cash Flow', 'Annual Earnings']:
         x = GD_data[i]
-        res = [json.loads(idx.replace("'", '"')) for idx in [x[0]]]
+        res = [json.loads(idx.replace("'", '"')) for idx in [x]]
         for j in res:
             newlist = j
         x = pd.DataFrame(newlist)
