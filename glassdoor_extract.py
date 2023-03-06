@@ -23,10 +23,10 @@ def glassdoor_scrape(driver: WebDriver, company_name: str, ret: dict[str, any]) 
     # click on the first instance
     driver.execute_script("arguments[0].click();", element)
     # print('clicked first')
-    # html = driver.page_source
-    # file = open("boo.html","w")
-    # file.write(html)
-    # file.close()
+    html = driver.page_source
+    file = open("boo.html","w")
+    file.write(html)
+    file.close()
     # for i in range(3):
     #        sleep(1)
     #        driver.refresh()
