@@ -18,11 +18,15 @@ def glassdoor_scrape(driver: WebDriver, company_name: str, ret: dict[str, any]) 
 
     driver.get(url)
     # print('got url')
-    element = driver.find_element(By.XPATH, ".//a[contains(@href, '/Overview/')]")
+    #element = driver.find_element(By.XPATH, ".//a[contains(@href, '/Overview/')]")
+    page = driver.find_element(By.XPATH, ".//a[contains(@href, '/Overview/')]").get_attribute("href")
+    #print(page)
+    #sleep(5)
+    driver.get(page)
+    
     # print('got overview')
     # click on the first instance
-    sleep(5)
-    driver.execute_script("arguments[0].click();", element)
+    #driver.execute_script("arguments[0].click();", element)
     # print('clicked first')
     # html = driver.page_source
     # file = open("boo.html","w")

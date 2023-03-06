@@ -234,6 +234,7 @@ def glassdoor_info(company_id, company_name):
 	chrome_options.add_argument("--headless")
 	chrome_options.add_argument("--ignore-certificate-errors")
 	chrome_options.add_argument("--incognito")
+	chrome_options.add_argument('--no-sandbox')
 
 	driver = webdriver.Chrome(options=chrome_options)
 
