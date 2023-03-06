@@ -1,5 +1,7 @@
+"""
+Provides an interface to the Companies House API
+"""
 import time
-
 import CompaniesHouse.key
 import requests
 import json
@@ -40,10 +42,9 @@ class CompanyInfo:
 
     # I do not anticipate making anywhere close to this 600 requests so removed the rate limiter
 
-    def __init__(self, company_info):
+    def __init__(self, company_info: str):
         """
         :param company_info: The company ID on Company House.
-        :type company_info: str
         """
         self.__company_number = company_info
         self.__key = CompaniesHouse.key.api_key
@@ -79,88 +80,77 @@ class CompanyInfo:
             response = requests.get(query, auth=(self.__key, ''), headers={'category': 'accounts'}, params={'category': 'accounts'})
             self.__accounts = json.JSONDecoder().decode(response.text)['items']
 
-    def all_info(self):
+    def all_info(self) -> dict[str, any]:
         """
         :return: "standard" information about the company
-        :rtype: dict[str, any]
         """
         self.__fetch_info()
         return self.__info
 
-    def get_name(self):
+    def get_name(self) -> str:
         """
         :return: the name of the company
-        :rtype: str
         """
         self.__fetch_info()
         return self.__info['company_name']
 
-    def get_office(self):
+    def get_office(self) -> dict[str, str]:
         """
         :return: A dictionary containing address of the company office.
         address_line_1: first line of address,
         address_line_2: second line of address,
         locality: city the office is in,
         postal_code: postcode
-        :rtype: dict[str, str]
         """
         self.__fetch_info()
         return self.__info['registered_office_address']
 
-    def date_of_creation(self):
+    def date_of_creation(self) -> str:
         """
         :return: The date the company was made in the form "yyyy-mm-dd"
-        :rtype: str
         """
         self.__fetch_info()
         return self.__info['date_of_creation']
 
-    def type(self):
+    def type(self) -> str:
         """
         :return: the type of company
-        :rtype: str
         """
         self.__fetch_info()
         return self.__info['type']
 
-    def current_directors(self):
+    def current_directors(self) -> list[str]:
         """
         :return: list of "directors"
-        :rtype: list[str]
         """
         self.__fetch_people()
         return [p['name'] for p in self.__people['items'] if p['officer_role'] == 'director' and 'resigned_on' not in p]
 
-    def current_secretaries(self):
+    def current_secretaries(self) -> list[str]:
         """
         :return: list of "secretaries"
-        :rtype: list[str]
         """
         self.__fetch_people()
         return [p['name'] for p in self.__people['items'] if p['officer_role'] == 'secretary' and 'resigned_on' not in p]
 
-    def get_account_history(self):
+    def get_account_history(self) -> list[dict[str, any]]:
         """
         :return: list of accounts filed by the company
-        :rtype: list[dict[str, any]]
         """
         self.__fetch_accounts()
         return self.__accounts
 
-    def get_account_information(self, year, pdf_accept=True, pdf_time=10, pdf_pages=50):
+    def get_account_information(
+            self, year: int, pdf_accept: bool = True, pdf_time: int = 10, pdf_pages: int = 50
+    ) -> list[dict[str, str]]:
         """
         This can be a VERY expensive function.
         It may have to transcribe dozens or even hundreds of pages of pdf.
         It caches as much as possible to reduce load.
         :param year: the year in which the account was filed
-        :type year: int
         :param pdf_accept: allows/disallows processing scanned pdfs
-        :type pdf_accept: bool
         :param pdf_time: maximum amount of time in s to spend trying to read a scanned pdf
-        :type pdf_time: int
         :param pdf_pages: maximum number of pages in a scanned pdf to attempt to read
-        :type pdf_pages: int
-        :return: list[dict[str, str]]
         """
         dir_path = os.path.join(self.path, "companies_house/{}/{}".format(self.__company_number, year))
         pkl_path = os.path.join(self.path, "companies_house/{}/{}/accounts_{}.pkl".format(self.__company_number, year, year))
@@ -208,13 +198,16 @@ class CompanyInfo:
         pkl.dump(information, open(pkl_path, 'wb'))
         return information
 
-    def get_long_text(self, year=None, pdf_accept=True, pdf_time=10, pdf_pages=50):
+    def get_long_text(
+            self, year: int = None, pdf_accept: bool = True, pdf_time: int = 10, pdf_pages: int = 50, pdf_len: int = 2000
+    ) -> str:
         """
-        :param year: defaults to the most recent year!
-        :param pdf_accept:
-        :param pdf_time:
-        :param pdf_pages:
-        :return:
+        :param year: the account to parse -- defaults to the most recent year
+        :param pdf_accept: if bool then parse pdfs else return ""
+        :param pdf_time: the maximum time to spend extracting data
+        :param pdf_pages: the maximum number of pages to parse
+        :param pdf_len: the maximum number of characters to extract
+        :return: Textual contents of the companies report
         """
         self.__fetch_accounts()
         if not year:
@@ -248,7 +241,7 @@ class CompanyInfo:
                         if len(block) > 200 and any(map(lambda x: len(x) > 80, block.split("\n"))):
                             clean_text.append(block.replace("\n", " "))
                             length += len(clean_text[-1])
-                            if length > 2000:
+                            if length > pdf_len:
                                 break
                 text = " ".join(clean_text)
         dir_path = os.path.join(self.path, "companies_house/{}/{}".format(self.__company_number, year))
@@ -259,5 +252,5 @@ class CompanyInfo:
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
         with open(os.path.join(dir_path, "text_{}.txt".format(year)), "w") as text_cache:
-            text_cache.write(text[:2000])
+            text_cache.write(text[:pdf_len])
         return text

@@ -1,12 +1,21 @@
+"""
+Provides a function which extracts news stories about a given company
+"""
 try:
     from transformers import pipeline
-except:
-    pass
+except ImportError:
+    pipeline = None
 from newsapi import NewsApiClient
 from templates import NEWS, SENTIMENT
 
 
-def get_news(company):
+def get_news(company: str) -> str:
+    """
+    This function gets news about the provided company and returns the HTML content to
+    be inserted into the final generated webpage
+    :param company: the name of the company to get news about
+    :return: html containing news information about the given company
+    """
     newsapi = NewsApiClient(api_key="21bf39a548cc4dd6a594ee32b5b5781f")
     all_articles = newsapi.get_everything(
         q=company,
@@ -24,12 +33,11 @@ def get_news(company):
     )['articles']
     all_articles.extend(filter(lambda x: company.lower() in x['title'], news_results))
     all_articles.extend(filter(lambda x: company.lower() not in x['title'], news_results))
-    try:
-        sentiment_pipeline = pipeline("sentiment-analysis")
-        sentiments = sentiment_pipeline(
+    if pipeline:
+        sentiments = pipeline("sentiment-analysis")(
             [i["title"] for i in all_articles]
         )
-    except:
+    else:
         sentiments = []
 
     if len(sentiments) == 0:
