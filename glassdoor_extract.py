@@ -284,46 +284,28 @@ def finance_scrape(ticker, ret):
 
 
 def get_socials(driver: WebDriver, ret: dict[str, any]) -> None:
+    socials = [
+        "Twitter",
+        "LinkedIn",
+        "Instagram",
+        "Facebook",
+        "Youtube",
+    ]
+
+    for social in socials:
+        ret[social] = "N/A"
+
     if ret['Website'] == 'N/A':
-        ret['Twitter'] = 'N/A'
-        ret['LinkedIn'] = 'N/A'
-        ret['Instagram'] = 'N/A'
-        ret['Facebook'] = 'N/A'
-        ret['YouTube'] = 'N/A'
+        return
         
     url = "https://" + str(ret["Website"])
     print(type(url))
     driver.get(url)
     print("got company url")
 
-    # Get Twitter
-    try:
-        twitter = driver.find_element(By.XPATH, ".//a[contains(@href, 'twitter')]")
-        ret["Twitter"] = twitter.get_attribute("href")
-    except:
-        ret["Twitter"] = "N/A"
-    # Get LinkedIn
-    try:
-        linkedin = driver.find_element(By.XPATH, ".//a[contains(@href, 'linkedin')]")
-        ret["LinkedIn"] = linkedin.get_attribute("href")
-    except:
-        ret["LinkedIn"] = "N/A"
-    # Get Instagram
-    try:
-        instagram = driver.find_element(By.XPATH, ".//a[contains(@href, 'instagram')]")
-        ret["Instagram"] = instagram.get_attribute("href")
-    except:
-        ret["Instagram"] = "N/A"
-    # Get Facebook
-    try:
-        facebook = driver.find_element(By.XPATH, ".//a[contains(@href, 'facebook')]")
-        ret["Facebook"] = facebook.get_attribute("href")
-    except:
-        ret["Facebook"] = "N/A"
-    # Get YouTube
-    try:
-        youtube = driver.find_element(By.XPATH, ".//a[contains(@href, 'youtube')]")
-        ret["YouTube"] = youtube.get_attribute("href")
-    except:
-        ret["YouTube"] = "N/A"
-
+    for social in socials:
+        try:
+            media = driver.find_element(By.XPATH, f".//a[contains(@href, '{social.lower()}'")
+            ret[social] = media.get_attribute("href")
+        except:
+            continue
