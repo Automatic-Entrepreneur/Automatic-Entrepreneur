@@ -14,7 +14,7 @@ from glassdoor_extract import *
 from templates import *
 
 
-def get_report(company_id, start_year=2010, end_year=2023, torch=True):
+def get_report(company_id, start_year=2010, end_year=2023, torch=True, front_page=True):
 	(
 		name,
 		CH_data,
@@ -24,7 +24,7 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 		img_paths,
 		captions,
 		news,
-	) = get_data(company_id, start_year, end_year, torch=torch)
+	) = get_data(company_id, start_year, end_year, torch=torch, front_page=front_page)
 
 	out = ""
 	print(GD_data)
@@ -104,10 +104,11 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 	out += SAYING_OPEN
 
 	# SATISFACTION
-	if False:  # if we have satisfaction data (TODO)
+	if 'Overall Rating' in GD_data.keys() and 'Recommended to Friends' in GD_data.keys()\
+			and 'Approve of CEO' in GD_data.keys():  # if we have satisfaction data
 		out += SATISFACTION_OPEN.format(name=name)
 		# Use the GD data to get generate a pie-chart of the satisfaction of the company
-		# satisfaction data (TODO)
+		# satisfaction data
 		employee_sat_attributes = {'overall_rating': float(GD_data['Overall Rating']),
 		                           'recommended_to_friend': float(GD_data['Recommended to Friends']),
 		                           'approve_of_CEO': float(GD_data['Approve of CEO'])}
@@ -158,15 +159,14 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 	return out
 
 
-def get_data(company_id, start_year=2010, end_year=2023, torch=True):
+def get_data(company_id, start_year=2010, end_year=2023, torch=True, front_page=True):
 	print("extracting data from companies house")
 	CH_data = extract_data(company_id, start_year, end_year)
 	name = CH_data["name"]
 
 	print("extracting data from glassdoor")
 	GD_data = glassdoor_info(company_id=company_id, company_name=CH_data["name"])
-
-	'''
+	"""
 	GD_data = {'Company': 'Softwire',
 	           'Picture': 'https://media.glassdoor.com/sqls/251160/softwire-squarelogo-1506517702277.png',
 	           'Mission': 'N/A',
@@ -181,8 +181,7 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 	           'LinkedIn': 'https://www.linkedin.com/company/softwire/',
 	           'Instagram': 'https://www.instagram.com/softwireuk/', 'Facebook': 'https://www.facebook.com/softwire',
 	           'YouTube': 'https://www.youtube.com/channel/UCVvQUh9ByC1dQB7x7mudReQ'}
-	'''
-
+	"""
 	print("generating summary")
 	questions = get_questions(name)
 	CEO_text, QA_text = get_text(company_id)
@@ -193,9 +192,12 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True):
 		QA_answers.append(
 			{"q": f"Where is {name}'s headquarters?", "a": GD_data["Headquarters"]}
 		)
-	print("generating graphs")
+
+	img_dir = "static/img/"
+	if not front_page:
+		img_dir = "FrontendWebpages/" + img_dir
 	img_paths = generate_bar_graph(
-		CH_data["data"], "static/img/", company_id, show_graph=False
+		CH_data["data"], img_dir, company_id, show_graph=False
 	)
 
 	print("generating captions")
@@ -305,7 +307,7 @@ if __name__ == "__main__":
 	start_year = 2010
 	end_year = 2023
 
-	report = get_report(company_id, start_year, end_year, False)
+	report = get_report(company_id, start_year, end_year, False, front_page=False)
 
 	with open(f"{company_id}.html", "w") as f:
 		f.write(report)
