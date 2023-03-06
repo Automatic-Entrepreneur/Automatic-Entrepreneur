@@ -24,7 +24,7 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True):
 		img_paths,
 		captions,
 		news,
-	) = get_data(company_id, torch=torch)
+	) = get_data(company_id, start_year, end_year, torch=torch)
 
 	out = ""
 	print(GD_data)
