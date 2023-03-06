@@ -253,7 +253,6 @@ def finance_scrape(ticker, ret):
         "INCOME_STATEMENT",
         "CASH_FLOW",
         "EARNINGS",
-        "TIME_SERIES_MONTHLY",
     ]:
         url = (
                 "https://www.alphavantage.co/query?function="
@@ -284,8 +283,6 @@ def finance_scrape(ticker, ret):
             ret["Cash Flow"] = data["annualReports"]
         if i == "EARNINGS":
             ret["Annual Earnings"] = data["annualEarnings"]
-        if i == "TIME_SERIES_MONTHLY":
-            ret["Monthly Time Series"] = data["Monthly Time Series"]
 
 
 def get_socials(driver: WebDriver, ret: dict[str, any]) -> None:
