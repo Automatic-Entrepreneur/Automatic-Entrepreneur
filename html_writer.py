@@ -216,12 +216,22 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True, front_page=
 
 
 def glassdoor_info(company_id, company_name):
+	ret = dict()
+
+	'''
 	root = os.path.dirname(__file__)
-	path = os.path.join(root, f"glassdoor/cache/{company_id}.pkl")
+	base_path = os.path.join(root, f"glassdoor/cache/{company_id}")
+	i = 0
+	path = base_path + f"_{i}.pkl"
+	while os.path.exists(path):
+		attribute, content = pkl.load(open(path, "rb"))
+		ret[attribute] = content
+		i += 1
+		path = base_path + f"_{i}.pkl"
+	if i > 0:
+		return ret
 	'''
-	if os.path.exists(path):
-		return pkl.load(open(path, "rb"))
-	'''
+
 	header = Headers(
 		browser="chrome",  # Generate only Chrome UA
 		os="win",  # Generate only Windows platform
@@ -244,15 +254,21 @@ def glassdoor_info(company_id, company_name):
 
 	driver = webdriver.Chrome(options=chrome_options)
 
-	ret = dict()
-
 	glassdoor_scrape(driver, company_name, ret)
 
 	if ret["Ticker"] != "N/A":
 		finance_scrape(ret["Ticker"], ret)
 	get_socials(driver, ret)
 
-	# pkl.dump(ret, open(path, "wb"))
+	'''
+	i = 0
+	path = base_path + f"_{i}.pkl"
+	for attribute, content in ret.items():
+		pkl.dump((attribute, content), open(path, "wb"))
+		i += 1
+		path = base_path + f"_{i}.pkl"
+	'''
+
 	return ret
 
 

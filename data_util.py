@@ -19,9 +19,9 @@ attribute_map = {
 		0: "no change in value",
 	},
 	"Debtors: amounts falling due within one year": {
-		1: "increased",
-		-1: "decreased",
-		0: "remained constant"
+		1: "debt",
+		-1: "negative debt",
+		0: "no change in debt"
 	}
 }
 
