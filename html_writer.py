@@ -100,14 +100,14 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True, front_pag
 		except:
 			out += STOCK_ONLY.format(
 				symbol=GD_data["Symbol"],
-				hi=GD_DATA["High (Day)"],
-				lo=GD_DATA["Low (Day)"],
+				hi=GD_data["High (Day)"],
+				lo=GD_data["Low (Day)"],
 				price=GD_data["Price"],
 				tradevol=GD_data["Trade Volume (Day)"],
 				change=GD_data["Change Percentage (Day)"]
 			)
 		out += STOCK_CLOSE
-		if "Balance Sheet" in GD_DATA:
+		if "Balance Sheet" in GD_data:
 			out += TABLE.format(table=generate_table(GD_data))
 	out += FINANCE_CLOSE
 
