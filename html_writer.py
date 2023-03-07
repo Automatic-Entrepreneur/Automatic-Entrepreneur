@@ -115,18 +115,27 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True, front_pag
 	out += SAYING_OPEN
 
 	# SATISFACTION
-	if 'Overall Rating' in GD_data.keys() and 'Recommended to Friends' in GD_data.keys()\
-			and 'Approve of CEO' in GD_data.keys():  # if we have satisfaction data
-		if GD_data['Overall Rating'] != 'N/A' and GD_data['Recommended to Friends'] != 'N/A' \
-				and GD_data['Approve of CEO'] != 'N/A':
-			out += SATISFACTION_OPEN.format(name=name)
-			# Use the GD data to get generate a pie-chart of the satisfaction of the company
-			# satisfaction data
-			employee_sat_attributes = {'overall_rating': float(GD_data['Overall Rating']),
-									   'recommended_to_friend': float(GD_data['Recommended to Friends']),
-									   'approve_of_CEO': float(GD_data['Approve of CEO'])}
-			out += generate_pie_charts(employee_sat_attributes)
-			out += SATISFACTION_CLOSE
+	employee_sat_attributes = {}
+	if 'Overall Rating' in GD_data.keys():
+		if GD_data['Overall Rating'] != 'N/A':
+			employee_sat_attributes['overall_rating'] = float(GD_data['Overall Rating'])
+	if 'Recommended to Friends' in GD_data.keys():
+		if GD_data['Recommended to Friends'] != 'N/A':
+			employee_sat_attributes['recommended_to_friend'] = float(GD_data['Recommended to Friends'])
+	if 'Approve of CEO' in GD_data.keys():
+		if GD_data['Approve of CEO'] != 'N/A':
+			employee_sat_attributes['approve_of_CEO'] = float(GD_data['Approve of CEO'])
+
+
+	if len(employee_sat_attributes) >= 1:
+		out += SATISFACTION_OPEN.format(name=name)
+		# Use the GD data to get generate a pie-chart of the satisfaction of the company
+		# satisfaction data
+		'''employee_sat_attributes = {'overall_rating': float(GD_data['Overall Rating']),
+								   'recommended_to_friend': float(GD_data['Recommended to Friends']),
+								   'approve_of_CEO': float(GD_data['Approve of CEO'])}'''
+		out += generate_pie_charts(employee_sat_attributes, len(employee_sat_attributes))
+		out += SATISFACTION_CLOSE
 
 	# NEWS
 	if news != "":
@@ -298,17 +307,18 @@ def generate_pie_chart_html(name, degrees):
 """
 
 
-def generate_pie_charts(attributes):
-	return_string = """
-	<style>    	.grid-container-2	{
+def generate_pie_charts(attributes, num_attributes):
+	autos = ' '.join(["auto" for i in range(num_attributes)])
+	return_string = f"""
+	<style>    	.grid-container-2	{{
 			display: grid;
-			grid-template-columns: auto auto auto;
+			grid-template-columns: {autos};
 			padding: 0px;
-		}
-		.grid-item-2	{
+		}}
+		.grid-item-2	{{
 			padding: 10px;
 			text-align: center;
-		}
+		}}
 		</style>
 		"""
 	return_string += f"""<div class="grid-container-2" style="position:relative;top:-5px">"""
@@ -325,7 +335,7 @@ def generate_pie_charts(attributes):
 				<div class="{name}_piechart"></div>
 				<div><strong>{int(attributes[name])}% Recommended to a friend</strong></div>
 			</div>"""
-		else:
+		elif name == "Approve of CEO":
 			return_string += generate_pie_chart_html(name, int(attributes[name] * 360 / 100))
 			return_string += f"""<div class="grid-item-2">
 				<div class="{name}_piechart"></div>
