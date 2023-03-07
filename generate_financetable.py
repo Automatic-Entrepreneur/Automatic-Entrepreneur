@@ -3,22 +3,34 @@ import json
 
 def generate_table(GD_data):
     return_df = pd.DataFrame()
-    for dic in d['Balance Sheet']:
-    dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['totalAssets', 
+    for dic in GD_data['Balance Sheet']:
+        for k, v in dic.keys():
+            if dic[k] == None:
+                dic[k] = 0
+        dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['totalAssets', 
                    'investments', 
                    'totalLiabilities', 
                    'deferredRevenue', 
                    'currentDebt'])
-    for dic in d['Income Statement']:
+    for dic in GD_data['Income Statement']:
+        for k, v in dic.keys():
+            if dic[k] == None:
+                dic[k] = 0
         dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['researchAndDevelopment', 
                     'ebitda', 
                     'grossProfit', 
                     'totalRevenue', 
                     'netIncome'])
-    for dic in d['Cash Flow']:
+    for dic in GD_data['Cash Flow']:
+        for k, v in dic.keys():
+            if dic[k] == None:
+                dic[k] = 0
         dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['operatingCashflow', 
                         'profitLoss'])
-    for dic in d['Annual Earnings']:
+    for dic in GD_data['Annual Earnings']:
+        for k, v in dic.keys():
+            if dic[k] == None:
+                dic[k] = 0
         dic.update((k, int(dic[k])/1000000) for k, v in dic.items())
     for i in ['Balance Sheet', 'Income Statement', 'Cash Flow', 'Annual Earnings']:
         x = pd.DataFrame(GD_data[i])
@@ -74,7 +86,7 @@ def generate_table(GD_data):
                                 'reportedCurrency' : 'Currency', 
                                 'researchAndDevelopment' : 'R&D (M)'})
     # temporarily set None to 0
-    return_df = return_df.replace('None', 0)
+    #return_df = return_df.replace('None', 0)
 
     # set financial year
     return_df['FY'] = pd.DatetimeIndex(return_df['FY']).year
