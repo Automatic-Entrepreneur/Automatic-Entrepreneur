@@ -78,26 +78,37 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True, front_pag
 		if len(img_paths) != 0:
 			out += DIVIDER
 		out += STOCK_OPEN
-		out += STOCK.format(
-			name=GD_data["Name"],
-			symbol=GD_data["Symbol"],
-			exchange=GD_data["Exchange"],
-			currency=GD_data["Currency"],
-			price=GD_data["Price"],
-			tradevol=GD_data["Trade Volume (Day)"],
-			change=GD_data["Change Percentage (Day)"],
-			_52hi=GD_data["52WeekHigh"],
-			_52lo=GD_data["52WeekLow"],
-			_50ave=GD_data["50DayMovingAverage"],
-			_200ave=GD_data["200DayMovingAverage"],
-			marketcap=GD_data["MarketCapitalization"],
-			ebitda=GD_data["EBITDA"],
-			peratio=GD_data["PERatio"],
-			pegratio=GD_data["PEGRatio"],
-			bookval=GD_data["BookValue"],
-			profitmargin=GD_data["ProfitMargin"])
+		try:
+			out += STOCK.format(
+				name=GD_data["Name"],
+				symbol=GD_data["Symbol"],
+				exchange=GD_data["Exchange"],
+				currency=GD_data["Currency"],
+				price=GD_data["Price"],
+				tradevol=GD_data["Trade Volume (Day)"],
+				change=GD_data["Change Percentage (Day)"],
+				_52hi=GD_data["52WeekHigh"],
+				_52lo=GD_data["52WeekLow"],
+				_50ave=GD_data["50DayMovingAverage"],
+				_200ave=GD_data["200DayMovingAverage"],
+				marketcap=GD_data["MarketCapitalization"],
+				ebitda=GD_data["EBITDA"],
+				peratio=GD_data["PERatio"],
+				pegratio=GD_data["PEGRatio"],
+				bookval=GD_data["BookValue"],
+				profitmargin=GD_data["ProfitMargin"])
+		except:
+			out += STOCK_ONLY.format(
+				symbol=GD_data["Symbol"],
+				hi=GD_DATA["High (Day)"],
+				lo=GD_DATA["Low (Day)"],
+				price=GD_data["Price"],
+				tradevol=GD_data["Trade Volume (Day)"],
+				change=GD_data["Change Percentage (Day)"]
+			)
 		out += STOCK_CLOSE
-		out += TABLE.format(table=generate_table(GD_data))
+		if "Balance Sheet" in GD_DATA:
+			out += TABLE.format(table=generate_table(GD_data))
 	out += FINANCE_CLOSE
 
 	# = WHAT PEOPLE ARE SAYING =

@@ -215,6 +215,36 @@ STOCK = '''
 						
 					</table>
 '''
+STOCK_ONLY = '''<h4> Daily Stock Information </h4>
+    
+					<table>
+						<tr>
+							<td><b>Symbol</b></td>
+							<td>{symbol}</td>
+						</tr>
+						<tr>
+							<td><b>High (Day)</b></td>
+							<td>{hi}</td>
+						</tr>
+						<tr>
+							<td><b>Low (Day)</b></td>
+							<td>{lo}</td>
+						</tr>
+						<tr>
+							<td><b>Price</b></td>
+							<td>{price}</td>
+						</tr>
+						<tr>
+							<td><b>Trade Volume</b></td>
+							<td>{tradevol}</td>
+						</tr>
+						<tr>
+							<td><b>Change</b></td>
+							<td>{change}</td>
+						</tr>
+						
+					</table>
+'''
 TABLE = '''				<h3>Finance Information</h3>
 									{table}
 '''

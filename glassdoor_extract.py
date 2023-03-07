@@ -267,6 +267,9 @@ def finance_scrape(ticker, ret):
         # data = r.json()
         if i == "GLOBAL_QUOTE":
             quote = data["Global Quote"]
+            ret["Symbol"] = quote["01. symbol"]
+            ret["High (Day)"] = quote["03. high"]
+            ret["Low (Day)"] = quote["04. low"]
             ret["Price"] = quote["05. price"]
             ret["Trade Volume (Day)"] = quote["06. volume"]
             ret["Change Percentage (Day)"] = quote["10. change percent"]
@@ -274,15 +277,16 @@ def finance_scrape(ticker, ret):
         if i == "OVERVIEW":
             for k, v in data.items():
                 ret[k] = v
-            print(ret["Symbol"])
-        if i == "BALANCE_SHEET":
-            ret["Balance Sheet"] = data["annualReports"]
-        if i == "INCOME_STATEMENT":
-            ret["Income Statement"] = data["annualReports"]
-        if i == "CASH_FLOW":
-            ret["Cash Flow"] = data["annualReports"]
-        if i == "EARNINGS":
-            ret["Annual Earnings"] = data["annualEarnings"]
+            #print(ret["Symbol"])
+        if 'Name' in ret:
+            if i == "BALANCE_SHEET":
+                ret["Balance Sheet"] = data["annualReports"]
+            if i == "INCOME_STATEMENT":
+                ret["Income Statement"] = data["annualReports"]
+            if i == "CASH_FLOW":
+                ret["Cash Flow"] = data["annualReports"]
+            if i == "EARNINGS":
+                ret["Annual Earnings"] = data["annualEarnings"]
 
 
 def get_socials(driver: WebDriver, ret: dict[str, any]) -> None:
