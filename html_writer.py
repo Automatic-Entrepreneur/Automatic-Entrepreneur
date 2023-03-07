@@ -78,7 +78,7 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True, front_pag
 		if len(img_paths) != 0:
 			out += DIVIDER
 		out += STOCK_OPEN
-		try:
+		try: # if all stock info available
 			out += STOCK.format(
 				name=GD_data["Name"],
 				symbol=GD_data["Symbol"],
@@ -98,14 +98,17 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True, front_pag
 				bookval=GD_data["BookValue"],
 				profitmargin=GD_data["ProfitMargin"])
 		except:
-			out += STOCK_ONLY.format(
-				symbol=GD_data["Symbol"],
-				hi=GD_data["High (Day)"],
-				lo=GD_data["Low (Day)"],
-				price=GD_data["Price"],
-				tradevol=GD_data["Trade Volume (Day)"],
-				change=GD_data["Change Percentage (Day)"]
-			)
+			try: # if only general (GLOBAL_QUOTE) available
+				out += STOCK_ONLY.format(
+					symbol=GD_data["Symbol"],
+					hi=GD_data["High (Day)"],
+					lo=GD_data["Low (Day)"],
+					price=GD_data["Price"],
+					tradevol=GD_data["Trade Volume (Day)"],
+					change=GD_data["Change Percentage (Day)"]
+				)
+			except: # if ticker exists but Alpha Vantage does not have any info
+				pass
 		out += STOCK_CLOSE
 		if "Balance Sheet" in GD_data:
 			out += TABLE.format(table=generate_table(GD_data))
