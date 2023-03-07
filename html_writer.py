@@ -106,14 +106,16 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True, front_pag
 	# SATISFACTION
 	if 'Overall Rating' in GD_data.keys() and 'Recommended to Friends' in GD_data.keys()\
 			and 'Approve of CEO' in GD_data.keys():  # if we have satisfaction data
-		out += SATISFACTION_OPEN.format(name=name)
-		# Use the GD data to get generate a pie-chart of the satisfaction of the company
-		# satisfaction data
-		employee_sat_attributes = {'overall_rating': float(GD_data['Overall Rating']),
-		                           'recommended_to_friend': float(GD_data['Recommended to Friends']),
-		                           'approve_of_CEO': float(GD_data['Approve of CEO'])}
-		out += generate_pie_charts(employee_sat_attributes)
-		out += SATISFACTION_CLOSE
+		if GD_data['Overall Rating'] != 'N/A' and GD_data['Recommended to Friends'] != 'N/A' \
+				and GD_data['Approve of CEO'] != 'N/A':
+			out += SATISFACTION_OPEN.format(name=name)
+			# Use the GD data to get generate a pie-chart of the satisfaction of the company
+			# satisfaction data
+			employee_sat_attributes = {'overall_rating': float(GD_data['Overall Rating']),
+									   'recommended_to_friend': float(GD_data['Recommended to Friends']),
+									   'approve_of_CEO': float(GD_data['Approve of CEO'])}
+			out += generate_pie_charts(employee_sat_attributes)
+			out += SATISFACTION_CLOSE
 
 	# NEWS
 	if news != "":
@@ -151,8 +153,9 @@ def get_report(company_id, start_year=2010, end_year=2023, torch=True, front_pag
 		),
 	]
 	for data, image in images:
-		if GD_data[data] != "N/A":
-			out += SOCIALS.format(data=GD_data[data], image=image)
+		if data in GD_data.keys():
+			if GD_data[data] != "N/A":
+				out += SOCIALS.format(data=GD_data[data], image=image)
 	if GD_data["Website"] != "N/A":
 		out += WEBSITE.format(website=GD_data["Website"])
 	out += SOCIALS_CLOSE.format(time=datetime.now().strftime("%H:%M %d/%d/%Y"))
@@ -204,7 +207,10 @@ def get_data(company_id, start_year=2010, end_year=2023, torch=True, front_page=
 	captions = overall_summary(CH_data["data"])
 
 	print("getting news")
-	news = get_news(GD_data['Company'])
+	if torch:
+		news = get_news(GD_data['Company'])
+	else:
+		news = ""
 
 	return name, CH_data, GD_data, CEO_summary, QA_answers, img_paths, captions, news
 
