@@ -6,6 +6,38 @@ from fuzzywuzzy import fuzz
 trend_map = {1: "increased", -1: "decreased", 0: "remained steady"}
 
 attribute_map = {
+	'Tangible assets': {
+		1: "value",
+		-1: "NEGATIVE value",
+		0: "no change in value",
+	},
+	'Net assets': {
+		1: "value",
+		-1: "NEGATIVE value",
+		0: "no change in value",
+	},
+	'Interest receivable and similar income': {
+		1: "positive interest",
+		0: "no change",
+		-1: "negative interest"
+	},
+	'Prepayments and accrued income':{
+		1: "value",
+		-1: "NEGATIVE value",
+		0: "no change in value",
+	},
+	'Accruals and deferred income': {
+		1: "value",
+		-1: "NEGATIVE value",
+		0: "no change in value",
+	},
+	'Profit on ordinary activities before taxation': {1: "profit", -1: "loss", 0: "no profit or loss"},
+	'Profit on ordinary activities before tax': {1: "profit", -1: "loss", 0: "no profit or loss"},
+	'Creditors: amounts falling due after one year': {
+		1: "value",
+		-1: "NEGATIVE value",
+		0: "no change in value",
+	},
 	"ProfitLoss": {1: "profit", -1: "loss", 0: "no profit or loss"},
 	"FixedAssets": {
 		1: "value",
@@ -26,11 +58,6 @@ attribute_map = {
 		1: "increased",
 		-1: "decreased",
 		0: "remained constant"
-	},
-	"Tangible Assets" : {
-		1: "value",
-		-1: "NEGATIVE value",
-		0: "no change in value",
 	},
 	"Income": {
 		1: "value",
@@ -130,13 +157,10 @@ def extract_data(
 			output[actual_attribute] = {"years": [], "values": []}
 			for year, value in sorted(data_by_year.items(), key=lambda t: t[0]):
 				output[actual_attribute]["years"].append(year)
-				output[actual_attribute]["values"].append(value)
+				if year >= 2018 and 'google' in company.get_name().lower():
+					output[actual_attribute]["values"].append(value * 1000)
+				else:
+					output[actual_attribute]["values"].append(value)
 		else:
 			print(f"no data found for {attribute}")
 	return {"name": company.get_name().title(), "data": output}
-
-
-if __name__ == "__main__":
-	extracted_data = extract_data('03824658', 2010, 2023)
-	for entry in extracted_data["data"]:
-		print(entry, ":", extracted_data["data"][entry])
