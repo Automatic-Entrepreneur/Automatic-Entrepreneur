@@ -1,7 +1,8 @@
 import typing
 import numpy as np
-from CompaniesHouse.CompanyInfo import CompanyInfo
+from CompaniesHouse import CompanyInfo
 from fuzzywuzzy import fuzz
+from functools import reduce
 
 trend_map = {1: "increased", -1: "decreased", 0: "remained steady"}
 
@@ -17,6 +18,11 @@ attribute_map = {
 		-1: "NEGATIVE value",
 		0: "no change in value",
 	},
+	"Debtors: amounts falling due within one year": {
+		1: "increased",
+		-1: "decreased",
+		0: "remained constant"
+	}
 }
 
 
@@ -90,19 +96,22 @@ def extract_data(
 	# choose which attributes to use
 	attributes_to_use = dict.fromkeys(attribute_map.keys())
 	for attribute in attribute_map:
-		ratio = 0
+		ratio = 60
 		for contender in extracted_data:
 			if contender == attribute: # prioritise exact match
 				attributes_to_use[attribute] = attribute
 				break
-			this_ratio = fuzz.partial_ratio(contender, attribute)
-			if this_ratio > ratio:  # 60 is arbitrary cutoff
+			this_ratio = fuzz.partial_ratio(contender.lower(), attribute.lower())
+			# get the best match which scored at least 60
+			if this_ratio > ratio:
 				attributes_to_use[attribute] = contender
+				ratio = this_ratio
 
 	# prepare output
 	output = {}
 	for attribute in attributes_to_use:
-		if attributes_to_use[attribute] is not None:
+		# if there was a match and we have at least 3 points to plot on the graph
+		if (attributes_to_use[attribute] is not None) and len(extracted_data[attributes_to_use[attribute]]) > 2:
 			actual_attribute = attributes_to_use[attribute]
 			if actual_attribute not in attribute_map:
 				attribute_map[actual_attribute] = attribute_map["FixedAssets"]  # put value in attribute_map
@@ -113,7 +122,6 @@ def extract_data(
 				output[actual_attribute]["values"].append(value)
 		else:
 			print(f"no data found for {attribute}")
-
 	return {"name": company.get_name().title(), "data": output}
 
 
