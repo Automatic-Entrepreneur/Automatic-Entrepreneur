@@ -3,6 +3,23 @@ import json
 
 def generate_table(GD_data):
     return_df = pd.DataFrame()
+    for dic in d['Balance Sheet']:
+    dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['totalAssets', 
+                   'investments', 
+                   'totalLiabilities', 
+                   'deferredRevenue', 
+                   'currentDebt'])
+    for dic in d['Income Statement']:
+        dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['researchAndDevelopment', 
+                    'ebitda', 
+                    'grossProfit', 
+                    'totalRevenue', 
+                    'netIncome'])
+    for dic in d['Cash Flow']:
+        dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['operatingCashflow', 
+                        'profitLoss'])
+    for dic in d['Annual Earnings']:
+        dic.update((k, int(dic[k])/1000000) for k, v in dic.items())
     for i in ['Balance Sheet', 'Income Statement', 'Cash Flow', 'Annual Earnings']:
         x = pd.DataFrame(GD_data[i])
         '''res = [json.loads(idx.replace("'", '"')) for idx in [x]]
@@ -79,11 +96,11 @@ def generate_table(GD_data):
     pd.options.display.float_format = '{:,.2f}'.format
     return_df['EPS'] = return_df['EPS'].astype(str)
 
-
+    '''
     # convert to millions
     for i in mils:
         return_df[i] = return_df[i]/1000000
-        return_df[[i]] = return_df[[i]].astype(int)
+        return_df[[i]] = return_df[[i]].astype(int)'''
         
     # replace 0s
     return_df = return_df.replace(0, 'N/A')
