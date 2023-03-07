@@ -1,37 +1,23 @@
 import pandas as pd
 import json
 
+
 def generate_table(GD_data):
+    bs_keys = ['totalAssets',
+      'investments', 
+      'totalLiabilities', 
+      'deferredRevenue',
+      'currentDebt']
+    is_keys = ['researchAndDevelopment', 
+            'ebitda', 
+            'grossProfit', 
+            'totalRevenue', 
+            'netIncome']
+    cf_keys = ['operatingCashflow', 
+            'profitLoss']
+
     return_df = pd.DataFrame()
-    for dic in GD_data['Balance Sheet']:
-        for k, v in dic.keys():
-            if dic[k] == None:
-                dic[k] = 0
-        dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['totalAssets', 
-                   'investments', 
-                   'totalLiabilities', 
-                   'deferredRevenue', 
-                   'currentDebt'])
-    for dic in GD_data['Income Statement']:
-        for k, v in dic.keys():
-            if dic[k] == None:
-                dic[k] = 0
-        dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['researchAndDevelopment', 
-                    'ebitda', 
-                    'grossProfit', 
-                    'totalRevenue', 
-                    'netIncome'])
-    for dic in GD_data['Cash Flow']:
-        for k, v in dic.keys():
-            if dic[k] == None:
-                dic[k] = 0
-        dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in ['operatingCashflow', 
-                        'profitLoss'])
-    for dic in GD_data['Annual Earnings']:
-        for k, v in dic.keys():
-            if dic[k] == None:
-                dic[k] = 0
-        dic.update((k, int(dic[k])/1000000) for k, v in dic.items())
+        
     for i in ['Balance Sheet', 'Income Statement', 'Cash Flow', 'Annual Earnings']:
         x = pd.DataFrame(GD_data[i])
         '''res = [json.loads(idx.replace("'", '"')) for idx in [x]]
@@ -39,26 +25,52 @@ def generate_table(GD_data):
             newlist = j
         x = pd.DataFrame(newlist)'''
         if i == 'Balance Sheet':
-            x = x[['fiscalDateEnding', 
-                'totalAssets', 
-                'investments', 
-                'totalLiabilities', 
-                'deferredRevenue', 
-                'currentDebt']]
+            lst = []
+            for d in GD_data[i]:
+                dic = {key: d[key] for key in (['fiscalDateEnding'] 
+                                               + bs_keys)}
+                for k, v in dic.items():
+                        if v == 'None':
+                            dic[k] = 0
+                dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in bs_keys)
+                lst.append(dic)
+            x = pd.DataFrame(lst)
         elif i == 'Income Statement':
-            x = x[['fiscalDateEnding',
-                'reportedCurrency', 
-                'researchAndDevelopment', 
-                'ebitda', 
-                'grossProfit', 
-                'totalRevenue', 
-                'netIncome']]
+            lst = []
+            for d in GD_data[i]:
+                dic = {key: d[key] for key in (['fiscalDateEnding',
+                                               'reportedCurrency'] 
+                                               + is_keys)}
+                for k, v in dic.items():
+                        if v == 'None':
+                            dic[k] = 0
+                dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in is_keys)
+                lst.append(dic)
+            x = pd.DataFrame(lst)
         elif i == 'Cash Flow':
-            x = x[['fiscalDateEnding', 
-                    'operatingCashflow', 
-                    'profitLoss']]
+            lst = []
+            for d in GD_data[i]:
+                dic = {key: d[key] for key in (['fiscalDateEnding'] 
+                                                + cf_keys)}
+                for k, v in dic.items():
+                        if v == 'None':
+                            #print(k)
+                            dic[k] = 0
+                dic.update((k, int(dic[k])/1000000) for k, v in dic.items() if k in cf_keys)
+                lst.append(dic)
+            x = pd.DataFrame(lst)
         elif i == 'Annual Earnings':
-            x = x.loc[:5]
+            count = 0
+            lst = []
+            for d in GD_data[i]:
+                if count < 5:
+                    for k, v in d.items():
+                            if v == 'None':
+                                #print(k)
+                                d[k] = 0
+                    count += 1
+                    lst.append(d)
+            x = pd.DataFrame(lst)
             
         # Set datetime
         x['fiscalDateEnding'] = pd.to_datetime(x['fiscalDateEnding'])
