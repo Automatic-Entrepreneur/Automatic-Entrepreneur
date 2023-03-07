@@ -194,7 +194,12 @@ class CompanyInfo:
                 for i in range(min(pdf_pages, len(scanner))):
                     if time.monotonic() - t > pdf_time:
                         break
-                    information.extend(scanner.read_page_table(i))
+                    try:
+                        information.extend(scanner.read_page_table(i))
+                    except KeyError:
+                        continue
+                    except ValueError:
+                        continue
         pkl.dump(information, open(pkl_path, 'wb'))
         return information
 

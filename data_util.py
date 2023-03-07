@@ -2,7 +2,6 @@ import typing
 import numpy as np
 from CompaniesHouse import CompanyInfo
 from fuzzywuzzy import fuzz
-from functools import reduce
 
 trend_map = {1: "increased", -1: "decreased", 0: "remained steady"}
 
@@ -22,7 +21,22 @@ attribute_map = {
 		1: "debt",
 		-1: "negative debt",
 		0: "no change in debt"
-	}
+	},
+	"Creditors: amounts falling due within one year": {
+		1: "increased",
+		-1: "decreased",
+		0: "remained constant"
+	},
+	"Tangible Assets" : {
+		1: "value",
+		-1: "NEGATIVE value",
+		0: "no change in value",
+	},
+	"Income": {
+		1: "value",
+		-1: "NEGATIVE value",
+		0: "no change in value",
+	},
 }
 
 
@@ -63,10 +77,7 @@ def extract_data(
 
 	for year in range(start_year, end_year):
 		try:
-			account_info_for_this_year = company.get_account_information(year, pdf_accept=True)
-			# print(f"grabbing info for {year}")
-			# for record in account_info_for_this_year:
-			# 	print(record)
+			account_info_for_this_year = company.get_account_information(year)
 		except IndexError:
 			continue
 		except (
@@ -129,4 +140,3 @@ if __name__ == "__main__":
 	extracted_data = extract_data('03824658', 2010, 2023)
 	for entry in extracted_data["data"]:
 		print(entry, ":", extracted_data["data"][entry])
-	# print(original_extract_data('03824658', 2010, 2023))
