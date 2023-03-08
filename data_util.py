@@ -173,10 +173,7 @@ def extract_data(
             output[actual_attribute] = {"years": [], "values": []}
             for year, value in sorted(data_by_year.items(), key=lambda t: t[0]):
                 output[actual_attribute]["years"].append(year)
-                if year >= 2018 and "google" in company.get_name().lower():
-                    output[actual_attribute]["values"].append(value * 1000)
-                else:
-                    output[actual_attribute]["values"].append(value)
+                output[actual_attribute]["values"].append(value)
         else:
             print(f"no data found for {attribute}")
     return {"name": company.get_name().title(), "data": output}
