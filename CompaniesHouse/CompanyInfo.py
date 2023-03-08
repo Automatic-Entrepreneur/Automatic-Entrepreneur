@@ -1,16 +1,18 @@
 """
 Provides an interface to the Companies House API
 """
-import time
-import CompaniesHouse.key
-import requests
-import json
-import pytesseract
-import os
-import platform
-from ixbrlparse import IXBRL
-import pickle as pkl
 import io
+import json
+import os
+import pickle as pkl
+import platform
+import time
+
+import pytesseract
+import requests
+from ixbrlparse import IXBRL
+
+import CompaniesHouse.key
 from CompaniesHouse.ScannedReportReader import ScannedReportReader
 
 if platform.system() == "Darwin":

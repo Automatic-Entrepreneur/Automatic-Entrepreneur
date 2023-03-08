@@ -1,9 +1,11 @@
-import requests
 import json
-import pickle as pkl
-import CompaniesHouse.key
-from functools import lru_cache
 import os
+import pickle as pkl
+from functools import lru_cache
+
+import requests
+
+import CompaniesHouse.key
 
 
 class TooManyResults(UserWarning):

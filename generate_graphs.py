@@ -1,11 +1,12 @@
 import typing
+
 import matplotlib.pyplot as plt
-from matplotlib import ticker
-from bokeh.embed import file_html, components, autoload_static
+from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.resources import INLINE
+from matplotlib import ticker
 
-from data_util import attribute_map, extract_data
+from data_util import attribute_map
 
 test_data = {
     "FixedAssets": {

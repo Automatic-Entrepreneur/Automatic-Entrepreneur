@@ -1,5 +1,7 @@
 import os
+
 from flask import Flask, render_template, request, redirect
+
 from CompaniesHouse import CompanySearch
 from html_writer import get_report
 

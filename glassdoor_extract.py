@@ -1,14 +1,12 @@
-from flask import Flask, render_template, request
-import webbrowser
-from selenium import webdriver
+import json
+from time import sleep
+
+import requests
+from bs4 import BeautifulSoup as bs
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from time import sleep
-import json
-from bs4 import BeautifulSoup as bs
-import requests
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def glassdoor_scrape(driver: WebDriver, company_name: str, ret: dict[str, any]) -> None:

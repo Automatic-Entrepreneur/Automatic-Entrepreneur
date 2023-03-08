@@ -1,6 +1,6 @@
-import requests
 import json
-import csv
+
+import requests
 
 """Need to input ticker/symbol instead of company name"""
 

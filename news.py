@@ -6,6 +6,7 @@ try:
 except ImportError:
     pipeline = None
 from newsapi import NewsApiClient
+
 from templates import NEWS, SENTIMENT
 
 

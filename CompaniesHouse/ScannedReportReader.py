@@ -1,14 +1,15 @@
 """
 Provides a class which converts scanned pdfs into usable data
 """
-import pytesseract
-from pdf2image import convert_from_bytes
-import pandas as pd
 import re
 from collections import defaultdict
-from functools import reduce
-from dateutil import parser
 from datetime import datetime
+from functools import reduce
+
+import pandas as pd
+import pytesseract
+from dateutil import parser
+from pdf2image import convert_from_bytes
 
 pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 

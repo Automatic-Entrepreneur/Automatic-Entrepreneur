@@ -1,16 +1,15 @@
-import os
-import pickle as pkl
+from datetime import datetime
 
 from fake_headers import Headers
-from caption import overall_summary
-from datetime import datetime
-from data_util import extract_data
-from generate_summary import get_text, generate_summary, answer_question, get_questions
-from generate_graphs import generate_bar_graph
-from generate_financetable import generate_table
-from news import get_news
+from selenium.webdriver.chrome import webdriver
 
+from caption import overall_summary
+from data_util import extract_data
+from generate_financetable import generate_table
+from generate_graphs import generate_bar_graph
+from generate_summary import get_text, generate_summary, answer_question, get_questions
 from glassdoor_extract import *
+from news import get_news
 from templates import *
 
 

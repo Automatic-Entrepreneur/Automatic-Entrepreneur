@@ -1,7 +1,9 @@
 import typing
+
 import numpy as np
-from CompaniesHouse import CompanyInfo
 from fuzzywuzzy import fuzz
+
+from CompaniesHouse import CompanyInfo
 
 trend_map = {1: "increased", -1: "decreased", 0: "remained steady"}
 

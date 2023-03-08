@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
 from fake_headers import Headers
+from flask import Flask, render_template, request
 from selenium import webdriver
-from glassdoor_extract import glassdoor_scrape, finance_scrape, get_socials
+
 from CompaniesHouse import CompanySearch
+from glassdoor_extract import glassdoor_scrape, finance_scrape, get_socials
 
 app = Flask(__name__)
 

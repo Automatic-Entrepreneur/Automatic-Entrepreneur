@@ -1,5 +1,4 @@
 import pandas as pd
-import json
 
 
 def generate_table(GD_data):

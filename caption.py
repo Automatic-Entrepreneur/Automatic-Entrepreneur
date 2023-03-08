@@ -1,4 +1,5 @@
 import typing
+
 from data_util import trend_map, attribute_map, compare, three_sigfig, extract_data
 
 SHARP_THRESHOLD = 0.15
