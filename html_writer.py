@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from fake_headers import Headers
-from selenium.webdriver.chrome import webdriver
+from selenium.webdriver.chromium import webdriver
 
 from caption import overall_summary
 from data_util import extract_data
