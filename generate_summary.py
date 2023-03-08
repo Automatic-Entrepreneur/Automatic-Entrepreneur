@@ -36,7 +36,7 @@ def generate_summary(company_id: str, text: str, debug=False) -> str:
 
 
 def answer_question(
-        text: str, questions: list[str], debug=False
+    text: str, questions: list[str], debug=False
 ) -> list[dict[str, str]]:
     if debug:
         return [{"q": "Who bought the company this year?", "a": "Withani Limited"}]
@@ -73,7 +73,7 @@ def get_questions(name):
 
 
 if __name__ == "__main__":
-    company = CompanyInfo('09857705')
+    company = CompanyInfo("09857705")
     text = company.get_long_text(pdf_time=50)
 
     company_id = "03824658"

@@ -1,4 +1,4 @@
-HEAD = '''<!doctype html>
+HEAD = """<!doctype html>
 <html>
 	<head>
 		<meta charset='UTF-8'>
@@ -37,12 +37,12 @@ HEAD = '''<!doctype html>
 				<div>
 					<h1>
 						<a href="https://{website}">
-'''
-TITLE_P = '''						<img src='{logo}' style='height:60px;position:relative;top:20px'></a>    {name} Summary
-'''
-TITLE_N = '''						{name} Summary
-'''
-LOGO = '''					</h1>
+"""
+TITLE_P = """						<img src='{logo}' style='height:60px;position:relative;top:20px'></a>    {name} Summary
+"""
+TITLE_N = """						{name} Summary
+"""
+LOGO = """					</h1>
 				</div>
 				<div style="font-size:20px">
 					<h3>
@@ -74,23 +74,25 @@ LOGO = '''					</h1>
 		<div style="position:relative;top:-15px">
 			<hr>
 			<div class="grid-container" style="position:relative;top:-5px">
-'''
-FACTS = ['''				<div class="grid-item">{data}</div>''',
-'''				<div class="grid-item">{data}</div>''',
-'''				<div class="grid-item">Founded in {data}</div>''',
-'''				<div class="grid-item">Glassdoor rating: {data}</div>''',
-'''				<div class="grid-item">CEO: {data}</div>''']
-MAIN = '''			</div>
+"""
+FACTS = [
+    """				<div class="grid-item">{data}</div>""",
+    """				<div class="grid-item">{data}</div>""",
+    """				<div class="grid-item">Founded in {data}</div>""",
+    """				<div class="grid-item">Glassdoor rating: {data}</div>""",
+    """				<div class="grid-item">CEO: {data}</div>""",
+]
+MAIN = """			</div>
 		</div>
 		<div style="margin-right:10px;margin-left:10px">
-'''
-MISSION = '''			<div>
+"""
+MISSION = """			<div>
 				<p style="font-size:18px;text-align:center">
 					{mission}
 				</p>
 			</div>
-'''
-REPORT = '''			<div>
+"""
+REPORT = """			<div>
 				<h2>
 					Company report
 				</h2>
@@ -103,39 +105,39 @@ REPORT = '''			<div>
 				</p>
 				<hr class="divider">
 			</div>
-'''
-FINANCE_OPEN = '''			<div>
+"""
+FINANCE_OPEN = """			<div>
 				<h2>
 					Finance overview
 				</h2>
 				<hr class="divider" style="margin-left:0;max-width: 100px">
-'''
-GRAPHS_OPEN = '''				<h3>Asset graphs</h3>
+"""
+GRAPHS_OPEN = """				<h3>Asset graphs</h3>
 				<div>
-'''
-IMAGE_L = '''					<div style='display:flex'>
+"""
+IMAGE_L = """					<div style='display:flex'>
 						<img src={img} alt={img} width='500'>
 						<div style="width:400px">
 							<p style="font-weight:bold">Highlights:</p>
 							{caption}
 						</div>
 					</div>
-'''
-IMAGE_R = '''					<div style='display:flex'>
+"""
+IMAGE_R = """					<div style='display:flex'>
 						<div style="text-align:right;width:400px">
 							<p style="font-weight:bold">Highlights:</p>
 							{caption}
                         </div>
 						<img src={img} alt={img} width='500'>
 					</div>
-'''
-GRAPHS_CLOSE = '''				</div>
+"""
+GRAPHS_CLOSE = """				</div>
 				<br>
-'''
-STOCK_OPEN = '''				<h3>Stock breakdown</h3>
+"""
+STOCK_OPEN = """				<h3>Stock breakdown</h3>
 				<div>
-'''
-STOCK = '''				
+"""
+STOCK = """				
 						<h4> Daily Stock Information </h4>
     
 					<table>
@@ -214,8 +216,8 @@ STOCK = '''
 						</tr>
 						
 					</table>
-'''
-STOCK_ONLY = '''<h4> Daily Stock Information </h4>
+"""
+STOCK_ONLY = """<h4> Daily Stock Information </h4>
     
 					<table>
 						<tr>
@@ -244,59 +246,59 @@ STOCK_ONLY = '''<h4> Daily Stock Information </h4>
 						</tr>
 						
 					</table>
-'''
-TABLE = '''				<h3>Finance Information</h3>
+"""
+TABLE = """				<h3>Finance Information</h3>
 									{table}
-'''
-STOCK_CLOSE = '''				</div>
-'''
-FINANCE_CLOSE = '''			</div>
+"""
+STOCK_CLOSE = """				</div>
+"""
+FINANCE_CLOSE = """			</div>
 				<hr class="divider">
-'''
-SAYING_OPEN = '''			<div>
+"""
+SAYING_OPEN = """			<div>
 				<h2>
 					What people are saying
 				</h2>
 				<hr class="divider" style="margin-left:0;max-width: 100px">
-'''
-SATISFACTION_OPEN = '''				<div>
+"""
+SATISFACTION_OPEN = """				<div>
 					<h3>Employee satisfaction at {name}</h3>
-'''
-SATISFACTION_CLOSE = '''					</div>
-'''
-DIVIDER = '''					<hr class="divider" style="margin-left:0;max-width: 100px">
-'''
-NEWS_OPEN = '''					<h3>{name} in the news</h3>
+"""
+SATISFACTION_CLOSE = """					</div>
+"""
+DIVIDER = """					<hr class="divider" style="margin-left:0;max-width: 100px">
+"""
+NEWS_OPEN = """					<h3>{name} in the news</h3>
 					<div>
-'''
-NEWS = '''					<div>
+"""
+NEWS = """					<div>
 						{title} ({date})
 						| <i>{author}, {publisher}</i> (<a href={link}>read</a>)
 						<hr style="border-top:thin solid #1E1E1E">
 					</div>
-'''
+"""
 SENTIMENT = "					<b>Overall news sentiment: {pos}% positive</b>"
-NEWS_CLOSE = '''				</div>
-'''
-SAYING_CLOSE = '''				<hr class="divider">
+NEWS_CLOSE = """				</div>
+"""
+SAYING_CLOSE = """				<hr class="divider">
 			</div>
-'''
-FAQS_OPEN = '''			<div>
+"""
+FAQS_OPEN = """			<div>
 				<h3>FAQs</h3>
-'''
-FAQS_CLOSE = '''			</div>
-'''
-SOCIALS_OPEN = '''			<br><br>
+"""
+FAQS_CLOSE = """			</div>
+"""
+SOCIALS_OPEN = """			<br><br>
 			<div>
 				<hr class="divider">
 				<div style="display:flex;justify-content:space-between">
 					<div style="display:flex;align-items:baseline">
-'''
-SOCIALS = '''						<a href="{data}"><img src="{image}" alt="social media icon" height="20"></a>&nbsp;&nbsp;
-'''
-WEBSITE = '''						<p style="position:relative;top:-5px">&nbsp;|&nbsp;&nbsp;website: <a href="https://{website}">{website}</a></p>
-'''
-SOCIALS_CLOSE = '''					</div>
+"""
+SOCIALS = """						<a href="{data}"><img src="{image}" alt="social media icon" height="20"></a>&nbsp;&nbsp;
+"""
+WEBSITE = """						<p style="position:relative;top:-5px">&nbsp;|&nbsp;&nbsp;website: <a href="https://{website}">{website}</a></p>
+"""
+SOCIALS_CLOSE = """					</div>
 					<div style="position:relative;top:10px">
 						Generated @ {time}<p style="display:inline" class="hide-print-button"> | </p>
 						<a href='javascript:if(window.print)window.print()' class="hide-print-button">create pdf</a>
@@ -305,4 +307,4 @@ SOCIALS_CLOSE = '''					</div>
 			</div>			
 		</div>
 	</body>
-</html>'''
+</html>"""

@@ -26,7 +26,7 @@ class CompanySearch:
 
     @lru_cache(maxsize=5)
     def search(
-            self, company_name: str, active: bool = True, start: int = 0, n: int = 20
+        self, company_name: str, active: bool = True, start: int = 0, n: int = 20
     ) -> list[dict[str, str]]:
         """
         Searches query on companies house

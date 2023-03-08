@@ -24,10 +24,10 @@ test_data = {
 
 
 def generate_bar_graph(
-        extracted_data: dict[str, dict[str, list[typing.Union[int, float]]]],
-        path: str,
-        company_id: str,
-        show_graph: bool = True,
+    extracted_data: dict[str, dict[str, list[typing.Union[int, float]]]],
+    path: str,
+    company_id: str,
+    show_graph: bool = True,
 ) -> dict[str, str]:
     # print(extractedData)
 
@@ -68,7 +68,9 @@ def generate_bar_graph(
             sanitized_attribute = (
                 attribute.replace(" ", "_").replace("/", "_slash_").replace(".", "_")
             )  # avoid invalid path
-            plt.savefig(f"{path}{company_id}_{sanitized_attribute}.png", bbox_inches="tight")
+            plt.savefig(
+                f"{path}{company_id}_{sanitized_attribute}.png", bbox_inches="tight"
+            )
             output[attribute] = f"{path}{company_id}_{sanitized_attribute}.png"
 
             if show_graph:
@@ -79,7 +81,7 @@ def generate_bar_graph(
 
 
 def generate_bar_graph_bokeh(
-        extracted_data: dict[str, dict[str, list[typing.Union[int, float]]]]
+    extracted_data: dict[str, dict[str, list[typing.Union[int, float]]]]
 ) -> dict[str, dict[str, str]]:
     output = {}
     for attribute in extracted_data:

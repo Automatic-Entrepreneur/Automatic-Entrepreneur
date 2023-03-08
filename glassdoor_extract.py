@@ -18,15 +18,17 @@ def glassdoor_scrape(driver: WebDriver, company_name: str, ret: dict[str, any]) 
 
     driver.get(url)
     # print('got url')
-    #element = driver.find_element(By.XPATH, ".//a[contains(@href, '/Overview/')]")
-    page = driver.find_element(By.XPATH, ".//a[contains(@href, '/Overview/')]").get_attribute("href")
-    #print(page)
-    #sleep(5)
+    # element = driver.find_element(By.XPATH, ".//a[contains(@href, '/Overview/')]")
+    page = driver.find_element(
+        By.XPATH, ".//a[contains(@href, '/Overview/')]"
+    ).get_attribute("href")
+    # print(page)
+    # sleep(5)
     driver.get(page)
-    
+
     # print('got overview')
     # click on the first instance
-    #driver.execute_script("arguments[0].click();", element)
+    # driver.execute_script("arguments[0].click();", element)
     # print('clicked first')
     # html = driver.page_source
     # file = open("boo.html","w")
@@ -133,10 +135,10 @@ def get_elements(driver: WebDriver, ret: dict[str, any]) -> None:
     # Get Company Description
     try:
         for i in soup.find(attrs={"data-test": "employerDescription"}):
-            ret['Description'] = i
+            ret["Description"] = i
             break
     except:
-        ret['Description'] = 'N/A'
+        ret["Description"] = "N/A"
     # Get Company Website
     try:
         for i in soup.find(attrs={"data-test": "employer-website"}):
@@ -255,12 +257,12 @@ def finance_scrape(ticker, ret):
         "EARNINGS",
     ]:
         url = (
-                "https://www.alphavantage.co/query?function="
-                + i
-                + "&symbol="
-                + ticker
-                + "&apikey="
-                + key
+            "https://www.alphavantage.co/query?function="
+            + i
+            + "&symbol="
+            + ticker
+            + "&apikey="
+            + key
         )
         r = requests.get(url)
         data = json.loads(r.text)
@@ -277,8 +279,8 @@ def finance_scrape(ticker, ret):
         if i == "OVERVIEW":
             for k, v in data.items():
                 ret[k] = v
-            #print(ret["Symbol"])
-        if 'Name' in ret:
+            # print(ret["Symbol"])
+        if "Name" in ret:
             if i == "BALANCE_SHEET":
                 ret["Balance Sheet"] = data["annualReports"]
             if i == "INCOME_STATEMENT":
@@ -301,9 +303,9 @@ def get_socials(driver: WebDriver, ret: dict[str, any]) -> None:
     for social in socials:
         ret[social] = "N/A"
 
-    if ret['Website'] == 'N/A':
+    if ret["Website"] == "N/A":
         return
-        
+
     url = "https://" + str(ret["Website"])
     print(type(url))
     driver.get(url)
@@ -311,7 +313,9 @@ def get_socials(driver: WebDriver, ret: dict[str, any]) -> None:
 
     for social in socials:
         try:
-            media = driver.find_element(By.XPATH, f".//a[contains(@href, '{social.lower()}'")
+            media = driver.find_element(
+                By.XPATH, f".//a[contains(@href, '{social.lower()}'"
+            )
             ret[social] = media.get_attribute("href")
         except:
             continue

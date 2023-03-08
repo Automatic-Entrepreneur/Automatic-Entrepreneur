@@ -19,7 +19,11 @@ def overlap_v(x: pd.Series, y: pd.Series) -> bool:
     :param y: potential index
     :return: True if y is a potential row index for x
     """
-    return (x.left > (y.left + y.width)) and (x.top < (y.top + y.height)) and (y.top < (x.top + x.height))
+    return (
+        (x.left > (y.left + y.width))
+        and (x.top < (y.top + y.height))
+        and (y.top < (x.top + x.height))
+    )
 
 
 def overlap_h(x: pd.Series, y: pd.Series) -> bool:
@@ -28,7 +32,11 @@ def overlap_h(x: pd.Series, y: pd.Series) -> bool:
     :param y: potential index
     :return: True if y is a potential column index for x
     """
-    return (x.top > (y.top + y.height)) and (x.left < (y.left + y.width)) and (y.left < (x.left + x.width))
+    return (
+        (x.top > (y.top + y.height))
+        and (x.left < (y.left + y.width))
+        and (y.left < (x.left + x.width))
+    )
 
 
 class ScannedReportReader:
@@ -37,6 +45,7 @@ class ScannedReportReader:
     Called from CompanyInfo -- refer there for sample usage.
     To be extended in the future to support extracting textual information.
     """
+
     def __init__(self, pdf_bytes: bytes, year: int):
         """
         :param pdf_bytes: bytes of the pdf to process
@@ -44,7 +53,9 @@ class ScannedReportReader:
         """
         self.__images = convert_from_bytes(pdf_bytes)
         self.__year = year
-        self.__num = re.compile(r"\d{1,3}(,\d\d\d)*(\.\d\d)?|\(\d{1,3}(,\d\d\d)*(\.\d\d)?\)")
+        self.__num = re.compile(
+            r"\d{1,3}(,\d\d\d)*(\.\d\d)?|\(\d{1,3}(,\d\d\d)*(\.\d\d)?\)"
+        )
         self.__text = re.compile(r"(\S*[a-zA-Z\d]{2,}\S*){2,}")
 
     def __len__(self) -> int:
@@ -71,7 +82,7 @@ class ScannedReportReader:
         :param i: the page to read
         :return: all text in the page i
         """
-        return pytesseract.image_to_string(self.__images[i], lang='eng')
+        return pytesseract.image_to_string(self.__images[i], lang="eng")
 
     def read_page_table(self, i: int) -> list[dict[str, any]]:
         """
@@ -81,7 +92,12 @@ class ScannedReportReader:
         """
         image = self.__images[i]
         attributes = []
-        dirty = pytesseract.image_to_data(image, lang='eng', output_type=pytesseract.Output.DATAFRAME, config='--oem 1 --psm 11 -l eng')
+        dirty = pytesseract.image_to_data(
+            image,
+            lang="eng",
+            output_type=pytesseract.Output.DATAFRAME,
+            config="--oem 1 --psm 11 -l eng",
+        )
         page = dirty[pd.notna(dirty.text)].reset_index(drop=True).copy()
         col_to_val = defaultdict(lambda: set())
         val_to_col = defaultdict(lambda: set())
@@ -113,15 +129,35 @@ class ScannedReportReader:
         for i in range(len(blocks)):
             # merge row keys horizontally
             # use a single key index as a leader and remove all other keys
-            if blocks[i] and not any(map(lambda x: x in col_to_val, blocks[i])) and not all(map(lambda x: self.__numeric(page.text[x]), blocks[i])):
-                text = " ".join(map(lambda x: page.text[x], sorted(blocks[i], key=lambda x: page.word_num[x])))
+            if (
+                blocks[i]
+                and not any(map(lambda x: x in col_to_val, blocks[i]))
+                and not all(map(lambda x: self.__numeric(page.text[x]), blocks[i]))
+            ):
+                text = " ".join(
+                    map(
+                        lambda x: page.text[x],
+                        sorted(blocks[i], key=lambda x: page.word_num[x]),
+                    )
+                )
                 top = min(map(lambda x: page.top[x], blocks[i]))
-                height = max(map(lambda x: page.top[x] + page.height[x], blocks[i])) - top
+                height = (
+                    max(map(lambda x: page.top[x] + page.height[x], blocks[i])) - top
+                )
                 left = min(map(lambda x: page.left[x], blocks[i]))
-                width = max(map(lambda x: page.left[x] + page.width[x], blocks[i])) - left
+                width = (
+                    max(map(lambda x: page.left[x] + page.width[x], blocks[i])) - left
+                )
                 conf = reduce(lambda x, y: x * page.conf[y] / 100, blocks[i], 100)
                 index = min(blocks[i])
-                page.loc[index, ['text', 'top', 'height', 'left', 'width', 'conf']] = text, top, height, left, width, conf
+                page.loc[index, ["text", "top", "height", "left", "width", "conf"]] = (
+                    text,
+                    top,
+                    height,
+                    left,
+                    width,
+                    conf,
+                )
                 blocks[i].remove(index)
                 drop.extend(blocks[i])
                 for j in blocks[i]:
@@ -130,7 +166,11 @@ class ScannedReportReader:
                         val_to_row[k].remove(j)
                     row_to_val.pop(j)
 
-        height = sum(map(lambda r: r[1].height, page.iterrows())) / len(page) if len(page) else 0
+        height = (
+            sum(map(lambda r: r[1].height, page.iterrows())) / len(page)
+            if len(page)
+            else 0
+        )
 
         page = page.drop(drop)
 
@@ -138,19 +178,50 @@ class ScannedReportReader:
             # if lowercase start
             # find everything which is vertically above and find a maximal set to merge with!
             if page.text[row][0].islower():
-                possible = set(map(lambda x: x[0], filter(lambda x: x[0] not in row_to_val and x[0] not in col_to_val and overlap_h(page.loc[row, :], x[1]), page.iterrows())))
+                possible = set(
+                    map(
+                        lambda x: x[0],
+                        filter(
+                            lambda x: x[0] not in row_to_val
+                            and x[0] not in col_to_val
+                            and overlap_h(page.loc[row, :], x[1]),
+                            page.iterrows(),
+                        ),
+                    )
+                )
                 top = page.top[row]
                 merge_able = {row}
                 for i in sorted(possible, key=lambda x: page.top[x], reverse=True):
                     if top - page.top[i] < 3 * height:
                         merge_able.add(i)
                 top = max(map(lambda x: page.top[x], merge_able))
-                height = max(map(lambda x: page.top[x] + page.height[x], merge_able)) - top
+                height = (
+                    max(map(lambda x: page.top[x] + page.height[x], merge_able)) - top
+                )
                 left = min(map(lambda x: page.left[x], merge_able))
-                width = max(map(lambda x: page.left[x] + page.width[x], merge_able)) - left
-                text = " ".join(map(lambda x: page.text[x], sorted(merge_able, key=lambda x: page.top[x] + 1 - (left - page.left[x]) / width)))
+                width = (
+                    max(map(lambda x: page.left[x] + page.width[x], merge_able)) - left
+                )
+                text = " ".join(
+                    map(
+                        lambda x: page.text[x],
+                        sorted(
+                            merge_able,
+                            key=lambda x: page.top[x]
+                            + 1
+                            - (left - page.left[x]) / width,
+                        ),
+                    )
+                )
                 conf = reduce(lambda x, y: x * page.conf[y] / 100, merge_able, 100)
-                page.loc[row, ['text', 'top', 'height', 'left', 'width', 'conf']] = text, top, height, left, width, conf
+                page.loc[row, ["text", "top", "height", "left", "width", "conf"]] = (
+                    text,
+                    top,
+                    height,
+                    left,
+                    width,
+                    conf,
+                )
 
         drop = set()
 
@@ -168,10 +239,25 @@ class ScannedReportReader:
             height = max(map(lambda x: page.top[x] + page.height[x], merge_able)) - top
             left = min(map(lambda x: page.left[x], merge_able))
             width = max(map(lambda x: page.left[x] + page.width[x], merge_able)) - left
-            text = " ".join(map(lambda x: page.text[x], sorted(merge_able, key=lambda x: page.top[x] + 1 - (left - page.left[x]) / width)))
+            text = " ".join(
+                map(
+                    lambda x: page.text[x],
+                    sorted(
+                        merge_able,
+                        key=lambda x: page.top[x] + 1 - (left - page.left[x]) / width,
+                    ),
+                )
+            )
             conf = reduce(lambda x, y: x * page.conf[y] / 100, merge_able, 100)
             index = min(merge_able)
-            page.loc[index, ['text', 'top', 'height', 'left', 'width', 'conf']] = text, top, height, left, width, conf
+            page.loc[index, ["text", "top", "height", "left", "width", "conf"]] = (
+                text,
+                top,
+                height,
+                left,
+                width,
+                conf,
+            )
             for col in merge_able - {index}:
                 col_to_val.pop(col)
             for val_2, cols_2 in val_to_col.items():
@@ -183,8 +269,12 @@ class ScannedReportReader:
 
         page = page.drop(list(drop))
 
-        val_to_col = {k: max(v, key=lambda x: page.top[x]) for k, v in val_to_col.items()}
-        val_to_row = {k: max(v, key=lambda x: page.top[x]) for k, v in val_to_row.items()}
+        val_to_col = {
+            k: max(v, key=lambda x: page.top[x]) for k, v in val_to_col.items()
+        }
+        val_to_row = {
+            k: max(v, key=lambda x: page.top[x]) for k, v in val_to_row.items()
+        }
 
         # TODO this fails when headers aren't recognised. Could you... recognise headers the other way?
         #   some pdfs ie softwire 2011 are hardly human readable and this can't read them either
@@ -211,7 +301,10 @@ class ScannedReportReader:
             if not (page.left[headers[-1]] < page.left[right]):
                 valid = True
                 for orphan in orphaned:
-                    col = min(filter(lambda x: page.left[x] > page.left[orphan], headers), key=lambda x: page.left[x])
+                    col = min(
+                        filter(lambda x: page.left[x] > page.left[orphan], headers),
+                        key=lambda x: page.left[x],
+                    )
                     for val in col_to_val[col]:
                         if val in val_to_row and val_to_row[val] == val_to_row[orphan]:
                             valid = False
@@ -228,7 +321,10 @@ class ScannedReportReader:
             if not valid and not (page.left[headers[0]] > page.left[left]):
                 valid = True
                 for orphan in orphaned:
-                    col = max(filter(lambda x: page.left[x] < page.left[orphan], headers), key=lambda x: page.left[x])
+                    col = max(
+                        filter(lambda x: page.left[x] < page.left[orphan], headers),
+                        key=lambda x: page.left[x],
+                    )
                     for val in col_to_val[col]:
                         if val in val_to_row and val_to_row[val] == val_to_row[orphan]:
                             valid = False
@@ -247,27 +343,39 @@ class ScannedReportReader:
         threshold = 1500
         query_year = datetime(year=self.__year, month=6, day=6)
         for val in set(val_to_col) & set(val_to_row):
-
             # TODO make float conversion more rigorous
 
-            match = re.match(r'[-+]?\d+(,\d{3})*(\.\d{2})?', page.text[val].replace("(", "").replace(")", ""))
+            match = re.match(
+                r"[-+]?\d+(,\d{3})*(\.\d{2})?",
+                page.text[val].replace("(", "").replace(")", ""),
+            )
             if match:
                 value = float(match.group().replace(",", ""))
             else:
                 # unable to extract a float value
                 continue
             try:
-                date = parser.parse(page.text[val_to_col[val]], dayfirst=True, fuzzy=True, default=datetime(self.__year, 12, 31))
+                date = parser.parse(
+                    page.text[val_to_col[val]],
+                    dayfirst=True,
+                    fuzzy=True,
+                    default=datetime(self.__year, 12, 31),
+                )
                 if abs((date - query_year).days) < threshold:
-                    instant = date.strftime('%Y-%m-%d')
+                    instant = date.strftime("%Y-%m-%d")
                     name = page.text[val_to_row[val]]
                 else:
                     instant = name = None
             except parser.ParserError:
                 try:
-                    date = parser.parse(page.text[val_to_row[val]], dayfirst=True, fuzzy=True, default=datetime(self.__year, 12, 31))
+                    date = parser.parse(
+                        page.text[val_to_row[val]],
+                        dayfirst=True,
+                        fuzzy=True,
+                        default=datetime(self.__year, 12, 31),
+                    )
                     if abs((date - query_year).days) < threshold:
-                        instant = date.strftime('%Y-%m-%d')
+                        instant = date.strftime("%Y-%m-%d")
                         name = page.text[val_to_col[val]]
                     else:
                         instant = name = None
@@ -277,12 +385,12 @@ class ScannedReportReader:
             if name:
                 attributes.append(
                     {
-                        'name': name,
-                        'value': value,
-                        'unit': None,
-                        'instant': instant,
-                        'startdate': None,
-                        'enddate': None
+                        "name": name,
+                        "value": value,
+                        "unit": None,
+                        "instant": instant,
+                        "startdate": None,
+                        "enddate": None,
                     }
                 )
         return attributes

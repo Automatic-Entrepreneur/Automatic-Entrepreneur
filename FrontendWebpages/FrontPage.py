@@ -8,14 +8,14 @@ err_404_refreshed = False
 
 
 def generate_html(
-        company_id: str, start_year: int = 2010, end_year: int = 2023
+    company_id: str, start_year: int = 2010, end_year: int = 2023
 ) -> None:
     report = get_report(company_id, start_year, end_year)
 
     with open(
-            os.path.join(os.path.dirname(__file__), "templates", f"{company_id}.html"),
-            "w",
-            encoding="utf-8",
+        os.path.join(os.path.dirname(__file__), "templates", f"{company_id}.html"),
+        "w",
+        encoding="utf-8",
     ) as f:
         f.write(report)
 
