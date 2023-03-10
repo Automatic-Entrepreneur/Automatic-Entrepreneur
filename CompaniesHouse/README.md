@@ -5,8 +5,6 @@ Documentation for these is in the code
 
 ### CompanyInformation
   - This is a class which wraps API calls and extraction from accounts.
-  - This is not completed
-  - The current implementation works for IXBRL only
 
 ### CompanySearch
   - This class searches for companies
